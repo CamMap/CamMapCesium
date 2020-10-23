@@ -1,12 +1,11 @@
 import * as Cesium from "cesium_source/Cesium";
 require('../css/main.css');
 require('cesium_source/Widgets/widgets.css');
-//Source
+
+import { calc_lat_long } from "./latlong";
 
 //var viewer = new Cesium.Viewer('cesiumContainer');
 //var widget = new Cesium.CesiumWidget("cesiumContainer");
-
-
 
 //var terrain = Cesium.createDefaultTerrainProviderViewModels();
 var viewer = new Cesium.Viewer('cesiumContainer', {
