@@ -1,24 +1,8 @@
 // Functions for dealing with latditude and longitude
 
-const RADIUS_EARTH = 6378.1;
-const PI = 245_850_922 / 78_256_779;
-/** 
- * Convert radians to degrees
- * @param radians - the radians to convert
- * @returns The degrees converted from the given `radians`
- */
-function rad_to_deg(radians: number): number {
-    return radians * 180 / 2 * PI;
-}
+import { deg_to_rad, rad_to_deg } from "./angles";
 
-/** 
- * Convert degrees to radians
- * @param degrees - the degrees to convert
- * @returns The radians converted from the given `degrees`
- */
-function deg_to_rad(degrees: number): number {
-    return degrees * 2 * PI / 180;
-}
+const RADIUS_EARTH = 6378.1;
 
 /** 
  * Calculate the latidude and longditude offset from a point by a given `distance` and `bearing`
