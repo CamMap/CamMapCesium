@@ -1,7 +1,7 @@
 // Functions for drawing a Field of View
 
-import { deg_to_rad, rad_to_deg } from "./angles";
-import { Entity, Cartesian3, Color, Camera } from "cesium_source/Cesium";
+import { deg_to_rad } from "./angles";
+import { Entity, Cartesian3, Color, Matrix3 } from "cesium_source/Cesium";
 
 /** 
  * Make a field of view frustum from points, this does not calculate `angles`, `distance` or `bearing`
@@ -116,20 +116,101 @@ export function make_fov_view(
  * @param long - the longditude coordinate (in degrees)
  * @param elevation - the elevation coordinate, in km
  * @param bearing - The bearing from north
- * @param tilt - The tilt of the camera, 0 is pointing at the ground, 180 is pointing at the sky
+ * @param tilt - The tilt of the camera, -90 is pointing at the ground, 90 is pointing at the sky
  * @param distance - the distance to draw the FOV to, in km
  * @returns The polygon entities which represent the field of view
  */
 export function make_fov([lat, long, elevation = 0]: [number, number, number], fov_angle: number, bearing: number, tilt: number, distance: number): Cesium.Entity[] {
 
-    // TODO
-    // This formula still needs to be implimented
+    // Draw a sphere of visibility, the distance is the radius of this sphere
+    // then the FOV is an arc of the sphere
+    let radius: number = distance;
+    let theta: number = tilt;
+    let phi: number = bearing;
 
+    // Make sure the angles point north 
+    // to begin with, otherwise they point looking 
+    // into space
+    theta += 90;
+    phi -= 90;
+
+    // Camera point is the center of the sphere
     let camera_point = Cartesian3.fromDegrees(lat, long, elevation);
-    let bottom_left_point = Cartesian3.fromDegrees(lat - 3, long + 5, elevation * 1 / 3);
-    let top_left_point = Cartesian3.fromDegrees(lat - 3, long + 5, elevation * 3);
-    let top_right_point = Cartesian3.fromDegrees(lat + 3, long + 5, elevation * 3);
-    let bottom_right_point = Cartesian3.fromDegrees(lat + 3, long + 5, elevation * 1 / 3);
 
-    return make_fov_view(camera_point, bottom_left_point, top_left_point, bottom_right_point, top_right_point);
+
+    // The theta and phi gradients are lines tangent to the theta and phi axis in the spherical coordinates, in the standard basis cartisean coordinate system
+    let theta_grad: Cartesian3 = new Cartesian3(0, 0, 0);
+    Cartesian3.subtract(camera_point, Cartesian3.fromDegrees(lat + 0.0001, long, elevation), theta_grad);
+
+    let phi_grad = new Cartesian3(0, 0, 0);
+    Cartesian3.subtract(camera_point, Cartesian3.fromDegrees(lat, long + 0.0001, elevation), phi_grad);
+
+
+    // Create a new axis where the x basis vector is pointing tangent to the theta axis and y basis vector is pointing tangent to the phi axis
+    let x_axis_new = new Cartesian3(0, 0, 0);
+    Cartesian3.normalize(theta_grad, x_axis_new);
+
+    let y_axis_new = new Cartesian3(0, 0, 0);
+    Cartesian3.normalize(phi_grad, y_axis_new);
+
+    // The new z axis is simply pointing away from the Earth
+    let z_axis_new = new Cartesian3(0, 0, 0);
+    Cartesian3.normalize(camera_point, z_axis_new);
+
+    // The transformation matrix is given by aligning the x, y, z new basis
+    // vectors in a column and so, the x component of each multipled by the x, y, z of the new basis
+    // respectively will give the new x coordinate, in the new basis
+
+    let transformation_matrix = new Matrix3(
+        x_axis_new.x, y_axis_new.x, z_axis_new.x,
+        x_axis_new.y, y_axis_new.y, z_axis_new.y,
+        x_axis_new.z, y_axis_new.z, z_axis_new.z
+    );
+
+    // Convert the spherical coordinates to cartesian, then transform the cartesian axis to point along the correct axis, where the x and y lie tangent to the Earths surace and the z points away from the center of the Earth.  This is done using the transformation matrix created above.
+
+    let top_left_cart = new Cartesian3(0, 0, 0);
+    Matrix3.multiplyByVector(transformation_matrix, spherical_to_cartesian(radius, theta - fov_angle, phi - fov_angle), top_left_cart);
+
+    let bottom_right_cart = new Cartesian3(0, 0, 0);
+    Matrix3.multiplyByVector(transformation_matrix, spherical_to_cartesian(radius, theta + fov_angle, phi - fov_angle), bottom_right_cart);
+
+    let bottom_left_cart = new Cartesian3(0, 0, 0);
+    Matrix3.multiplyByVector(transformation_matrix, spherical_to_cartesian(radius, theta + fov_angle, phi + fov_angle), bottom_left_cart);
+
+    let top_right_cart = new Cartesian3(0, 0, 0);
+    Matrix3.multiplyByVector(transformation_matrix, spherical_to_cartesian(radius, theta - fov_angle, phi + fov_angle), top_right_cart);
+
+    // Now put the point at an offset from the camera, otherwise they would simply be at the center of the Earth.  This moves the cartesian axis to be where the camera is located.
+
+    let top_left_point: Cartesian3 = new Cartesian3(0, 0, 0);
+    Cartesian3.add(camera_point, top_left_cart, top_left_point);
+
+    let bottom_right_point: Cartesian3 = new Cartesian3(0, 0, 0);
+    Cartesian3.add(camera_point, bottom_right_cart, bottom_right_point);
+
+    let bottom_left_point: Cartesian3 = new Cartesian3(0, 0, 0);
+    Cartesian3.add(camera_point, bottom_left_cart, bottom_left_point);
+
+    let top_right_point: Cartesian3 = new Cartesian3(0, 0, 0);
+    Cartesian3.add(camera_point, top_right_cart, top_right_point);
+
+    return make_fov_view(camera_point, bottom_right_point, top_left_point, bottom_left_point, top_right_point);
+}
+
+export function spherical_to_cartesian(radius: number, theta: number, phi: number): Cartesian3 {
+    // For spherical coordinates
+    // x = rsin(theta)cos(phi)
+    // y = rsin(theta)sin(phi)
+    // z = rcos(theta)
+
+    let theta_rad = deg_to_rad(theta);
+    let phi_rad = deg_to_rad(phi);
+
+    return new Cartesian3(
+        radius * Math.sin(theta_rad) * Math.cos(phi_rad),
+        radius * Math.sin(theta_rad) * Math.sin(phi_rad),
+        radius * Math.cos(theta_rad),
+
+    )
 }

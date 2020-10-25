@@ -2,7 +2,6 @@ import * as Cesium from "cesium_source/Cesium";
 require('../css/main.css');
 require('cesium_source/Widgets/widgets.css');
 
-import { calc_lat_long } from "./latlong";
 import { make_fov } from "./fov";
 
 //var viewer = new Cesium.Viewer('cesiumContainer');
@@ -49,9 +48,22 @@ var line = viewer.entities.add({
 });
 
 // A FOV frustum
-let fov: Cesium.Entity[] = make_fov([-105, 25, 10000], 45, 45, 90, 10);
+let fov: Cesium.Entity[] = make_fov([-105, 25, 100000], 10, 0, 0, 600000);
+
+let fov_2: Cesium.Entity[] = make_fov([-105, 20, 100000], 10, 0, 0, 600000);
+
+let fov_3: Cesium.Entity[] = make_fov([-105, 15, 100000], 10, 0, 0, 600000);
+
 
 for (var e of fov) {
+    viewer.entities.add(e);
+}
+
+for (var e of fov_2) {
+    viewer.entities.add(e);
+}
+
+for (var e of fov_3) {
     viewer.entities.add(e);
 }
 

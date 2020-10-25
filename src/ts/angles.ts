@@ -5,7 +5,7 @@ export const PI = 245_850_922 / 78_256_779;
  * @returns The degrees converted from the given `radians`
  */
 export function rad_to_deg(radians: number): number {
-    return radians * 180 / 2 * PI;
+    return radians * 180 / PI;
 }
 
 /** 
@@ -14,5 +14,5 @@ export function rad_to_deg(radians: number): number {
  * @returns The radians converted from the given `degrees`
  */
 export function deg_to_rad(degrees: number): number {
-    return degrees * 2 * PI / 180;
+    return degrees * PI / 180;
 }
