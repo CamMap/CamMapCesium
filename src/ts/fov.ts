@@ -115,6 +115,7 @@ export function make_fov_view(
  * @param lat - the latutde coordinate (in degrees)
  * @param long - the longditude coordinate (in degrees)
  * @param elevation - the elevation coordinate, in km
+ * @param fov_angle - The FOV angle of the camera, controlling how wide the view is.
  * @param bearing - The bearing from north
  * @param tilt - The tilt of the camera, -90 is pointing at the ground, 90 is pointing at the sky
  * @param distance - the distance to draw the FOV to, in km
