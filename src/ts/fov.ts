@@ -31,8 +31,6 @@ export function make_fov_view(
                         camera_point,
                         top_left,
                         bottom_left,
-                        camera_point
-
                     ],
                 holes: []
             },
@@ -49,7 +47,6 @@ export function make_fov_view(
                         camera_point,
                         top_left,
                         top_right,
-                        camera_point
                     ],
                 holes: []
             },
@@ -65,7 +62,6 @@ export function make_fov_view(
                         camera_point,
                         top_right,
                         bottom_right,
-                        camera_point
                     ],
                 holes: []
             },
@@ -81,7 +77,6 @@ export function make_fov_view(
                         camera_point,
                         bottom_right,
                         bottom_left,
-                        camera_point,
                     ],
                 holes: []
             },
@@ -99,7 +94,6 @@ export function make_fov_view(
                         bottom_left,
                         top_left,
                         top_right,
-                        camera_point
                     ],
                 holes: []
             },
