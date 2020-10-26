@@ -126,8 +126,8 @@ export function make_fov([lat, long, elevation = 0]: [number, number, number], f
     // Draw a sphere of visibility, the distance is the radius of this sphere
     // then the FOV is an arc of the sphere
     let radius: number = distance;
-    let theta: number = tilt;
-    let phi: number = bearing;
+    let theta: number = bearing;
+    let phi: number = tilt * -1;
 
     // Make sure the angles point north 
     // to begin with, otherwise they point looking 
