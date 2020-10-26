@@ -1,7 +1,7 @@
 // Functions for drawing a Field of View
 
 import { deg_to_rad } from "./angles";
-import { Entity, Cartesian3, Color, Matrix3 } from "cesium_source/Cesium";
+import { Entity, Cartesian3, Color, Matrix3, Viewer } from "cesium_source/Cesium";
 
 /** 
  * Make a field of view frustum from points, this does not calculate `angles`, `distance` or `bearing`
@@ -198,6 +198,14 @@ export function make_fov([lat, long, elevation = 0]: [number, number, number], f
 
     return make_fov_view(camera_point, bottom_right_point, top_left_point, bottom_left_point, top_right_point);
 }
+
+/* TODO
+function make_fov_cone(viewer: Viewer); Entity[]{
+    // To make a cone, apply sin and cos to 
+    // build a circle, like in an argand diagram.
+    // This is done in spherical coordinates
+}
+*/
 
 export function spherical_to_cartesian(radius: number, theta: number, phi: number): Cartesian3 {
     // For spherical coordinates
