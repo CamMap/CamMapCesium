@@ -112,7 +112,7 @@ export function make_fov_view(
  * @param fov_angle - The FOV angle of the camera, controlling how wide the view is.
  * @param bearing - The bearing from north
  * @param tilt - The tilt of the camera, -90 is pointing at the ground, 90 is pointing at the sky
- * @param tilt - The rotation of the camera, in degrees
+ * @param roll - The rotation of the camera, in degrees
  * @param distance - the distance to draw the FOV to, in km
  * @returns The polygon entities which represent the field of view
  */
