@@ -89,7 +89,6 @@ export function make_fov_view(
             hierarchy: {
                 positions:
                     [
-                        camera_point,
                         bottom_right,
                         bottom_left,
                         top_left,
