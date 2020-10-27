@@ -116,7 +116,7 @@ export function make_fov_view(
  * @param distance - the distance to draw the FOV to, in km
  * @returns The polygon entities which represent the field of view
  */
-export function make_fov([lat, long, elevation = 0]: [number, number, number], fov_angle: number, bearing: number, tilt: number, roll: number, distance: number): Cesium.Entity[] {
+export function make_fov([lat, long, elevation = 0]: [number, number, number], fov_angle: number, [screen_width, screen_height]: [number, number], bearing: number, tilt: number, roll: number, distance: number): Cesium.Entity[] {
 
     // Draw a sphere of visibility, the distance is the radius of this sphere
     // then the FOV is an arc of the sphere
@@ -160,6 +160,14 @@ export function make_fov([lat, long, elevation = 0]: [number, number, number], f
     // vectors in a column and so, the x component of each multipled by the x, y, z of the new basis
     // respectively will give the new x coordinate, in the new basis
 
+    let scale_matrix = Matrix3.IDENTITY;
+    if (screen_width > screen_height) {
+        scale_matrix = Matrix3.fromScale(new Cartesian3(1, 1, screen_height / screen_width));
+    }
+    if (screen_width < screen_height) {
+        scale_matrix = Matrix3.fromScale(new Cartesian3(screen_width / screen_height, 1, 1));
+    }
+
     let transformation_matrix = new Matrix3(
         x_axis_new.x, y_axis_new.x, z_axis_new.x,
         x_axis_new.y, y_axis_new.y, z_axis_new.y,
@@ -174,6 +182,8 @@ export function make_fov([lat, long, elevation = 0]: [number, number, number], f
     Matrix3.multiply(transformation_matrix, rotation_matrix, transformation_matrix);
 
     Matrix3.multiply(transformation_matrix, roll_transform_matrix, transformation_matrix);
+
+    Matrix3.multiply(transformation_matrix, scale_matrix, transformation_matrix);
 
     // Convert the spherical coordinates to cartesian, then transform the cartesian axis to point along the correct axis, where the x and y lie tangent to the Earths surace and the z points away from the center of the Earth.  This is done using the transformation matrix created above.
 

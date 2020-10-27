@@ -48,11 +48,11 @@ var line = viewer.entities.add({
 });
 
 // A FOV frustum
-let fov: Cesium.Entity[] = make_fov([-105, 25, 100000], 10, 0, 0, 45, 600000);
+let fov: Cesium.Entity[] = make_fov([-105, 25, 100000], 10, [100, 50], 0, 0, 45, 600000);
 
-let fov_2: Cesium.Entity[] = make_fov([-105, 20, 100000], 10, 90, 30, 0, 600000);
+let fov_2: Cesium.Entity[] = make_fov([-105, 20, 100000], 10, [100, 100], 90, 30, 0, 600000);
 
-let fov_3: Cesium.Entity[] = make_fov([-105, 15, 100000], 10, -90, 90, 0, 600000);
+let fov_3: Cesium.Entity[] = make_fov([-105, 15, 100000], 10, [100, 100], -90, 90, 0, 600000);
 
 
 for (var e of fov) {
