@@ -112,10 +112,11 @@ export function make_fov_view(
  * @param fov_angle - The FOV angle of the camera, controlling how wide the view is.
  * @param bearing - The bearing from north
  * @param tilt - The tilt of the camera, -90 is pointing at the ground, 90 is pointing at the sky
+ * @param tilt - The rotation of the camera, in degrees
  * @param distance - the distance to draw the FOV to, in km
  * @returns The polygon entities which represent the field of view
  */
-export function make_fov([lat, long, elevation = 0]: [number, number, number], fov_angle: number, bearing: number, tilt: number, distance: number): Cesium.Entity[] {
+export function make_fov([lat, long, elevation = 0]: [number, number, number], fov_angle: number, bearing: number, tilt: number, roll: number, distance: number): Cesium.Entity[] {
 
     // Draw a sphere of visibility, the distance is the radius of this sphere
     // then the FOV is an arc of the sphere
@@ -167,7 +168,12 @@ export function make_fov([lat, long, elevation = 0]: [number, number, number], f
 
     let rotation_matrix = Matrix3.fromHeadingPitchRoll(new HeadingPitchRoll(deg_to_rad(theta), deg_to_rad(0), deg_to_rad(phi)));
 
+    // Controls rotation of camera, must be applied in cartiasian, rather than spherical 
+    let roll_transform_matrix = Matrix3.fromRotationY(roll)
+
     Matrix3.multiply(transformation_matrix, rotation_matrix, transformation_matrix);
+
+    Matrix3.multiply(transformation_matrix, roll_transform_matrix, transformation_matrix);
 
     // Convert the spherical coordinates to cartesian, then transform the cartesian axis to point along the correct axis, where the x and y lie tangent to the Earths surace and the z points away from the center of the Earth.  This is done using the transformation matrix created above.
 
