@@ -109,6 +109,8 @@ export function make_fov_view(
  * @param lat - the latutde coordinate (in degrees)
  * @param long - the longditude coordinate (in degrees)
  * @param elevation - the elevation coordinate, in km
+ * @param screen_width - The width of the screen, must be same units as screen_height
+ * @param screen_height - The height of the screen, must be same units as screen_width
  * @param fov_angle - The FOV angle of the camera, controlling how wide the view is.
  * @param bearing - The bearing from north
  * @param tilt - The tilt of the camera, -90 is pointing at the ground, 90 is pointing at the sky
