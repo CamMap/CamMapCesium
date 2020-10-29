@@ -20,7 +20,7 @@ for creating entities
 */
 
 // Create a new fov
-var fov_cam = new FOV(viewer, [-107.0, 40.0, 30000.0], 0, 0, 0, 10, 1000);
+var fov_cam = new FOV(viewer, [-107.0, 40.0, 30000.0], 0, 0, 0, 10000, 100000);
 fov_cam.draw(viewer.scene);
 
 // A massive Red Sphere, wouldn't be this big in the application

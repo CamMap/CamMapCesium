@@ -52,8 +52,8 @@ export class FOV {
         var frustum = new Cesium.PerspectiveFrustum({
             fov: Cesium.Math.PI_OVER_THREE,
             aspectRatio: 1,
-            near: 10000.0,
-            far: 100000.0
+            near: near,
+            far: far
         });
         this.camera.frustum = frustum;
         this.camera.setView({
