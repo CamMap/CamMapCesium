@@ -20,6 +20,18 @@ export class FOV {
 
     cur_drawn: any;
 
+    /**
+     * Constructs an FOV object, call draw() to draw it in a scene
+     * @param viewer - The cesium viewer to be used (should this be scene)
+     * @param lat -  The laditude of the camera position
+     * @param long - The longditude of the camera position
+     * @param elevation - The elevation of the camera position  
+     * @param theta - The bearing of the camera
+     * @param phi - The tilt of the camera
+     * @param roll - The roll of the camera
+     * @param near - The near plane of the camera
+     * @param far - The far plane of the camera
+     */
     constructor(viewer: Cesium.Viewer, [lat, long, elevation]: [number, number, number], theta: number, phi: number, roll: number, near: number, far: number) {
 
         this.position = Cesium.Cartesian3.fromDegrees(lat, long, elevation);
