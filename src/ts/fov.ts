@@ -186,6 +186,6 @@ export class FOV {
      * @returns the rectangle of what the camera can see projected onto the Earth
      */
     getCameraRect(ellipsoid: Cesium.Ellipsoid): Cesium.Rectangle {
-        return this.camera.computeViewRectangle()!;
+        return this.camera.computeViewRectangle(ellipsoid)!;
     }
 }
