@@ -128,15 +128,15 @@ export class FOV {
      * @param elevation - The elevation of the position on the sphere
      */
     getSurfaceTransform(lat: number, long: number, elevation: number): [Cartesian3, Cartesian3, Cartesian3] {
-        let camera_point = Cartesian3.fromDegrees(lat, long, elevation);
-
+        // The point in cartesian coordinates
+        let cartesian_point = Cartesian3.fromDegrees(lat, long, elevation);
 
         // The theta and phi gradients are lines tangent to the theta and phi axis in the spherical coordinates, in the standard basis cartisean coordinate system
         let theta_grad: Cartesian3 = new Cartesian3(0, 0, 0);
-        Cartesian3.subtract(camera_point, Cartesian3.fromDegrees(lat + 0.0001, long, elevation), theta_grad);
+        Cartesian3.subtract(cartesian_point, Cartesian3.fromDegrees(lat + 0.0001, long, elevation), theta_grad);
 
         let phi_grad = new Cartesian3(0, 0, 0);
-        Cartesian3.subtract(camera_point, Cartesian3.fromDegrees(lat, long + 0.0001, elevation), phi_grad);
+        Cartesian3.subtract(cartesian_point, Cartesian3.fromDegrees(lat, long + 0.0001, elevation), phi_grad);
 
 
         // Create a new axis where the x basis vector is pointing tangent to the theta axis and y basis vector is pointing tangent to the phi axis
@@ -148,7 +148,7 @@ export class FOV {
 
         // The new z axis is simply pointing away from the Earth
         let z_axis_new = new Cartesian3(0, 0, 0);
-        Cartesian3.normalize(camera_point, z_axis_new);
+        Cartesian3.normalize(cartesian_point, z_axis_new);
 
         return [x_axis_new, y_axis_new, z_axis_new];
 
