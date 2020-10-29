@@ -87,6 +87,9 @@ export class FOV {
         }));
     }
 
+    /**
+     * Destroys the view object so it is no longer present in the scene
+     */
     destroy() {
         this.cur_drawn.destroy();
     }
