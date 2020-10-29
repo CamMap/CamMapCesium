@@ -94,7 +94,16 @@ export class FOV {
         this.cur_drawn.destroy();
     }
 
-
+    /**
+     * Calculate the rotation matrix to align the object to the surface of a sphere
+     * @param lat - The latitude of the position on the sphere
+     * @param long - The longditude of the position on the sphere
+     * @param elevation - The elevation of the position on the sphere
+     * @param theta - the bearing of the camera
+     * @param phi - the tilt of the camera
+     * @param roll - the roll of the camera
+     * @returns The rotation matrix to put the obect on the surface of a sphere
+     */
     getSurfaceRotationMatrix(lat: number, long: number, elevation: number, theta: number, phi: number, roll: number): Matrix3 {
         let [x_axis_new, y_axis_new, z_axis_new] = this.getSurfaceTransform(lat, long, elevation);
 
