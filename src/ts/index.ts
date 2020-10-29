@@ -2,7 +2,7 @@ import * as Cesium from "cesium_source/Cesium";
 require('../css/main.css');
 require('cesium_source/Widgets/widgets.css');
 
-import { make_fov } from "./fov";
+import { FOV } from "./fov";
 
 //var viewer = new Cesium.Viewer('cesiumContainer');
 //var widget = new Cesium.CesiumWidget("cesiumContainer");
@@ -25,6 +25,9 @@ See https://www.cesium.com/docs/tutorials/creating-entities/
 for creating entities
 */
 
+var fov_cam = new FOV(viewer, [-107.0, 40.0, 30000.0], 0, 0, 0, 10, 1000);
+fov_cam.draw(viewer.scene);
+
 // A massive Red Sphere, wouldn't be this big in the application
 var redSphere = viewer.entities.add({
     name: "Red sphere with black outline",
@@ -46,26 +49,6 @@ var line = viewer.entities.add({
         material: Cesium.Color.RED
     }
 });
-
-// A FOV frustum
-let fov: Cesium.Entity[] = make_fov([-105, 25, 100000], 10, [100, 50], 0, 0, 45, 600000);
-
-let fov_2: Cesium.Entity[] = make_fov([-105, 20, 100000], 10, [100, 100], 90, 30, 0, 600000);
-
-let fov_3: Cesium.Entity[] = make_fov([-105, 15, 100000], 10, [100, 100], -90, 90, 0, 600000);
-
-
-for (var e of fov) {
-    viewer.entities.add(e);
-}
-
-for (var e of fov_2) {
-    viewer.entities.add(e);
-}
-
-for (var e of fov_3) {
-    viewer.entities.add(e);
-}
 
 // Fly the Camera to a point
 viewer.camera.flyTo({
