@@ -48,7 +48,8 @@ export class FOV {
     }
 
     /**
-     * Draw the fow, with the assigned viewer
+     * Draw a FOV in a cesium scene
+     * @param scene - The cesium scene in which the object should be drawn 
      */
     draw(scene: Cesium.Scene) {
         let rotation_matrix = this.getSurfaceRotationMatrix(this.lat, this.long, this.elevation, this.theta, this.phi, this.roll);
