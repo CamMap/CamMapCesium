@@ -203,26 +203,30 @@ export class FOV {
      * @param ellipsoid - The ellopsoid the point shoudl map to
      */
     drawLineFromPixelToScreen(viewer: Cesium.Viewer, pixel: Cartesian2, ellipsoid: Cesium.Ellipsoid) {
-        let pointOnSphere = this.camera.pickEllipsoid(pixel, ellipsoid)!;
-        viewer.entities.add({
-            name: "Cam Line",
-            polyline: {
-                positions: [Cesium.Cartesian3.fromDegrees(this.lat, this.long, this.elevation), pointOnSphere],
-                width: 10,
-                arcType: Cesium.ArcType.NONE,
-                material: new Cesium.PolylineArrowMaterialProperty(
-                    Cesium.Color.GREEN
-                ),
-            },
-        })
+        let pointOnSphere = this.camera.pickEllipsoid(pixel, ellipsoid);
+        if (pointOnSphere != undefined) {
+            pointOnSphere = pointOnSphere as Cesium.Cartesian3;
+            viewer.entities.add({
+                name: "Cam Line",
+                polyline: {
+                    positions: [Cesium.Cartesian3.fromDegrees(this.lat, this.long, this.elevation), pointOnSphere],
+                    width: 10,
+                    arcType: Cesium.ArcType.NONE,
+                    material: new Cesium.PolylineArrowMaterialProperty(
+                        Cesium.Color.GREEN
+                    ),
+                },
+            })
 
-        // Keep this as a point cloud for now, so we can add more points in the future
-        var points = viewer.scene.primitives.add(new Cesium.PointPrimitiveCollection());
-        points.add({
-            position: pointOnSphere,
-            color: Cesium.Color.GREEN,
-            pixelSize: 10,
-        });
+
+            // Keep this as a point cloud for now, so we can add more points in the future
+            var points = viewer.scene.primitives.add(new Cesium.PointPrimitiveCollection());
+            points.add({
+                position: pointOnSphere,
+                color: Cesium.Color.GREEN,
+                pixelSize: 10,
+            });
+        }
     }
 
     /**
