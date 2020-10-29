@@ -119,6 +119,14 @@ export class FOV {
         return rotation_matrix;
     }
 
+    /**
+     * Get the plane tangent to the sphere, where the x axis is tangent to 
+     * the latitude axis, the y axis is tangent to the longditude and 
+     * the z axis is pointing to directly up towards space.
+     * @param lat - The latitude of the position on the sphere 
+     * @param long - The longditude of the position on the sphere
+     * @param elevation - The elevation of the position on the sphere
+     */
     getSurfaceTransform(lat: number, long: number, elevation: number): [Cartesian3, Cartesian3, Cartesian3] {
         let camera_point = Cartesian3.fromDegrees(lat, long, elevation);
 
