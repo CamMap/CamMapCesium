@@ -1,5 +1,8 @@
 # Thales Mapping Project
 
+## Screenshot
+<img src= "Screenshot.png">
+
 ## Instructions
 To run, make sure you have node(npm) > 6.0.0 (https://nodejs.org/en/), the most recent one will work well, then open a terminal at the directory and run
 ```
