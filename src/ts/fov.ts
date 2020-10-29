@@ -4,7 +4,7 @@ import { Cartesian3, Matrix3, HeadingPitchRoll } from "cesium_source/Cesium";
 import * as Cesium from "cesium_source/Cesium";
 
 /**
- * A wrapper around cesium debug camera viewer.
+ * A wrapper around cesium camera viewer.
  */
 export class FOV {
 
