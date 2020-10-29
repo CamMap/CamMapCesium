@@ -1,4 +1,4 @@
-// Functions for drawing a Field of View
+/** Functions for drawing a Field of View */
 
 import { Cartesian3, Matrix3, HeadingPitchRoll } from "cesium_source/Cesium";
 import * as Cesium from "cesium_source/Cesium";
