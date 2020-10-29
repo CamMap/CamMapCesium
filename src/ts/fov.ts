@@ -32,8 +32,8 @@ export class FOV {
      * @param theta - The bearing of the camera
      * @param phi - The tilt of the camera
      * @param roll - The roll of the camera
-     * @param near - The near plane of the camera
-     * @param far - The far plane of the camera
+     * @param near - The near plane distance of the camera
+     * @param far - The far plane distance of the camera
      */
     constructor(viewer: Cesium.Viewer, [lat, long, elevation]: [number, number, number], theta: number, phi: number, roll: number, near: number, far: number) {
 
