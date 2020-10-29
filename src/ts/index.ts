@@ -1,3 +1,4 @@
+import { Cartesian2 } from "cesium";
 import * as Cesium from "cesium_source/Cesium";
 require('../css/main.css');
 require('cesium_source/Widgets/widgets.css');
@@ -33,6 +34,10 @@ viewer.entities.add({
     },
 
 });
+
+fov_cam.drawLineFromPixelToScreen(viewer,
+    new Cesium.Cartesian2(100, 200),
+    viewer.scene.globe.ellipsoid);
 
 // A massive Red Sphere, wouldn't be this big in the application
 var redSphere = viewer.entities.add({
