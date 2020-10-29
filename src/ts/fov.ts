@@ -226,8 +226,8 @@ export class FOV {
     }
 
     /**
-     * 
-     * @param boundingVolume 
+     * Computes the intersection of the view and a bounding box
+     * @param boundingVolume - The bounding volume of the object of which to check the intersection
      */
     checkIntersection(boundingVolume: BoundingRectangle | BoundingSphere | AxisAlignedBoundingBox | OrientedBoundingBox): Cesium.Intersect {
         return this.camera.frustum.computeCullingVolume(this.camera.position, this.cameraDirection, this.cameraUp).computeVisibility(boundingVolume);
