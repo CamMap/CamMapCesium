@@ -14,6 +14,16 @@ var viewer = new Cesium.Viewer('cesiumContainer', {
     fullscreenButton: false
 });
 
+var layers = viewer.scene.imageryLayers;
+  layers.addImageryProvider(new Cesium.SingleTileImageryProvider({
+      url: "Images/EiffelTowerPublicDomain.jpg",
+      rectangle: Cesium.Rectangle.fromDegrees(-75.0, 25.0, -67.0, 38.75),
+      
+    })
+    
+  ); 
+
+
 /*
 See https://www.cesium.com/docs/tutorials/creating-entities/
 for creating entities
