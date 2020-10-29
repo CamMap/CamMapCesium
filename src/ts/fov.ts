@@ -46,8 +46,6 @@ export class FOV {
         this.phi = Cesium.Math.toRadians(phi);
         this.roll = Cesium.Math.toRadians(roll);
 
-        let rotation_matrix = this.getSurfaceRotationMatrix(this.lat, this.long, this.elevation, this.theta, this.phi, this.roll);
-
         this.camera = new Cesium.Camera(viewer.scene);
         var frustum = new Cesium.PerspectiveFrustum({
             fov: Cesium.Math.PI_OVER_THREE,
@@ -55,11 +53,24 @@ export class FOV {
             near: near,
             far: far
         });
+
+        var frustum = new Cesium.PerspectiveFrustum({
+            fov: Cesium.Math.PI_OVER_THREE,
+            aspectRatio: 1,
+            near: near,
+            far: far
+        });
+        let [_, y_axis_new, z_axis_new] = this.getSurfaceTransform(lat, long, elevation);
+
+        let rotation_matrix = this.getSurfaceRotationMatrix(lat, long, elevation, this.theta, this.phi - Cesium.Math.PI_OVER_TWO, this.roll);
         this.camera.frustum = frustum;
-        this.camera.setView({
-            destination: Cesium.Cartesian3.fromDegrees(long, lat, elevation),
-            orientation: Cesium.Quaternion.fromRotationMatrix(rotation_matrix)
-        })
+        this.camera.position = Cesium.Cartesian3.fromDegrees(lat, long, elevation);
+        this.camera.up = Cesium.Cartesian3.clone(z_axis_new);
+        this.camera.right = Cesium.Cartesian3.clone(y_axis_new);
+
+        let x_on_new_axis = new Cartesian3(0, 0, 0);
+        Cesium.Matrix3.multiplyByVector(rotation_matrix, Cesium.Cartesian3.UNIT_X, x_on_new_axis);
+        this.camera.direction = x_on_new_axis;
     }
 
     /**
@@ -71,7 +82,7 @@ export class FOV {
 
         let geom: Cesium.Geometry = Cesium.FrustumGeometry.createGeometry(new Cesium.FrustumGeometry({
             frustum: this.camera.frustum as Cesium.PerspectiveFrustum,
-            origin: Cesium.Cartesian3.fromDegrees(-107.0, 40.0, 30000.0),
+            origin: Cesium.Cartesian3.fromDegrees(this.lat, this.long, this.elevation),
             orientation: Cesium.Quaternion.fromRotationMatrix(rotation_matrix)
         }))!;
         var instance = new Cesium.GeometryInstance({
@@ -155,5 +166,26 @@ export class FOV {
 
         return [x_axis_new, y_axis_new, z_axis_new];
 
+    }
+
+    /**
+     * Draw a debug camera, usful for determining if the FOV Frustrum and Camera have comes
+     * out of sync
+     * @param scene - The scene in which to draw the debug camera
+     */
+    draw_debug_camera(scene: Cesium.Scene) {
+        scene.primitives.add(new Cesium.DebugCameraPrimitive({
+            camera: this.camera,
+            color: Cesium.Color.YELLOW,
+            show: true
+        }));
+    }
+
+    /**
+     * This is only an approximation rectangle from cesium, using a polygon would usually be more accurate
+     * @returns the rectangle of what the camera can see projected onto the Earth
+     */
+    getCameraRect(ellipsoid: Cesium.Ellipsoid): Cesium.Rectangle {
+        return this.camera.computeViewRectangle()!;
     }
 }

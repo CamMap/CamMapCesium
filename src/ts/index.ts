@@ -20,8 +20,19 @@ for creating entities
 */
 
 // Create a new fov
-var fov_cam = new FOV(viewer, [-107.0, 40.0, 30000.0], 0, 0, 0, 10000, 100000);
+var fov_cam = new FOV(viewer, [-107.0, 40.0, 100000.0], 90, -45, 0, 10000, 700000);
 fov_cam.draw(viewer.scene);
+fov_cam.draw_debug_camera(viewer.scene);
+
+let r = fov_cam.getCameraRect(viewer.scene.globe.ellipsoid);
+viewer.entities.add({
+    name: "Cam Rect",
+    rectangle: {
+        coordinates: r,
+        material: Cesium.Color.RED.withAlpha(0.5)
+    },
+
+});
 
 // A massive Red Sphere, wouldn't be this big in the application
 var redSphere = viewer.entities.add({
@@ -53,3 +64,5 @@ viewer.camera.flyTo({
         pitch: Cesium.Math.toRadians(-90.0),
     }
 });
+
+//viewer.camera.lookAt(Cesium.Cartographic.toCartesian(Cesium.Rectangle.center(r), viewer.scene.globe.ellipsoid), new Cesium.Cartesian3(1, 1, 1));
