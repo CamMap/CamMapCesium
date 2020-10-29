@@ -4,10 +4,6 @@ require('cesium_source/Widgets/widgets.css');
 
 import { FOV } from "./fov";
 
-//var viewer = new Cesium.Viewer('cesiumContainer');
-//var widget = new Cesium.CesiumWidget("cesiumContainer");
-
-//var terrain = Cesium.createDefaultTerrainProviderViewModels();
 var viewer = new Cesium.Viewer('cesiumContainer', {
     animation: false,
     timeline: false,
@@ -16,8 +12,6 @@ var viewer = new Cesium.Viewer('cesiumContainer', {
     infoBox: false,
     vrButton: false,
     fullscreenButton: false
-    // terrainProviderViewModels: terrain,
-    // selectedTerrainProviderViewModel: terrain[1]
 });
 
 /*
@@ -25,6 +19,7 @@ See https://www.cesium.com/docs/tutorials/creating-entities/
 for creating entities
 */
 
+// Create a new fov
 var fov_cam = new FOV(viewer, [-107.0, 40.0, 30000.0], 0, 0, 0, 10, 1000);
 fov_cam.draw(viewer.scene);
 
