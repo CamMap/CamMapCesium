@@ -21,7 +21,7 @@ for creating entities
 */
 
 // Create a new fov
-var fov_cam = new FOV(viewer, [-107.0, 40.0, 100000.0], 90, -45, 0, 10000, 300000);
+var fov_cam = new FOV(viewer, [-107.0, 40.0, 100000.0], 60, 1, 90, -45, 0, 10000, 300000);
 fov_cam.draw(viewer.scene);
 fov_cam.draw_debug_camera(viewer.scene);
 

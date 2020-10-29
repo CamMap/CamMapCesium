@@ -23,6 +23,7 @@ export class FOV {
     phi: number;
     roll: number;
     viewer: Cesium.Viewer;
+    fov: number;
 
     cur_drawn: any;
 
@@ -38,7 +39,7 @@ export class FOV {
      * @param near - The near plane distance of the camera
      * @param far - The far plane distance of the camera
      */
-    constructor(viewer: Cesium.Viewer, [lat, long, elevation]: [number, number, number], theta: number, phi: number, roll: number, near: number, far: number) {
+    constructor(viewer: Cesium.Viewer, [lat, long, elevation]: [number, number, number], fov: number, aspectRatio: number, theta: number, phi: number, roll: number, near: number, far: number) {
 
         this.position = Cesium.Cartesian3.fromDegrees(lat, long, elevation);
         this.viewer = viewer;
@@ -48,21 +49,16 @@ export class FOV {
         this.theta = Cesium.Math.toRadians(theta);
         this.phi = Cesium.Math.toRadians(phi);
         this.roll = Cesium.Math.toRadians(roll);
+        this.fov = Cesium.Math.toRadians(fov);
 
         this.camera = new Cesium.Camera(viewer.scene);
         var frustum = new Cesium.PerspectiveFrustum({
-            fov: Cesium.Math.PI_OVER_THREE,
-            aspectRatio: 1,
+            fov: this.fov,
+            aspectRatio: aspectRatio,
             near: near,
             far: far
         });
 
-        var frustum = new Cesium.PerspectiveFrustum({
-            fov: Cesium.Math.PI_OVER_THREE,
-            aspectRatio: 1,
-            near: near,
-            far: far
-        });
         let [_, y_axis_new, z_axis_new] = this.getSurfaceTransform(lat, long, elevation);
 
         let rotation_matrix = this.getSurfaceRotationMatrix(lat, long, elevation, this.theta, this.phi - Cesium.Math.PI_OVER_TWO, this.roll);
