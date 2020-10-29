@@ -5,7 +5,7 @@
 
 import { Cartesian3, Matrix3, HeadingPitchRoll } from "cesium_source/Cesium";
 import * as Cesium from "cesium_source/Cesium";
-import { Cartesian2 } from "cesium";
+import { AxisAlignedBoundingBox, BoundingRectangle, BoundingSphere, Cartesian2, OrientedBoundingBox } from "cesium";
 
 /**
  * A wrapper around cesium camera viewer.
@@ -14,6 +14,8 @@ export class FOV {
 
     position: Cesium.Cartesian3;
     camera: Cesium.Camera;
+    cameraUp: Cesium.Cartesian3;
+    cameraDirection: Cesium.Cartesian3;
     lat: number;
     long: number;
     elevation: number;
@@ -72,6 +74,9 @@ export class FOV {
         let x_on_new_axis = new Cartesian3(0, 0, 0);
         Cesium.Matrix3.multiplyByVector(rotation_matrix, Cesium.Cartesian3.UNIT_X, x_on_new_axis);
         this.camera.direction = x_on_new_axis;
+
+        this.cameraUp = this.camera.up;
+        this.cameraDirection = this.camera.direction;
     }
 
     /**
@@ -218,5 +223,13 @@ export class FOV {
             color: Cesium.Color.GREEN,
             pixelSize: 10,
         });
+    }
+
+    /**
+     * 
+     * @param boundingVolume 
+     */
+    checkIntersection(boundingVolume: BoundingRectangle | BoundingSphere | AxisAlignedBoundingBox | OrientedBoundingBox): Cesium.Intersect {
+        return this.camera.frustum.computeCullingVolume(this.camera.position, this.cameraDirection, this.cameraUp).computeVisibility(boundingVolume);
     }
 }
