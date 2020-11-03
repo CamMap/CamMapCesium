@@ -1,3 +1,5 @@
+import exifr from 'exifr';
+
 // The upload file button
 let uploadFile = document.getElementById('uploadFile')! as HTMLInputElement;
 uploadFile.onchange = onUploadImage;
@@ -30,7 +32,15 @@ function showUploadedImage(file: File) {
 
     var fileReader = new FileReader();
     fileReader.onload = function (e) {
+        // Switch Image to display the loaded image
         img.src = e.target!.result as string;
+
+        // Attempt to get GPS coordinates
+        exifr.gps('./myimage.jpg').then((gps) => {
+            console.log("GPS data: Latitude: " + gps.latitude + " | Longitude: " + gps.longitude);
+        }).catch((_) => {
+            console.log("Couldn't image read GPS coordinates");
+        });
         console.log("Loaded Image:" + e.target!.result);
     }
     fileReader.readAsDataURL(file);
