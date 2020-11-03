@@ -39,7 +39,7 @@ function showUploadedImage(file: File) {
         exifr.gps('./myimage.jpg').then((gps) => {
             console.log("GPS data: Latitude: " + gps.latitude + " | Longitude: " + gps.longitude);
         }).catch((_) => {
-            console.log("Couldn't image read GPS coordinates");
+            console.log("Couldn't read image GPS coordinates");
         });
         console.log("Loaded Image:" + e.target!.result);
     }
