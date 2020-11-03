@@ -225,6 +225,10 @@ export class FOV {
         }
     }
 
+    getPointOnSphereFromScreen(pixel: Cartesian2, ellipsoid: Cesium.Ellipsoid) {
+        return this.camera.pickEllipsoid(pixel, ellipsoid);
+    }
+
     /**
      * Draws a line from the a percent(0.0 - 1.0) on the camera screen to the point that pixel maps to 
      * on an ellipsoid
