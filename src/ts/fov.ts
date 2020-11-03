@@ -225,6 +225,11 @@ export class FOV {
         }
     }
 
+    /**
+     * Map a point from the camera screen to a sphere point
+     * @param pixel - The pixel to on the camera screen
+     * @param ellipsoid - The sphere to map the camera screen to 
+     */
     getPointOnSphereFromScreen(pixel: Cartesian2, ellipsoid: Cesium.Ellipsoid) {
         return this.camera.pickEllipsoid(pixel, ellipsoid);
     }
