@@ -40,6 +40,22 @@ fov_cam.drawLineFromPixelToScreen(viewer,
     new Cesium.Cartesian2(100, 200),
     viewer.scene.globe.ellipsoid);
 
+fov_cam.drawLineFromPercentToScreen(viewer,
+    new Cesium.Cartesian2(1.0, 1.0),
+    viewer.scene.globe.ellipsoid);
+
+fov_cam.drawLineFromPercentToScreen(viewer,
+    new Cesium.Cartesian2(1.0, 0.0),
+    viewer.scene.globe.ellipsoid);
+
+fov_cam.drawLineFromPercentToScreen(viewer,
+    new Cesium.Cartesian2(0.0, 0.0),
+    viewer.scene.globe.ellipsoid);
+
+fov_cam.drawLineFromPercentToScreen(viewer,
+    new Cesium.Cartesian2(0.0, 1.0),
+    viewer.scene.globe.ellipsoid);
+
 // A massive Red Sphere, wouldn't be this big in the application
 var redSphere = viewer.entities.add({
     name: "Red sphere with black outline",

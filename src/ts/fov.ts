@@ -3,9 +3,9 @@
  * @packageDocumentation
 */
 
-import { Cartesian3, Matrix3, HeadingPitchRoll } from "cesium_source/Cesium";
+import { Cartesian3, Matrix3, HeadingPitchRoll, Cartographic, Cartesian2 } from "cesium_source/Cesium";
 import * as Cesium from "cesium_source/Cesium";
-import { AxisAlignedBoundingBox, BoundingRectangle, BoundingSphere, Cartesian2, Cartographic, OrientedBoundingBox } from "cesium";
+import { AxisAlignedBoundingBox, BoundingRectangle, BoundingSphere, OrientedBoundingBox } from "cesium";
 
 /**
  * A wrapper around cesium camera viewer.
@@ -229,13 +229,13 @@ export class FOV {
      * Draws a line from the a percent(0.0 - 1.0) on the camera screen to the point that pixel maps to 
      * on an ellipsoid
      * @param viewer - The cesium viewer
-     * @param pixel - The percent coordinate on the camera screen, bewteen 0.0 and 1.0
+     * @param percent - The percent coordinate on the camera screen, bewteen 0.0 and 1.0
      * @param ellipsoid - The ellopsoid the point shoudl map to
      */
     drawLineFromPercentToScreen(viewer: Cesium.Viewer, percent: Cartesian2, ellipsoid: Cesium.Ellipsoid) {
         let maxHeight = viewer.canvas.clientHeight;
         let maxWidth = viewer.canvas.clientWidth;
-        let pixel = new Cartesian2(maxHeight * percent.x, maxWidth * percent.y);
+        let pixel = new Cesium.Cartesian2(maxWidth * percent.x, maxHeight * percent.y);
         this.drawLineFromPixelToScreen(viewer, pixel, ellipsoid);
     }
 
