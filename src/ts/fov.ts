@@ -5,7 +5,7 @@
 
 import { Cartesian3, Matrix3, HeadingPitchRoll } from "cesium_source/Cesium";
 import * as Cesium from "cesium_source/Cesium";
-import { AxisAlignedBoundingBox, BoundingRectangle, BoundingSphere, Cartesian2, OrientedBoundingBox } from "cesium";
+import { AxisAlignedBoundingBox, BoundingRectangle, BoundingSphere, Cartesian2, Cartographic, OrientedBoundingBox } from "cesium";
 
 /**
  * A wrapper around cesium camera viewer.
@@ -237,6 +237,40 @@ export class FOV {
         let maxWidth = viewer.canvas.clientWidth;
         let pixel = new Cartesian2(maxHeight * percent.x, maxWidth * percent.y);
         this.drawLineFromPixelToScreen(viewer, pixel, ellipsoid);
+    }
+
+    /**
+     * Move the camera to a specified location
+     * @param location - The location to move the camera to
+     */
+    moveCameraToCartesian(location: Cartesian3) {
+        // Switch Camera to lat, long, elevation and move it
+        this.moveCameraToCartographic(Cartographic.fromCartesian(location));
+    }
+
+    /**
+     * Moves the camera to the specified location
+     * @param cart - The position in Cartographic coordinates
+     */
+    moveCameraToCartographic(cart: Cartographic) {
+        let lat = cart.latitude;
+        let long = cart.longitude;
+        let elevation = cart.height;
+
+
+        let [_, y_axis_new, z_axis_new] = this.getSurfaceTransform(lat, long, elevation);
+
+        let rotation_matrix = this.getSurfaceRotationMatrix(lat, long, elevation, this.theta, this.phi - Cesium.Math.PI_OVER_TWO, this.roll);
+        this.camera.position = Cesium.Cartesian3.fromDegrees(lat, long, elevation);
+        this.camera.up = Cesium.Cartesian3.clone(z_axis_new);
+        this.camera.right = Cesium.Cartesian3.clone(y_axis_new);
+
+        let x_on_new_axis = new Cartesian3(0, 0, 0);
+        Cesium.Matrix3.multiplyByVector(rotation_matrix, Cesium.Cartesian3.UNIT_X, x_on_new_axis);
+        this.camera.direction = x_on_new_axis;
+
+        this.cameraUp = this.camera.up;
+        this.cameraDirection = this.camera.direction;
     }
 
     /**
