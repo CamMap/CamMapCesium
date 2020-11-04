@@ -5,7 +5,6 @@
 
 import { Cartesian3, Matrix3, HeadingPitchRoll, Cartographic, Cartesian2 } from "cesium_source/Cesium";
 import * as Cesium from "cesium_source/Cesium";
-import { AxisAlignedBoundingBox, BoundingRectangle, BoundingSphere, OrientedBoundingBox } from "cesium";
 
 /**
  * A wrapper around cesium camera viewer.
