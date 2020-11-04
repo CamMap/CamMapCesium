@@ -247,8 +247,39 @@ export class FOV {
      * @param pixel - The camera pixel to project the ray from
      * @param dist - The distance away from the camera where the point is located
      */
-    getPointAtDistFromScreen(pixel: Cartesian2, dist: number) {
-        Cesium.Ray.getPoint(this.getRayFromScreen(pixel), dist);
+    getPointAtDistFromScreen(pixel: Cartesian2, dist: number): Cesium.Cartesian3 {
+        return Cesium.Ray.getPoint(this.getRayFromScreen(pixel), dist);
+    }
+
+    /**
+     * A convience function to draw a point at a set distance away from the camera on a
+     * ray projected through the camera screen
+     * @param pixel - The camera pixel to project the ray from
+     * @param dist - The distance away from the camera where the point is located
+     */
+    placePointAtDistFromScreen(viewer: Cesium.Viewer, pixel: Cartesian2, dist: number) {
+        let point = this.getPointAtDistFromScreen(pixel, dist);
+
+        // Add the polylien
+        viewer.entities.add({
+            name: "Cam Line to ray distance",
+            polyline: {
+                positions: [Cesium.Cartesian3.fromDegrees(this.lat, this.long, this.elevation), point],
+                width: 10,
+                arcType: Cesium.ArcType.NONE,
+                material: new Cesium.PolylineArrowMaterialProperty(
+                    Cesium.Color.GREEN
+                ),
+            },
+        })
+
+        // Now just draw the point
+        var points = viewer.scene.primitives.add(new Cesium.PointPrimitiveCollection());
+        points.add({
+            position: point,
+            color: Cesium.Color.BLUE,
+            pixelSize: 10,
+        });
     }
 
     /**
