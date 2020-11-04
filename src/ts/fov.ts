@@ -242,6 +242,10 @@ export class FOV {
         return this.camera.getPickRay(pixel);
     }
 
+    getPointAtDistFromScreen(pixel: Cartesian2, dist: number) {
+        Cesium.Ray.getPoint(this.getRayFromScreen(pixel), dist);
+    }
+
     /**
      * Draws a line from the a percent(0.0 - 1.0) on the camera screen to the point that pixel maps to 
      * on an ellipsoid
