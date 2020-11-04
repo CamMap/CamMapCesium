@@ -242,6 +242,11 @@ export class FOV {
         return this.camera.getPickRay(pixel);
     }
 
+    /**
+     * Get a point a set distance away from the camera which goes through a ray of a set pixel
+     * @param pixel - The camera pixel to project the ray from
+     * @param dist - The distance away from the camera where the point is located
+     */
     getPointAtDistFromScreen(pixel: Cartesian2, dist: number) {
         Cesium.Ray.getPoint(this.getRayFromScreen(pixel), dist);
     }
