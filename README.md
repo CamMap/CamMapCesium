@@ -13,7 +13,7 @@ That will install all the required packages, it should show what it's doing in t
 ```
 npm run start
 ```
-This will start a server on localhost::8080, which it should tell you.  Go there in your browser and the Cesium-Typescript app should be running.  At the moment is should zoom/fly to a red sphere, zoom out to see the Earth.  To rotate the view, press middle mouse, there is a help box at the top right with all of what you can do.
+This will start a server on localhost:8080, which it should tell you.  Go there in your browser and the Cesium-Typescript app should be running.  At the moment is should zoom/fly to a red sphere, zoom out to see the Earth.  To rotate the view, press middle mouse, there is a help box at the top right with all of what you can do.
 
 This is build in Typescript and Cesium(both open-source).  Typescript is just Javascript with types, which is very helpful for code completion and debugging(it won't even compile if you have used the wrong type).  The best editor to use with Typescript is VSCode, I think, and with it you can hover over varibles to see their types and the options/examples associated with them.
 
