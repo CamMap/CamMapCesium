@@ -141,7 +141,7 @@ export class FOV {
     /**
      * Get the plane tangent to the sphere, where the x axis is tangent to 
      * the latitude axis, the y axis is tangent to the longditude and 
-     * the z axis is pointing to directly up towards space.
+     * the z axis is pointing directly up towards space.
      * @param lat - The latitude of the position on the sphere 
      * @param long - The longditude of the position on the sphere
      * @param elevation - The elevation of the position on the sphere
@@ -158,8 +158,8 @@ export class FOV {
         const phi_grad = new Cartesian3(0, 0, 0);
         Cartesian3.subtract(cartesian_point, Cartesian3.fromDegrees(lat, long + 0.0001, elevation), phi_grad);
 
-
-        // Create a new axis where the x basis vector is pointing tangent to the theta axis and y basis vector is pointing tangent to the phi axis
+        // Create a new axis where the x basis vector is pointing tangent to the theta axis 
+        // and y basis vector is pointing tangent to the phi axis
         const x_axis_new = new Cartesian3(0, 0, 0);
         Cartesian3.normalize(theta_grad, x_axis_new);
 
@@ -217,7 +217,6 @@ export class FOV {
                     ),
                 },
             });
-
 
             // Keep this as a point cloud for now, so we can add more points in the future
             const points = viewer.scene.primitives.add(new Cesium.PointPrimitiveCollection());
