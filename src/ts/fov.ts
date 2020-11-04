@@ -235,6 +235,14 @@ export class FOV {
     }
 
     /**
+     * Project a ray from the camera to a set distance
+     * @param pixel the camera pixel to project the ray from
+     */
+    getRayFromScreen(pixel: Cartesian2) {
+        return this.camera.getPickRay(pixel);
+    }
+
+    /**
      * Draws a line from the a percent(0.0 - 1.0) on the camera screen to the point that pixel maps to 
      * on an ellipsoid
      * @param viewer - The cesium viewer
