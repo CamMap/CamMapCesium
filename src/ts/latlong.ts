@@ -1,6 +1,6 @@
 // Functions for dealing with latditude and longitude
 
-import { deg_to_rad, rad_to_deg } from "./angles";
+import * as Cesium from "cesium_source/Cesium";
 
 const RADIUS_EARTH = 6378.1;
 
@@ -15,12 +15,12 @@ const RADIUS_EARTH = 6378.1;
  * @returns The latitude and longditude of the other point, which is offset from `lat` and `long` by `distance` and `bearing`
  */
 export function calc_lat_long([lat, long]: [number, number], distance: number, bearing: number): [number, number] {
-    let lat1 = deg_to_rad(lat);
-    let long1 = deg_to_rad(long);
+    let lat1 = Cesium.Math.toRadians(lat);
+    let long1 = Cesium.Math.toRadians(long);
 
     let lat2: number = Math.asin(Math.sin(lat1) * Math.cos(distance / RADIUS_EARTH) + Math.cos(lat1) * Math.sin(distance / RADIUS_EARTH) * Math.cos(bearing));
 
     let long2 = long1 + Math.atan2(Math.sin(bearing) * Math.sin(distance / RADIUS_EARTH) * Math.cos(lat1), Math.cos(distance / RADIUS_EARTH) - Math.sin(lat1) * Math.sin(lat2));
 
-    return [rad_to_deg(lat2), rad_to_deg(long2)];
+    return [Cesium.Math.toDegrees(lat2), Cesium.Math.toDegrees(long2)];
 }
