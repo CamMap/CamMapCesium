@@ -262,10 +262,13 @@ export class FOV {
      * @param cart - The position in Cartographic coordinates
      */
     moveCameraToCartographic(cart: Cartographic) {
+
+        // First destroy drawn 3d object
+        this.destroy();
+
         let lat = cart.latitude;
         let long = cart.longitude;
         let elevation = cart.height;
-
 
         let [_, y_axis_new, z_axis_new] = this.getSurfaceTransform(lat, long, elevation);
 
@@ -280,6 +283,9 @@ export class FOV {
 
         this.cameraUp = this.camera.up;
         this.cameraDirection = this.camera.direction;
+
+        // Then redraw after changing position
+        this.draw(this.viewer.scene);
     }
 
     /**
