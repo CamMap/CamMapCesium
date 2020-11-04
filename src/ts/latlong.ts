@@ -1,4 +1,7 @@
-// Functions for dealing with latditude and longitude
+/** 
+ * Functions for dealing with latditude and longitude 
+ * @packageDocumentation
+*/
 
 import * as Cesium from "cesium_source/Cesium";
 
