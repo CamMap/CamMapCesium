@@ -238,7 +238,7 @@ export class FOV {
      * Project a ray from the camera to a set distance
      * @param pixel the camera pixel to project the ray from
      */
-    getRayFromScreen(pixel: Cartesian2) {
+    getRayFromScreen(pixel: Cartesian2): Cesium.Ray {
         return this.camera.getPickRay(pixel);
     }
 
