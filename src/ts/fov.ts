@@ -141,6 +141,7 @@ export class FOV {
      * @param lat - The latitude of the position on the sphere 
      * @param long - The longditude of the position on the sphere
      * @param elevation - The elevation of the position on the sphere
+     * @returns The new [x axis, y axis, z axis] normalized vectors
      */
     getSurfaceTransform(lat: number, long: number, elevation: number): [Cartesian3, Cartesian3, Cartesian3] {
         // The point in cartesian coordinates
