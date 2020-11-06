@@ -6,6 +6,7 @@
   "scripts": {
     "start": "npx webpack serve --mode development --config webpack.config.js",
     "build": "npx webpack --config webpack.config.js",
+    "lint": "npx eslint ./src/ts --ext .ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -20,8 +21,11 @@
     "webpack-dev-server": "^3.11.0"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.6.1",
+    "@typescript-eslint/parser": "^4.6.1",
     "copy-webpack-plugin": "^6.2.1",
     "css-loader": "^5.0.0",
+    "eslint": "^7.12.1",
     "html-webpack-plugin": "^4.5.0",
     "style-loader": "^2.0.0",
     "url-loader": "^4.1.1",
