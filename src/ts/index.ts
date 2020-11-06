@@ -1,4 +1,3 @@
-import { Cartesian2 } from "cesium";
 import * as Cesium from "cesium_source/Cesium";
 require('../css/main.css');
 require('cesium_source/Widgets/widgets.css');
