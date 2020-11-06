@@ -1,18 +1,25 @@
 import exifr from 'exifr';
 
 // The upload file button
-let uploadFile = document.getElementById('uploadFile')! as HTMLInputElement;
-uploadFile.onchange = onUploadImage;
+let uploadFile = document.getElementById('uploadFile');
+if (uploadFile !== null) {
+    uploadFile = uploadFile as HTMLInputElement;
+    uploadFile.onchange = onUploadImage;
+} else {
+    throw console.error("Could not get 'uploadFile' element, is it in HTML");
+}
 
 /**
  * Called when a file is uploaded/ the upload file has changed,
  * This only uploads a file if one was selected
  * @param event The input event
  */
-function onUploadImage(event: Event): any {
-    let files = (event.target! as HTMLInputElement).files;
-    if (files && files.length) {
-        showUploadedImage(files![0]);
+function onUploadImage(event: Event): void | null {
+    if (event.target && event.target instanceof HTMLInputElement) {
+        const files = event.target.files;
+        if (files && files.length) {
+            showUploadedImage(files[0]);
+        }
     }
 }
 
@@ -21,8 +28,11 @@ function onUploadImage(event: Event): any {
  * once the uploaded image has been loaded
  * @param file The file url to upload
  */
-function showUploadedImage(file: File) {
-    let img = document.getElementById("target")! as HTMLImageElement;
+function showUploadedImage(file: File): void {
+    const img = document.getElementById("target") as HTMLImageElement;
+    if (!img) {
+        return;
+    }
 
     ///////////////////////
     // For putting the data to a canvas which will be helpful for 
@@ -30,18 +40,20 @@ function showUploadedImage(file: File) {
     // ctx.putImageData(??, 0, 0);
     ////////////////////////
 
-    var fileReader = new FileReader();
+    const fileReader = new FileReader();
     fileReader.onload = function (e) {
         // Switch Image to display the loaded image
-        img.src = e.target!.result as string;
+        if (e.target) {
+            img.src = e.target.result as string;
 
-        // Attempt to get GPS coordinates
-        exifr.gps('./myimage.jpg').then((gps) => {
-            console.log("GPS data: Latitude: " + gps.latitude + " | Longitude: " + gps.longitude);
-        }).catch((_) => {
-            console.log("Couldn't read image GPS coordinates");
-        });
-        console.log("Loaded Image:" + e.target!.result);
+            // Attempt to get GPS coordinates
+            exifr.gps('./myimage.jpg').then((gps) => {
+                console.log("GPS data: Latitude: " + gps.latitude + " | Longitude: " + gps.longitude);
+            }).catch(() => {
+                console.log("Couldn't read image GPS coordinates");
+            });
+            console.log("Loaded Image:" + e.target.result);
+        }
     }
     fileReader.readAsDataURL(file);
 }
