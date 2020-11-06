@@ -6,7 +6,7 @@ require('./image');
 
 import { FOV } from "./fov";
 
-var viewer = new Cesium.Viewer('cesiumContainer', {
+const viewer = new Cesium.Viewer('cesiumContainer', {
     animation: false,
     timeline: false,
     geocoder: false,
@@ -22,11 +22,11 @@ for creating entities
 */
 
 // Create a new fov
-var fov_cam = new FOV(viewer, [-107.0, 40.0, 100000.0], 60, 1, 90, -45, 0, 10000, 300000);
+const fov_cam = new FOV(viewer, [-107.0, 40.0, 100000.0], 60, 1, 90, -45, 0, 10000, 300000);
 fov_cam.draw(viewer.scene);
 fov_cam.draw_debug_camera(viewer.scene);
 
-let r = fov_cam.getCameraRect(viewer.scene.globe.ellipsoid);
+const r = fov_cam.getCameraRect(viewer.scene.globe.ellipsoid);
 viewer.entities.add({
     name: "Cam Rect",
     rectangle: {
@@ -57,7 +57,7 @@ fov_cam.drawLineFromPercentToScreen(viewer,
     viewer.scene.globe.ellipsoid);
 
 // A massive Red Sphere, wouldn't be this big in the application
-var redSphere = viewer.entities.add({
+viewer.entities.add({
     name: "Red sphere with black outline",
     position: Cesium.Cartesian3.fromDegrees(-107.0, 40.0, 30000.0),
     ellipsoid: {
@@ -69,7 +69,7 @@ var redSphere = viewer.entities.add({
 });
 
 // A line
-var line = viewer.entities.add({
+viewer.entities.add({
     polyline: {
         positions: Cesium.Cartesian3.fromDegreesArrayHeights([-107.0, 40.0, 30000,
         -107.0, 30.0, 3000]),
