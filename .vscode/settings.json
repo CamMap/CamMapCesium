@@ -12,5 +12,13 @@
     "eslint.validate": [
         "javascript",
         "typescript"
-    ]
+    ],
+    "html.format.enable": true,
+    "html.format.wrapLineLength": 120,
+    "html.format.maxPreserveNewLines": 1,
+    "[html]": {
+        "editor.detectIndentation": false,
+        "editor.insertSpaces": true,
+        "editor.tabSize": 4,
+    }
 }
