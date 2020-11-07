@@ -130,7 +130,7 @@ export class FOV {
             x_axis_new.x, y_axis_new.x, z_axis_new.x,
             x_axis_new.y, y_axis_new.y, z_axis_new.y,
             x_axis_new.z, y_axis_new.z, z_axis_new.z,
-        )
+        );
 
         const rot_matrix = Matrix3.fromHeadingPitchRoll(new HeadingPitchRoll(theta - Cesium.Math.PI_OVER_TWO, (phi * -1) + Cesium.Math.PI_OVER_TWO, roll));
         Matrix3.multiply(rotation_matrix, rot_matrix, rotation_matrix);
@@ -216,7 +216,7 @@ export class FOV {
                         Cesium.Color.GREEN
                     ),
                 },
-            })
+            });
 
 
             // Keep this as a point cloud for now, so we can add more points in the future
@@ -275,7 +275,7 @@ export class FOV {
                     Cesium.Color.GREEN
                 ),
             },
-        })
+        });
 
         // Now just draw the point
         const points = viewer.scene.primitives.add(new Cesium.PointPrimitiveCollection());

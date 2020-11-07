@@ -54,6 +54,6 @@ function showUploadedImage(file: File): void {
             });
             console.log("Loaded Image:" + e.target.result);
         }
-    }
+    };
     fileReader.readAsDataURL(file);
 }

@@ -70,8 +70,7 @@ viewer.entities.add({
 // A line
 viewer.entities.add({
     polyline: {
-        positions: Cesium.Cartesian3.fromDegreesArrayHeights([-107.0, 40.0, 30000,
-        -107.0, 30.0, 3000]),
+        positions: Cesium.Cartesian3.fromDegreesArrayHeights([-107.0, 40.0, 30000, -107.0, 30.0, 3000]),
         width: 5,
         material: Cesium.Color.RED
     }
