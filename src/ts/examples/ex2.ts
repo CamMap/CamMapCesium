@@ -1,6 +1,6 @@
 /**
  * This shoud run correcly and could be used for a test, if it does not run
- * something must be failing.  The use this, require() this in index.
+ * something must be failing.  To use this, require() this in index.
  * 
  * This example displays a camera view with 4 lines pointing from each corner.
  * to points on the surface of the Earth.

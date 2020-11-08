@@ -1,6 +1,6 @@
 /**
  * This shoud run correcly and could be used for a test, if it does not run
- * something must be failing.  The use this, require() this in index.
+ * something must be failing.  To use this, require() this in index.
  * 
  * This example draws a red sphere and a line comming out of it.
  * The camera also flys to and centers on the red circle.
