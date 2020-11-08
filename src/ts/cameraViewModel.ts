@@ -4,7 +4,7 @@ class CameraViewModel {
 
     private cesiumRoot;
     
-    private cameraPlaceholder;
+    private cameraPlaceholder: Cesium.Entity;
 
     private cameraData = {
         lat: 55.873704,
@@ -32,7 +32,7 @@ class CameraViewModel {
     }
 
     rerender(): void {
-        this.cameraPlaceholder.position = Cesium.Cartesian3.fromDegrees(this.cameraData.lng, this.cameraData.lat, this.cameraData.height);
+        // TODO
     }
 
     setLatLng(lat: number, lng: number): void {
