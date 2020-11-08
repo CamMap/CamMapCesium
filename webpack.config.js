@@ -1,21 +1,25 @@
 const path = require('path');
 const webpack = require('webpack');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 // The path to the CesiumJS source code
 const cesiumSource = 'node_modules/cesium/Source';
-const cesiumC = 'node_modules/cesium/Source/Cesium';
 const cesiumWorkers = '../Build/Cesium/Workers';
 
 const CopywebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: './src/ts/index.ts',
-    devtool: 'inline-source-map',
+    context: __dirname,
+    // devtool: 'inline-source-map', <-- This should be turned on for Development
+    // Whoever is refactoring this, make different configs for dev and release
+    mode: 'development',
     module: {
         rules: [{
             test: /\.tsx?$/,
             use: 'ts-loader',
+            include: path.resolve(__dirname, 'src'),
             exclude: /node_modules/
         }, {
             test: /\.css$/,
@@ -30,11 +34,10 @@ module.exports = {
         alias: {
             // CesiumJS module name
             cesium_source: path.resolve(__dirname, cesiumSource),
-            // cesium: path.resolve(__dirname, cesiumC)
-            //cesium_path: path.resolve(__dirname, cesiumSource + "/Cesium")
         }
     },
     plugins: [
+        new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             template: 'src/html/index.html'
         }),
@@ -45,25 +48,44 @@ module.exports = {
                 { from: path.join(cesiumSource, 'Assets'), to: 'Assets' },
                 { from: path.join(cesiumSource, 'Widgets'), to: 'Widgets' },
                 { from: "src/images", to: 'Images' }
-            ]
+            ],
+            options: { concurrency: 50 },
         }),
         new webpack.DefinePlugin({
             // Define relative base path in cesium for loading assets
             CESIUM_BASE_URL: JSON.stringify('')
         })
     ],
+    // development server options
+    devServer: {
+        contentBase: path.join(__dirname, "dist")
+    },
     amd: {
         // Enable webpack-friendly use of require in Cesium
         toUrlUndefined: true
     },
+    // Cesium says this is required, but it doesn't seem to be
     // node: {
     // Resolve node module use of fs
     //     fs: 'empty'
     //  },
     output: {
-        filename: 'bundle.js',
+        filename: '[name].[contenthash].js',
         path: path.resolve(__dirname, 'dist'),
         // Needed to compile multiline strings in Cesium
         sourcePrefix: ''
-    }
+    },
+    optimization: {
+        moduleIds: 'deterministic',
+        runtimeChunk: 'single',
+        splitChunks: {
+         cacheGroups: {
+           vendor: {
+             test: /[\\/]node_modules[\\/]/,
+             name: 'vendors',
+             chunks: 'all',
+           },
+         },
+       },
+      },
 };
