@@ -3,10 +3,13 @@ module.exports = {
     parser: '@typescript-eslint/parser',
     plugins: [
         '@typescript-eslint',
+        'jsdoc',
+        'eslint-plugin-tsdoc'
     ],
     extends: [
         'eslint:recommended',
         'plugin:@typescript-eslint/recommended',
+        'plugin:jsdoc/recommended'
     ],
     "rules": {
         "semi": "off",
@@ -107,5 +110,35 @@ module.exports = {
 
         "brace-style": "off",
         "@typescript-eslint/brace-style": ["error", "1tbs"],
+        
+        "jsdoc/require-jsdoc": ["error", {'require': {
+            ArrowFunctionExpression: false,
+            FunctionDeclaration: true,
+            FunctionExpression: true,
+            ClassDeclaration: true,
+            ClassExpression: true,
+            MethodDefinition: true,
+          }, 
+          'checkGetters': true,
+          'checkSetters': true,
+          'enableFixer': true,
+          'checkConstructors': false
+          }
+        ],
+        "jsdoc/require-returns-type": "error",
+        "jsdoc/require-param": ["error", {
+            'checkConstructors': false,
+            'checkDestructured': false
+        }],
+        "jsdoc/require-param-type": 0,
+        "jsdoc/check-param-names": ["error", {
+            'checkDestructured': false
+        }],
+        "tsdoc/syntax": "error",
+    },
+   "settings": {
+        "jsdoc": {
+            "mode": "typescript",
+        }
     }
 };
