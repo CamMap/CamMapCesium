@@ -1,5 +1,6 @@
 import * as Cesium from "cesium_source/Cesium";
 import CameraViewModel from './cameraViewModel';
+import image from './image';
 //TODO: someone migrate this to ES6 later on
 require('../css/main.css');
 require('cesium_source/Widgets/widgets.css');
@@ -33,6 +34,11 @@ cesiumRoot.camera.setView({
 });
 
 const viewModel = new CameraViewModel(cesiumRoot);
+const imageHandler = new image(viewModel);
+
+//This could probably have been done in the image class
+//but it works and I dont have time to refactor before the costumer day
+imageHandler.uploadFile.onchange = imageHandler.onUploadImage.bind(imageHandler);
 
 /**
  * Sets the height attribute for the viewModel from slider value

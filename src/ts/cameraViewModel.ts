@@ -40,6 +40,19 @@ class CameraViewModel {
         this.cameraData.lng = lng;
         this.rerender();
     }
+    
+    /**
+     * Sets the camera view to the stored values in the cameraData struct 
+     */
+    setCamera(): void {
+        this.cesiumRoot.camera.setView({
+            destination: Cesium.Cartesian3.fromDegrees(this.cameraData.lng, this.cameraData.lat , 3),
+            orientation: {
+                heading: Cesium.Math.toRadians(this.cameraData.heading),
+                pitch: Cesium.Math.toRadians(0.0),
+            }
+        });
+    }
 
     setHeight(height: number): void {
         this.cameraData.height = height;
@@ -100,7 +113,6 @@ class CameraViewModel {
     public get fov_ver(): number {
         return this.cameraData.fov_v;
     }
-
 }
 
 export default CameraViewModel;
