@@ -66,6 +66,41 @@ class CameraViewModel {
         this.rerender();
     }
 
+    /** 
+     * @returns the height of the camera
+    */
+    public get height(): number {
+        return this.cameraData.height;
+    }
+
+    /** 
+     * @returns the heading of the camera
+    */
+    public get heading(): number {
+        return this.cameraData.heading;
+    }
+
+    /** 
+     * @returns the tilt of the camera
+    */
+    public get tilt(): number {
+        return this.cameraData.tilt;
+    }
+
+    /** 
+     * @returns the Horizontal FOV of the camera
+    */
+    public get fov_hor(): number {
+        return this.cameraData.fov_h;
+    }
+
+    /** 
+     * @returns the Vertical FOV of the camera
+    */
+    public get fov_ver(): number {
+        return this.cameraData.fov_v;
+    }
+
 }
 
 export default CameraViewModel;

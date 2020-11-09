@@ -12,28 +12,26 @@
 <body>
     <div class="grid">
         <!--Cesium Map-->
-        <div class="mapbox">                    
+        <div class="mapbox">
             <div id="cesiumContainer"></div>
         </div>
         <div class="sliderbox">
             <!--Sliders-->
-            <div class="slidecontainer">        
-                <p>FOV: <output for="fov_hor" id="fov_result">0</output><br>
+            <div class="slidecontainer">
+                <p> Horizontal FOV: <output for="fov_hor" id="fov_hor_result">0</output><br>
                     <input type="range" min="1" max="180" value="0" class="slider" id="fov_hor"></p>
+                <p>Vertical FOV: <output for="fov_vert" id="fov_vert_result">0</output><br>
+                    <input type="range" min="1000" max="3000" value="0" class="slider" id="fov_vert"></p>
                 <p>camera height: <output for="cam_height" id="cam_height_result">0</output><br>
                     <input type="range" min="1" max="2000" value="0" class="slider" id="cam_height"></p>
                 <p>camera tilt: <output for="cam_tilt" id="cam_tilt_result">0</output><br>
                     <input type="range" min="1" max="200" value="0" class="slider" id="cam_tilt"></p>
                 <p>camera heading: <output for="cam_heading" id="cam_heading_result">0</output><br>
                     <input type="range" min="1" max="360" value="0" class="slider" id="cam_heading"></p>
-                <p>max distance: <output for="max_dist" id="max_dist_result">0</output><br>
-                    <input type="range" min="1000" max="3000" value="0" class="slider" id="max_dist"></p>
-                <p>min distance: <output for="min_dist" id="min_dist_result">0</output><br>
-                    <input type="range" min="10" max="900" value="0" class="slider" id="min_dist"></p>
             </div>
-        </div> 
+        </div>
         <!--Image selection/display-->
-        <div id="vid" class="imagebox">            
+        <div id="vid" class="imagebox">
             <label>Choose an image</label>
             <input type="file" id="uploadFile" name="image" />
             <img src="" id="target" />

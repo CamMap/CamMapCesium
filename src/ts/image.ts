@@ -47,7 +47,7 @@ function showUploadedImage(file: File): void {
             img.src = e.target.result as string;
 
             // Attempt to get GPS coordinates
-            exifr.gps('./myimage.jpg').then((gps) => {
+            exifr.gps(img.src).then((gps) => {
                 console.log("GPS data: Latitude: " + gps.latitude + " | Longitude: " + gps.longitude);
             }).catch(() => {
                 console.log("Couldn't read image GPS coordinates");
