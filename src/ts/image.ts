@@ -4,7 +4,7 @@ import CameraViewModel from './cameraViewModel';
 /**
  * When an image is loaded into page, modifies specied CameraViewModel
  */
-class image { 
+export default class image { 
 
     viewModel : CameraViewModel;
     public uploadFile : HTMLInputElement;
@@ -30,6 +30,7 @@ class image {
      * @param event The input event
      */
     onUploadImage(event: Event): void {
+        console.log('onUploadImage');
         if (event.target && event.target instanceof HTMLInputElement) {
             const files = event.target.files;
             if (files && files.length) {
@@ -63,6 +64,8 @@ class image {
         fileReader.onload = function (e) {
             // Switch Image to display the loaded image
             if (e.target) {
+                console.log(e.target, img);
+                img.onload = createImageOnCanvas;
                 img.src = e.target.result as string;
 
                 // Attempt to get the heading 
@@ -90,4 +93,49 @@ class image {
     }
 }
 
-export default image;
+/**
+ * It reads the image and draws it on the Canvas
+ */
+
+function createImageOnCanvas(){
+    const canvas = (document.getElementById('myCanvas') as HTMLCanvasElement);
+    const context  = canvas.getContext('2d');
+    const target = document.getElementById("target") as HTMLImageElement;
+    console.log (target);
+    context?.drawImage(target,0,0,350,300);
+    target.style.display = 'none';
+}
+/**
+ * @param canvas gets the image on canvas
+ * 
+ * @param event this gets the x and y positions when selected
+ * 
+ */
+
+
+function getCursorPosition(canvas: HTMLCanvasElement, event: MouseEvent ) {
+
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    console.log("x: " + x + " y: " + y);
+    const span = document.getElementById('image-cord');
+    if(span){
+        span.innerText = `X: ${x}, Y: ${y}`;
+    }
+}
+window.onload = ()=>{
+    console.log('on load fired');
+    const canvas = document.getElementById("myCanvas");
+    if(canvas){
+        canvas.addEventListener("click", function(e){
+            console.log('click event called.');
+            getCursorPosition(document.getElementById("myCanvas") as HTMLCanvasElement, e);
+        });
+    }
+    document.getElementById("drawImage")?.addEventListener('click',()=>{
+        console.log('button clicked');
+        createImageOnCanvas();
+    });
+
+};

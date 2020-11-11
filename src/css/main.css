@@ -27,11 +27,12 @@ html, body {
     grid-row: 1;
 }
 
-.imagebox {
+img {
     grid-column: 2;
     grid-row: 2;
     padding: 1em;
 }
+
 
 .mapbox {
     grid-column: 1;
@@ -76,12 +77,18 @@ html, body {
     justify-content: center;
 }
 
-img{
-    max-width: 100%;
-    max-height: 100%;
-    padding: 0.5em;
-    display: block;
-}
+.input-area{
+    flex: 20%;
+    flex-direction: column;
+    display: flex;
+    }
+.previewImage{
+    flex: 80%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}  
+ 
 
 .cesium-widget-credits{
     display: none !important;

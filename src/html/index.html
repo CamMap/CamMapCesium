@@ -30,11 +30,16 @@
                     <input type="range" min="0" max="360" value="0" class="slider" id="cam_heading"></p>
             </div>
         </div>
-        <!--Image selection/display-->
-        <div id="vid" class="imagebox">
-            <label>Choose an image</label>
-            <input type="file" id="uploadFile" name="image" />
-            <img src="" id="target" />
+        <div id="vid">
+            <div class="input-area">
+                <label>Choose an image</label>
+                <input type="file" id="uploadFile" name="image" />
+                <span id="image-cord"></span>
+             </div>
+             <div class="previewImage">
+                 <img id="target" alt=""/>
+                 <canvas id="myCanvas" height="300" width="350"></canvas>
+             </div>
         </div>
     </div>
 </body>
