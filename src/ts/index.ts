@@ -36,6 +36,18 @@ cesiumRoot.camera.setView({
 const viewModel = new CameraViewModel(cesiumRoot);
 const imageHandler = new image(viewModel);
 
+//set sliders to default value
+cam_height.value = String(viewModel.height);
+(document.getElementById("cam_height_result") as HTMLOutputElement).value = String(viewModel.height);
+cam_tilt.value = String(viewModel.tilt);
+(document.getElementById("cam_tilt_result") as HTMLOutputElement).value = String(viewModel.tilt);
+fov_hor.value = String(viewModel.fovHor);
+(document.getElementById("fov_hor_result") as HTMLOutputElement).value = String(viewModel.fovHor);
+fov_vert.value = String(viewModel.fovVer);
+(document.getElementById("fov_vert_result") as HTMLOutputElement).value = String(viewModel.fovVer);
+cam_heading.value = String(viewModel.heading);
+(document.getElementById("cam_heading_result") as HTMLOutputElement).value = String(viewModel.heading);
+
 //This could probably have been done in the image class
 //but it works and I dont have time to refactor before the costumer day
 imageHandler.uploadFile.onchange = imageHandler.onUploadImage.bind(imageHandler);
@@ -79,3 +91,53 @@ cam_heading.oninput = function() {
     viewModel.heading = (Number(cam_heading.value)); 
     (document.getElementById("cam_heading_result") as HTMLOutputElement).value = String(viewModel.heading);
 };
+
+/**
+ * It reads the image and draws it on the Canvas
+ */
+
+function createImageOnCanvas(){
+    const canvas = (document.getElementById('myCanvas') as HTMLCanvasElement);
+    const context  = canvas.getContext('2d');
+    const target = document.getElementById("target") as HTMLImageElement;
+    console.log (target);
+    context?.drawImage(target,0,0,350,300);
+    target.style.display = 'none';
+}
+
+/**
+ * @param canvas gets the image on canvas
+ * 
+ * @param event this gets the x and y positions when selected
+ * 
+ */
+function getCursorPosition(canvas: HTMLCanvasElement, event: MouseEvent ): [number, number]{
+
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = -(event.clientY - rect.bottom);
+    return [x,y];
+
+}
+
+window.onload = ()=>{
+    console.log('on load fired');
+    const canvas = document.getElementById("myCanvas");
+    if(canvas){
+        canvas.addEventListener("click", function(e){
+            console.log('click event called.');
+            const span = document.getElementById('image-cord');
+            const points = getCursorPosition(document.getElementById("myCanvas") as HTMLCanvasElement, e);
+            if(span){
+                span.innerText = `X: ${points[0]}, Y: ${points[1]}`;
+            }
+            viewModel.addDot(points[0]/350, points[1]/300);
+        });
+    }
+    
+    document.getElementById("drawImage")?.addEventListener('click',()=>{
+        console.log('button clicked');
+        createImageOnCanvas();
+    });
+};
+

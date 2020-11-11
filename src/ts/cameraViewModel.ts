@@ -154,14 +154,14 @@ class CameraViewModel {
         return this.cameraData.fov_v;
     }
     
-    // positing in % (0.0-1.0)
     /**
-     *  Idk what this does Alex will have to fill it in.  positing in % (0.0-1.0)
-     * @param imgPosX - 0 for left point, 1 for right
-     * @param imgPosY - 0 for bottom point, 1 for top point
+     *  Draws a point on the map from image click.  
+     * @param imgPosX - percentage of x coord where image was clicked positing in % (0.0-1.0)
+     * @param imgPosY - percentage of y coord where image was clicked positing in % (0.0-1.0)
      */
     addDot(imgPosX: number, imgPosY: number): void {
         this.dots.push([imgPosX, imgPosY]);
+        this.rerender();
     }
     
     /**

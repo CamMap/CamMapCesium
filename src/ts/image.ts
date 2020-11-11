@@ -93,6 +93,7 @@ export default class image {
     }
 }
 
+
 /**
  * It reads the image and draws it on the Canvas
  */
@@ -105,37 +106,4 @@ function createImageOnCanvas(){
     context?.drawImage(target,0,0,350,300);
     target.style.display = 'none';
 }
-/**
- * @param canvas gets the image on canvas
- * 
- * @param event this gets the x and y positions when selected
- * 
- */
 
-
-function getCursorPosition(canvas: HTMLCanvasElement, event: MouseEvent ) {
-
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    console.log("x: " + x + " y: " + y);
-    const span = document.getElementById('image-cord');
-    if(span){
-        span.innerText = `X: ${x}, Y: ${y}`;
-    }
-}
-window.onload = ()=>{
-    console.log('on load fired');
-    const canvas = document.getElementById("myCanvas");
-    if(canvas){
-        canvas.addEventListener("click", function(e){
-            console.log('click event called.');
-            getCursorPosition(document.getElementById("myCanvas") as HTMLCanvasElement, e);
-        });
-    }
-    document.getElementById("drawImage")?.addEventListener('click',()=>{
-        console.log('button clicked');
-        createImageOnCanvas();
-    });
-
-};

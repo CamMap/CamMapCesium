@@ -83,10 +83,7 @@ img {
     display: flex;
     }
 .previewImage{
-    flex: 80%;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
+   
 }  
  
 
