@@ -1,16 +1,14 @@
-/** 
- * Functions for drawing a Field of View 
+/**
+ * Functions for drawing a Field of View
  * @packageDocumentation
 */
 
-import { Cartesian3, Matrix3, HeadingPitchRoll, Cartographic, Cartesian2 } from "cesium_source/Cesium";
-import * as Cesium from "cesium_source/Cesium";
+import { Cartesian2, Cartesian3, Cartographic, default as Cesium, HeadingPitchRoll, Matrix3 } from "cesium_source/Cesium";
 
 /**
  * A wrapper around cesium camera viewer.
  */
 export class FOV {
-
     position: Cesium.Cartesian3;
     camera: Cesium.Camera;
     cameraUp: Cesium.Cartesian3;
@@ -24,22 +22,23 @@ export class FOV {
     viewer: Cesium.Viewer;
     fov: number;
 
-    cur_drawn: Cesium.Primitive | null;
+    curDrawn: Cesium.Primitive | null;
 
     /**
      * Constructs an FOV object, call draw() to draw it in a scene
      * @param viewer - The cesium viewer to be used (should this be scene)
      * @param lat -  The laditude of the camera position
      * @param long - The longditude of the camera position
-     * @param elevation - The elevation of the camera position  
+     * @param elevation - The elevation of the camera position
      * @param theta - The bearing of the camera
      * @param phi - The tilt of the camera
      * @param roll - The roll of the camera
      * @param near - The near plane distance of the camera
      * @param far - The far plane distance of the camera
      */
-    constructor(viewer: Cesium.Viewer, [lat, long, elevation]: [number, number, number], fov: number, aspectRatio: number, theta: number, phi: number, roll: number, near: number, far: number) {
-
+    constructor(
+        viewer: Cesium.Viewer, [lat, long, elevation]: [number, number, number], fov: number, aspectRatio: number, theta: number, phi: number, roll: number, near: number, far: number
+    ) {
         this.position = Cesium.Cartesian3.fromDegrees(lat, long, elevation);
         this.viewer = viewer;
         this.lat = lat;
@@ -49,27 +48,29 @@ export class FOV {
         this.phi = Cesium.Math.toRadians(phi);
         this.roll = Cesium.Math.toRadians(roll);
         this.fov = Cesium.Math.toRadians(fov);
-        this.cur_drawn = null;
+        this.curDrawn = null;
 
         this.camera = new Cesium.Camera(viewer.scene);
         const frustum = new Cesium.PerspectiveFrustum({
             fov: this.fov,
             aspectRatio: aspectRatio,
             near: near,
-            far: far
+            far: far,
         });
 
-        const [, y_axis_new, z_axis_new] = this.getSurfaceTransform(lat, long, elevation);
+        const [, yAxisNew, zAxisNew] = this.getSurfaceTransform(lat, long, elevation);
 
-        const rotation_matrix = this.getSurfaceRotationMatrix(lat, long, elevation, this.theta, this.phi - Cesium.Math.PI_OVER_TWO, this.roll);
+        const rotationMatrix = this.getSurfaceRotationMatrix(
+            lat, long, elevation, this.theta, this.phi - Cesium.Math.PI_OVER_TWO, this.roll
+        );
         this.camera.frustum = frustum;
         this.camera.position = Cesium.Cartesian3.fromDegrees(lat, long, elevation);
-        this.camera.up = Cesium.Cartesian3.clone(z_axis_new);
-        this.camera.right = Cesium.Cartesian3.clone(y_axis_new);
+        this.camera.up = Cesium.Cartesian3.clone(zAxisNew);
+        this.camera.right = Cesium.Cartesian3.clone(yAxisNew);
 
-        const x_on_new_axis = new Cartesian3(0, 0, 0);
-        Cesium.Matrix3.multiplyByVector(rotation_matrix, Cesium.Cartesian3.UNIT_X, x_on_new_axis);
-        this.camera.direction = x_on_new_axis;
+        const xOnNewAxis = Cartesian3.clone(Cartesian3.ZERO);
+        Cesium.Matrix3.multiplyByVector(rotationMatrix, Cesium.Cartesian3.UNIT_X, xOnNewAxis);
+        this.camera.direction = xOnNewAxis;
 
         this.cameraUp = this.camera.up;
         this.cameraDirection = this.camera.direction;
@@ -77,31 +78,34 @@ export class FOV {
 
     /**
      * Draw a FOV in a cesium scene
-     * @param scene - The cesium scene in which the object should be drawn 
+     * @param scene - The cesium scene in which the object should be drawn
      */
     draw(scene: Cesium.Scene): void {
-        const rotation_matrix = this.getSurfaceRotationMatrix(this.lat, this.long, this.elevation, this.theta, this.phi, this.roll);
+        const rotationMatrix = this.getSurfaceRotationMatrix(
+            this.lat, this.long, this.elevation, this.theta, this.phi, this.roll
+        );
 
         const geom: Cesium.Geometry | undefined = Cesium.FrustumGeometry.createGeometry(new Cesium.FrustumGeometry({
             frustum: this.camera.frustum as Cesium.PerspectiveFrustum,
             origin: Cesium.Cartesian3.fromDegrees(this.lat, this.long, this.elevation),
-            orientation: Cesium.Quaternion.fromRotationMatrix(rotation_matrix)
+            orientation: Cesium.Quaternion.fromRotationMatrix(rotationMatrix),
         }));
 
-        if (geom !== undefined) {
+        if(geom !== undefined) {
             const instance = new Cesium.GeometryInstance({
-                geometry: geom
+                geometry: geom,
             });
 
-            const material = Cesium.Material.fromType('Color');
-            material.uniforms.color = Cesium.Color.ORANGE.withAlpha(0.5);
+            const material = Cesium.Material.fromType("Color");
+            const alpha = 0.5;
+            material.uniforms.color = Cesium.Color.ORANGE.withAlpha(alpha);
 
-            this.cur_drawn = scene.primitives.add(new Cesium.Primitive({
+            this.curDrawn = scene.primitives.add(new Cesium.Primitive({
                 geometryInstances: instance,
                 appearance: new Cesium.MaterialAppearance({
-                    material: material
+                    material: material,
                 }),
-                asynchronous: false
+                asynchronous: false,
             })) as Cesium.Primitive;
         }
     }
@@ -110,7 +114,7 @@ export class FOV {
      * Destroys the view object so it is no longer present in the scene
      */
     destroy(): void {
-        if (this.cur_drawn !== null) this.cur_drawn.destroy();
+        if(this.curDrawn !== null) this.curDrawn.destroy();
     }
 
     /**
@@ -123,55 +127,57 @@ export class FOV {
      * @param roll - the roll of the camera
      * @returns The rotation matrix to put the obect on the surface of a sphere
      */
-    getSurfaceRotationMatrix(lat: number, long: number, elevation: number, theta: number, phi: number, roll: number): Matrix3 {
-        const [x_axis_new, y_axis_new, z_axis_new] = this.getSurfaceTransform(lat, long, elevation);
+    getSurfaceRotationMatrix(
+        lat: number, long: number, elevation: number, theta: number, phi: number, roll: number
+    ): Matrix3 {
+        const [xAxisNew, yAxisNew, zAxisNew] = this.getSurfaceTransform(lat, long, elevation);
 
-        const rotation_matrix = new Matrix3(
-            x_axis_new.x, y_axis_new.x, z_axis_new.x,
-            x_axis_new.y, y_axis_new.y, z_axis_new.y,
-            x_axis_new.z, y_axis_new.z, z_axis_new.z,
+        const rotationMatrix = new Matrix3(
+            xAxisNew.x, yAxisNew.x, zAxisNew.x,
+            xAxisNew.y, yAxisNew.y, zAxisNew.y,
+            xAxisNew.z, yAxisNew.z, zAxisNew.z,
         );
 
-        const rot_matrix = Matrix3.fromHeadingPitchRoll(new HeadingPitchRoll(theta - Cesium.Math.PI_OVER_TWO, (phi * -1) + Cesium.Math.PI_OVER_TWO, roll));
-        Matrix3.multiply(rotation_matrix, rot_matrix, rotation_matrix);
+        const rotMatrix = Matrix3.fromHeadingPitchRoll(new HeadingPitchRoll(theta - Cesium.Math.PI_OVER_TWO, -phi + Cesium.Math.PI_OVER_TWO, roll));
+        Matrix3.multiply(rotationMatrix, rotMatrix, rotationMatrix);
 
-        return rotation_matrix;
+        return rotationMatrix;
     }
 
     /**
-     * Get the plane tangent to the sphere, where the x axis is tangent to 
-     * the latitude axis, the y axis is tangent to the longditude and 
+     * Get the plane tangent to the sphere, where the x axis is tangent to
+     * the latitude axis, the y axis is tangent to the longditude and
      * the z axis is pointing directly up towards space.
-     * @param lat - The latitude of the position on the sphere 
+     * @param lat - The latitude of the position on the sphere
      * @param long - The longditude of the position on the sphere
      * @param elevation - The elevation of the position on the sphere
      * @returns The new [x axis, y axis, z axis] normalized vectors
      */
     getSurfaceTransform(lat: number, long: number, elevation: number): [Cartesian3, Cartesian3, Cartesian3] {
         // The point in cartesian coordinates
-        const cartesian_point = Cartesian3.fromDegrees(lat, long, elevation);
+        const cartesianPoint = Cartesian3.fromDegrees(lat, long, elevation);
+        const smallChange = 0.0001;
 
         // The theta and phi gradients are lines tangent to the theta and phi axis in the spherical coordinates, in the standard basis cartisean coordinate system
-        const theta_grad: Cartesian3 = new Cartesian3(0, 0, 0);
-        Cartesian3.subtract(cartesian_point, Cartesian3.fromDegrees(lat + 0.0001, long, elevation), theta_grad);
+        const thetaGrad: Cartesian3 = new Cartesian3(0, 0, 0);
+        Cartesian3.subtract(cartesianPoint, Cartesian3.fromDegrees(lat + smallChange, long, elevation), thetaGrad);
 
-        const phi_grad = new Cartesian3(0, 0, 0);
-        Cartesian3.subtract(cartesian_point, Cartesian3.fromDegrees(lat, long + 0.0001, elevation), phi_grad);
+        const phiGrad = new Cartesian3(0, 0, 0);
+        Cartesian3.subtract(cartesianPoint, Cartesian3.fromDegrees(lat, long + smallChange, elevation), phiGrad);
 
-        // Create a new axis where the x basis vector is pointing tangent to the theta axis 
-        // and y basis vector is pointing tangent to the phi axis
-        const x_axis_new = new Cartesian3(0, 0, 0);
-        Cartesian3.normalize(theta_grad, x_axis_new);
+        // Create a new axis where the x basis vector is pointing tangent to the theta axis
+        // And y basis vector is pointing tangent to the phi axis
+        const xAxisNew = new Cartesian3(0, 0, 0);
+        Cartesian3.normalize(thetaGrad, xAxisNew);
 
-        const y_axis_new = new Cartesian3(0, 0, 0);
-        Cartesian3.normalize(phi_grad, y_axis_new);
+        const yAxisNew = new Cartesian3(0, 0, 0);
+        Cartesian3.normalize(phiGrad, yAxisNew);
 
         // The new z axis is simply pointing away from the Earth
-        const z_axis_new = new Cartesian3(0, 0, 0);
-        Cartesian3.normalize(cartesian_point, z_axis_new);
+        const zAxisNew = new Cartesian3(0, 0, 0);
+        Cartesian3.normalize(cartesianPoint, zAxisNew);
 
-        return [x_axis_new, y_axis_new, z_axis_new];
-
+        return [xAxisNew, yAxisNew, zAxisNew];
     }
 
     /**
@@ -179,11 +185,11 @@ export class FOV {
      * out of sync
      * @param scene - The scene in which to draw the debug camera
      */
-    draw_debug_camera(scene: Cesium.Scene): void {
+    drawDebugCamera(scene: Cesium.Scene): void {
         scene.primitives.add(new Cesium.DebugCameraPrimitive({
             camera: this.camera,
             color: Cesium.Color.YELLOW,
-            show: true
+            show: true,
         }));
     }
 
@@ -196,15 +202,15 @@ export class FOV {
     }
 
     /**
-     * Draws a line from the a pixel on the camera screen to the point that pixel maps to 
+     * Draws a line from the a pixel on the camera screen to the point that pixel maps to
      * on an ellipsoid
      * @param viewer - The cesium viewer
-     * @param pixel - The pixel coordinate on the camera screen 
+     * @param pixel - The pixel coordinate on the camera screen
      * @param ellipsoid - The ellopsoid the point shoudl map to
      */
     drawLineFromPixelToScreen(viewer: Cesium.Viewer, pixel: Cartesian2, ellipsoid: Cesium.Ellipsoid): void {
         let pointOnSphere = this.camera.pickEllipsoid(pixel, ellipsoid);
-        if (pointOnSphere != undefined) {
+        if(pointOnSphere != undefined) {
             pointOnSphere = pointOnSphere as Cesium.Cartesian3;
             viewer.entities.add({
                 name: "Cam Line",
@@ -212,9 +218,7 @@ export class FOV {
                     positions: [Cesium.Cartesian3.fromDegrees(this.lat, this.long, this.elevation), pointOnSphere],
                     width: 10,
                     arcType: Cesium.ArcType.NONE,
-                    material: new Cesium.PolylineArrowMaterialProperty(
-                        Cesium.Color.GREEN
-                    ),
+                    material: new Cesium.PolylineArrowMaterialProperty(Cesium.Color.GREEN),
                 },
             });
 
@@ -231,7 +235,7 @@ export class FOV {
     /**
      * Map a point from the camera screen to a sphere point
      * @param pixel - The pixel to on the camera screen
-     * @param ellipsoid - The sphere to map the camera screen to 
+     * @param ellipsoid - The sphere to map the camera screen to
      */
     getPointOnSphereFromScreen(pixel: Cartesian2, ellipsoid: Cesium.Ellipsoid): Cartesian3 | undefined {
         return this.camera.pickEllipsoid(pixel, ellipsoid);
@@ -270,9 +274,7 @@ export class FOV {
                 positions: [Cesium.Cartesian3.fromDegrees(this.lat, this.long, this.elevation), point],
                 width: 10,
                 arcType: Cesium.ArcType.NONE,
-                material: new Cesium.PolylineArrowMaterialProperty(
-                    Cesium.Color.GREEN
-                ),
+                material: new Cesium.PolylineArrowMaterialProperty(Cesium.Color.GREEN),
             },
         });
 
@@ -286,7 +288,7 @@ export class FOV {
     }
 
     /**
-     * Draws a line from the a percent(0.0 - 1.0) on the camera screen to the point that pixel maps to 
+     * Draws a line from the a percent(0.0 - 1.0) on the camera screen to the point that pixel maps to
      * on an ellipsoid
      * @param viewer - The cesium viewer
      * @param percent - The percent coordinate on the camera screen, bewteen 0.0 and 1.0
@@ -313,7 +315,6 @@ export class FOV {
      * @param cart - The position in Cartographic coordinates
      */
     moveCameraToCartographic(cart: Cartographic): void {
-
         // First destroy drawn 3d object
         this.destroy();
 
@@ -321,16 +322,18 @@ export class FOV {
         const long = cart.longitude;
         const elevation = cart.height;
 
-        const [, y_axis_new, z_axis_new] = this.getSurfaceTransform(lat, long, elevation);
+        const [, yAxisNew, zAxisNew] = this.getSurfaceTransform(lat, long, elevation);
 
-        const rotation_matrix = this.getSurfaceRotationMatrix(lat, long, elevation, this.theta, this.phi - Cesium.Math.PI_OVER_TWO, this.roll);
+        const rotationMatrix = this.getSurfaceRotationMatrix(
+            lat, long, elevation, this.theta, this.phi - Cesium.Math.PI_OVER_TWO, this.roll
+        );
         this.camera.position = Cesium.Cartesian3.fromDegrees(lat, long, elevation);
-        this.camera.up = Cesium.Cartesian3.clone(z_axis_new);
-        this.camera.right = Cesium.Cartesian3.clone(y_axis_new);
+        this.camera.up = Cesium.Cartesian3.clone(zAxisNew);
+        this.camera.right = Cesium.Cartesian3.clone(yAxisNew);
 
-        const x_on_new_axis = new Cartesian3(0, 0, 0);
-        Cesium.Matrix3.multiplyByVector(rotation_matrix, Cesium.Cartesian3.UNIT_X, x_on_new_axis);
-        this.camera.direction = x_on_new_axis;
+        const xOnNewAxis = new Cartesian3(0, 0, 0);
+        Cesium.Matrix3.multiplyByVector(rotationMatrix, Cesium.Cartesian3.UNIT_X, xOnNewAxis);
+        this.camera.direction = xOnNewAxis;
 
         this.cameraUp = this.camera.up;
         this.cameraDirection = this.camera.direction;

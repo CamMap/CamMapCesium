@@ -41,6 +41,11 @@ module.exports = {
         "function-paren-newline": ["error", { "minItems": 4 }],
         "eol-last": ["error", "always"],
         "no-trailing-spaces": ["error"],
+        "no-multi-spaces": ["error"],
+        "camelcase": ["error"],
+        "new-parens": ["error"],
+        "multiline-comment-style": ["error", "separate-lines"],
+        "no-inline-comments": "error",
         "capitalized-comments": ["error"],
         "no-lonely-if": ["error"],
         "linebreak-style": ["error", "unix"],
@@ -92,7 +97,7 @@ module.exports = {
         "@typescript-eslint/no-extra-semi": ["error"],
 
         "no-magic-numbers": "off",
-        "@typescript-eslint/no-magic-numbers": ["error", { "ignoreEnums": true }],
+        "@typescript-eslint/no-magic-numbers": ["error", { "ignore": [0, 1], "ignoreEnums": true }],
 
         "lines-between-class-members": "off",
         "@typescript-eslint/lines-between-class-members": ["error", "always", { "exceptAfterSingleLine": true }],

@@ -1,142 +1,151 @@
 import * as Cesium from "cesium_source/Cesium";
-import CameraViewModel from './cameraViewModel';
-import image from './image';
+import CameraViewModel from "./cameraViewModel";
+import image from "./image";
 //TODO: someone migrate this to ES6 later on
-require('../css/main.css');
-require('cesium_source/Widgets/widgets.css');
-require('./image');
+require("../css/main.css");
+require("cesium_source/Widgets/widgets.css");
+require("./image");
 
-//sliders
-const cam_height = document.getElementById("cam_height") as HTMLInputElement;
-const cam_tilt = document.getElementById("cam_tilt") as HTMLInputElement;
-const fov_hor = document.getElementById("fov_hor") as HTMLInputElement;
-const fov_vert = document.getElementById("fov_vert") as HTMLInputElement;
-const cam_heading = document.getElementById("cam_heading") as HTMLInputElement;
+//Sliders
+const camHeight = document.getElementById("camHeight") as HTMLInputElement;
+const camTilt = document.getElementById("camTilt") as HTMLInputElement;
+const fovHor = document.getElementById("fovHor") as HTMLInputElement;
+const fovVert = document.getElementById("fovVert") as HTMLInputElement;
+const camHeading = document.getElementById("camHeading") as HTMLInputElement;
 
-// setup cesium root panel reference;
-const cesiumRoot = new Cesium.Viewer('cesiumContainer', {
+// Setup cesium root panel reference;
+const cesiumRoot = new Cesium.Viewer("cesiumContainer", {
     animation: false,
     timeline: false,
     geocoder: false,
     selectionIndicator: false,
     infoBox: false,
     vrButton: false,
-    fullscreenButton: false
+    fullscreenButton: false,
 });
 
-// set default view
+const camLongditude = -4.291606;
+const camLatitude = 55.873704;
+const camElevation = 30.0;
+
+const camPitch = -45.0;
+
+// Set default view
 cesiumRoot.camera.setView({
-    destination: Cesium.Cartesian3.fromDegrees(-4.291606, 55.873704, 30.0),
+    destination: Cesium.Cartesian3.fromDegrees(camLongditude, camLatitude, camElevation),
     orientation: {
         heading: Cesium.Math.toRadians(0.0),
-        pitch: Cesium.Math.toRadians(-45.0),
-    }
+        pitch: Cesium.Math.toRadians(camPitch),
+    },
 });
 
 const viewModel = new CameraViewModel(cesiumRoot);
 const imageHandler = new image(viewModel);
 
-//set sliders to default value
-cam_height.value = String(viewModel.height);
-(document.getElementById("cam_height_result") as HTMLOutputElement).value = String(viewModel.height);
-cam_tilt.value = String(viewModel.tilt);
-(document.getElementById("cam_tilt_result") as HTMLOutputElement).value = String(viewModel.tilt);
-fov_hor.value = String(viewModel.fovHor);
-(document.getElementById("fov_hor_result") as HTMLOutputElement).value = String(viewModel.fovHor);
-fov_vert.value = String(viewModel.fovVer);
-(document.getElementById("fov_vert_result") as HTMLOutputElement).value = String(viewModel.fovVer);
-cam_heading.value = String(viewModel.heading);
-(document.getElementById("cam_heading_result") as HTMLOutputElement).value = String(viewModel.heading);
+//Set sliders to default value
+camHeight.value = String(viewModel.height);
+(document.getElementById("camHeight_result") as HTMLOutputElement).value = String(viewModel.height);
+camTilt.value = String(viewModel.tilt);
+(document.getElementById("camTilt_result") as HTMLOutputElement).value = String(viewModel.tilt);
+fovHor.value = String(viewModel.fovHor);
+(document.getElementById("fovHor_result") as HTMLOutputElement).value = String(viewModel.fovHor);
+fovVert.value = String(viewModel.fovVer);
+(document.getElementById("fovVert_result") as HTMLOutputElement).value = String(viewModel.fovVer);
+camHeading.value = String(viewModel.heading);
+(document.getElementById("camHeading_result") as HTMLOutputElement).value = String(viewModel.heading);
 
 //This could probably have been done in the image class
-//but it works and I dont have time to refactor before the costumer day
+//But it works and I dont have time to refactor before the costumer day
 imageHandler.uploadFile.onchange = imageHandler.onUploadImage.bind(imageHandler);
 
 /**
  * Sets the height attribute for the viewModel from slider value
  */
-cam_height.oninput = function() { 
-    viewModel.height = (Number(cam_height.value)); 
-    (document.getElementById("cam_height_result") as HTMLOutputElement).value = String(viewModel.height);
+camHeight.oninput = function() {
+    viewModel.height = Number(camHeight.value);
+    (document.getElementById("camHeight_result") as HTMLOutputElement).value = String(viewModel.height);
 };
 
 /**
  * Sets the tilt attribute for the viewModel from slider value
  */
-cam_tilt.oninput = function() {
-    viewModel.tilt = (Number(cam_tilt.value)); 
-    (document.getElementById("cam_tilt_result") as HTMLOutputElement).value = String(viewModel.tilt);
+camTilt.oninput = function() {
+    viewModel.tilt = Number(camTilt.value);
+    (document.getElementById("camTilt_result") as HTMLOutputElement).value = String(viewModel.tilt);
 };
 
 /**
  * Sets the horizontal FOV attribute for the viewModel from slider value
  */
-fov_hor.oninput = function() { 
-    viewModel.fovHor = (Number(fov_hor.value)); 
-    (document.getElementById("fov_hor_result") as HTMLOutputElement).value = String(viewModel.fovHor);
+fovHor.oninput = function() {
+    viewModel.fovHor = Number(fovHor.value);
+    (document.getElementById("fovHor_result") as HTMLOutputElement).value = String(viewModel.fovHor);
 };
 
 /**
  * Sets the vertical FOV attribute for the viewModel from slider value
  */
-fov_vert.oninput = function() { 
-    viewModel.fovVer = (Number(fov_vert.value)); 
-    (document.getElementById("fov_vert_result") as HTMLOutputElement).value = String(viewModel.fovVer);
+fovVert.oninput = function() {
+    viewModel.fovVer = Number(fovVert.value);
+    (document.getElementById("fovVert_result") as HTMLOutputElement).value = String(viewModel.fovVer);
 };
 
 /**
  * Sets the heading attribute for the viewModel from slider value
  */
-cam_heading.oninput = function() { 
-    viewModel.heading = (Number(cam_heading.value)); 
-    (document.getElementById("cam_heading_result") as HTMLOutputElement).value = String(viewModel.heading);
+camHeading.oninput = function() {
+    viewModel.heading = Number(camHeading.value);
+    (document.getElementById("camHeading_result") as HTMLOutputElement).value = String(viewModel.heading);
 };
+
+const canvasX = 350;
+const canvasY = 300;
 
 /**
  * It reads the image and draws it on the Canvas
  */
 
 function createImageOnCanvas(){
-    const canvas = (document.getElementById('myCanvas') as HTMLCanvasElement);
-    const context  = canvas.getContext('2d');
+    const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
+    const context = canvas.getContext("2d");
     const target = document.getElementById("target") as HTMLImageElement;
-    console.log (target);
-    context?.drawImage(target,0,0,350,300);
-    target.style.display = 'none';
+    console.log(target);
+    context?.drawImage(
+        target, 0, 0, canvasX, canvasY
+    );
+    target.style.display = "none";
 }
 
 /**
  * @param canvas gets the image on canvas
- * 
+ *
  * @param event this gets the x and y positions when selected
- * 
+ *
  */
-function getCursorPosition(canvas: HTMLCanvasElement, event: MouseEvent ): [number, number]{
-
+function getCursorPosition(canvas: HTMLCanvasElement, event: MouseEvent): [number, number]{
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = -(event.clientY - rect.bottom);
-    return [x,y];
-
+    return [x, y];
 }
 
 window.onload = ()=>{
-    console.log('on load fired');
+    console.log("on load fired");
     const canvas = document.getElementById("myCanvas");
     if(canvas){
         canvas.addEventListener("click", function(e){
-            console.log('click event called.');
-            const span = document.getElementById('image-cord');
+            console.log("click event called.");
+            const span = document.getElementById("image-cord");
             const points = getCursorPosition(document.getElementById("myCanvas") as HTMLCanvasElement, e);
             if(span){
                 span.innerText = `X: ${points[0]}, Y: ${points[1]}`;
             }
-            viewModel.addDot(points[0]/350, points[1]/300);
+            viewModel.addDot(points[0] / canvasX, points[1] / canvasY);
         });
     }
-    
-    document.getElementById("drawImage")?.addEventListener('click',()=>{
-        console.log('button clicked');
+
+    document.getElementById("drawImage")?.addEventListener("click", ()=>{
+        console.log("button clicked");
         createImageOnCanvas();
     });
 };
