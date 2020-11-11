@@ -41,17 +41,18 @@ class CameraViewModel {
     }
 
     rerender(): void {
-        //Make this move efficient in future stints
-        this.dotsPlaceholder.forEach(dotEntity => { this.cesiumRoot.entities.remove(dotEntity); });
-        this.dotsPlaceholder = [];
-
         const cameraPos = Cesium.Cartesian3.fromDegrees(this.cameraData.lng, this.cameraData.lat, this.cameraData.height);
 
         this.cameraPlaceholder.position = new Cesium.ConstantPositionProperty(cameraPos);
-
-        this.dots.forEach(dot => {            
-            this.dotsPlaceholder.push(this.drawDot(dot[0], dot[1], cameraPos));
-        });
+        
+        for (let i = 0; i < this.dots.length; i++) {
+            const dot = this.dots[i];
+            if (this.dotsPlaceholder.length > i) {
+                this.drawDot(dot[0], dot[1], cameraPos, this.dotsPlaceholder[i]);
+            } else {
+                this.dotsPlaceholder.push(this.drawDot(dot[0], dot[1], cameraPos));
+            }
+        }
     }
 
     /**
@@ -170,19 +171,37 @@ class CameraViewModel {
      * @param imgPosX ??
      * @param imgPosY ??
      * @param camerapos Current camera position
+     * @param oldPlaceholder placeholder entity to update (optional)
      */
-    private drawDot(imgPosX: number, imgPosY: number, camerapos: Cesium.Cartesian3): Cesium.Entity {
+    private drawDot(imgPosX: number, imgPosY: number, camerapos: Cesium.Cartesian3, oldPlaceholder?: Cesium.Entity): Cesium.Entity {
         const headingDelta = (imgPosX-0.5) * this.cameraData.fov_h;
         const tiltDelta = (imgPosY-0.5) * this.cameraData.fov_v;
-        const dotHeading = this.cameraData.heading + headingDelta;
+        let dotHeading = this.cameraData.heading + headingDelta;
         const dotTilt = this.cameraData.tilt + tiltDelta;
 
         const distanceAlongGroundInMeters = Math.tan(Cesium.Math.toRadians(dotTilt)) * this.cameraData.height;
 
-        const rhumbLine = Cesium.EllipsoidRhumbLine.fromStartHeadingDistance(Cesium.Cartographic.fromDegrees(this.cameraData.lng, this.cameraData.lat), Cesium.Math.toRadians(dotHeading), distanceAlongGroundInMeters);
-        
-        const dot = Cesium.Cartographic.toCartesian(rhumbLine.end);
+        if (dotTilt < 0 || dotTilt > 180) {
+            dotHeading -= 180;
+        }
 
+        const rhumbLine = Cesium.EllipsoidRhumbLine.fromStartHeadingDistance(Cesium.Cartographic.fromDegrees(this.cameraData.lng, this.cameraData.lat), Cesium.Math.toRadians(dotHeading), Math.abs(distanceAlongGroundInMeters));
+        const rhumbLineEnd = rhumbLine.end;
+
+        if (dotTilt >= 90) {
+            rhumbLineEnd.height = this.cameraData.height*2;
+        }
+
+        const dot = Cesium.Cartographic.toCartesian(rhumbLineEnd);
+
+        //This was a oneliner, but i was getting constant errors from linter
+        if (oldPlaceholder && oldPlaceholder.polyline) {
+            oldPlaceholder.polyline.positions = new Cesium.PositionPropertyArray([
+                new Cesium.ConstantPositionProperty(camerapos),
+                new Cesium.ConstantPositionProperty(dot)
+            ]);
+            return oldPlaceholder;
+        }
         //cast to polyline
         return this.cesiumRoot.entities.add({
             polyline: {
