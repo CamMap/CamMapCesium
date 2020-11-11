@@ -44,7 +44,7 @@ imageHandler.uploadFile.onchange = imageHandler.onUploadImage.bind(imageHandler)
  * Sets the height attribute for the viewModel from slider value
  */
 cam_height.oninput = function() { 
-    viewModel.setHeight(Number(cam_height.value)); 
+    viewModel.height = (Number(cam_height.value)); 
     (document.getElementById("cam_height_result") as HTMLOutputElement).value = String(viewModel.height);
 };
 
@@ -52,7 +52,7 @@ cam_height.oninput = function() {
  * Sets the tilt attribute for the viewModel from slider value
  */
 cam_tilt.oninput = function() {
-    viewModel.setTilt(Number(cam_tilt.value)); 
+    viewModel.tilt = (Number(cam_tilt.value)); 
     (document.getElementById("cam_tilt_result") as HTMLOutputElement).value = String(viewModel.tilt);
 };
 
@@ -60,22 +60,22 @@ cam_tilt.oninput = function() {
  * Sets the horizontal FOV attribute for the viewModel from slider value
  */
 fov_hor.oninput = function() { 
-    viewModel.setFovHor(Number(fov_hor.value)); 
-    (document.getElementById("fov_hor_result") as HTMLOutputElement).value = String(viewModel.fov_hor);
+    viewModel.fovHor = (Number(fov_hor.value)); 
+    (document.getElementById("fov_hor_result") as HTMLOutputElement).value = String(viewModel.fovHor);
 };
 
 /**
  * Sets the vertical FOV attribute for the viewModel from slider value
  */
 fov_vert.oninput = function() { 
-    viewModel.setFovVer(Number(fov_vert.value)); 
-    (document.getElementById("fov_vert_result") as HTMLOutputElement).value = String(viewModel.fov_ver);
+    viewModel.fovVer = (Number(fov_vert.value)); 
+    (document.getElementById("fov_vert_result") as HTMLOutputElement).value = String(viewModel.fovVer);
 };
 
 /**
  * Sets the heading attribute for the viewModel from slider value
  */
 cam_heading.oninput = function() { 
-    viewModel.setHeading(Number(cam_heading.value)); 
+    viewModel.heading = (Number(cam_heading.value)); 
     (document.getElementById("cam_heading_result") as HTMLOutputElement).value = String(viewModel.heading);
 };

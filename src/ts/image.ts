@@ -70,7 +70,7 @@ export default class image {
 
                 // Attempt to get the heading 
                 exifr.parse(file).then(output => {
-                    localViewModel.setHeading(output.GPSImgDirection as number);
+                    localViewModel.heading = (output.GPSImgDirection as number);
                     localViewModel.setCamera();
                     
                 }).catch(() => {
