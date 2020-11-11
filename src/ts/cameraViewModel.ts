@@ -71,7 +71,7 @@ class CameraViewModel {
      */
     setCamera(): void {
         this.cesiumRoot.camera.setView({
-            destination: Cesium.Cartesian3.fromDegrees(this.cameraData.lng, this.cameraData.lat , 3),
+            destination: Cesium.Cartesian3.fromDegrees(this.cameraData.lng, this.cameraData.lat , this.cameraData.height),
             orientation: {
                 heading: Cesium.Math.toRadians(this.cameraData.heading),
                 pitch: Cesium.Math.toRadians(0.0),

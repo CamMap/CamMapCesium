@@ -70,9 +70,11 @@ export default class image {
 
                 // Attempt to get the heading 
                 exifr.parse(file).then(output => {
-                    localViewModel.heading = (output.GPSImgDirection as number);
-                    localViewModel.setCamera();
-                    
+                    const heading = output.GPSImgDirection as number;
+                    if (heading) {
+                        localViewModel.heading = heading;
+                        localViewModel.setCamera();
+                    }
                 }).catch(() => {
                     console.error("Heading could not be found");
                     return;
