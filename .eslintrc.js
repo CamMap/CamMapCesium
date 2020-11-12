@@ -128,6 +128,7 @@ module.exports = {
         "jsdoc/require-returns-description": "error",
         "jsdoc/require-returns-type": "off",
         "jsdoc/require-returns": "error",
+        "jsdoc/require-returns-check": "error",
         "jsdoc/require-param": ["error", {
             'checkConstructors': false,
             'checkDestructured': false
