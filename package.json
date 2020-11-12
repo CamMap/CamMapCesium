@@ -6,6 +6,7 @@
   "scripts": {
     "start": "npx webpack serve --mode development --config webpack.config.js",
     "build": "npx webpack --config webpack.config.js",
+    "docs": "npx typedoc --out docs src",
     "lint": "npx eslint ./src/ts --ext .ts",
     "quicktestbuild": "npx tsc -p tsconfig.json --outdir src/jsfiles",
     "test": "echo \"Error: no test specified\" && exit 1"
