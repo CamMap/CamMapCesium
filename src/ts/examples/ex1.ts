@@ -3,6 +3,7 @@
  * something must be failing.  To use this, require() this in index.
  *
  * This example draws an FOV and displays a red rectangle enclosing it on Earth.
+ *
  * @packageDocumentation
  */
 
@@ -28,7 +29,6 @@ const viewer = new Cesium.Viewer("cesiumContainer", {
 //
 
 // Create a new fov
-
 const fovCam = new FOV(
     viewer, [-107.0, 40.0, 100000.0], 60, 1, 90, -45, 0, 10000, 300000
 );

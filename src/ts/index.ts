@@ -104,7 +104,6 @@ const canvasY = 300;
 /**
  * It reads the image and draws it on the Canvas
  */
-
 function createImageOnCanvas(){
     const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
     const context = canvas.getContext("2d");
@@ -117,9 +116,10 @@ function createImageOnCanvas(){
 }
 
 /**
- * @param canvas gets the image on canvas
+ * @param canvas - gets the image on canvas
  *
- * @param event this gets the x and y positions when selected
+ * @param event - this gets the x and y positions when selected
+ * @returns The cursor position
  *
  */
 function getCursorPosition(canvas: HTMLCanvasElement, event: MouseEvent): [number, number]{

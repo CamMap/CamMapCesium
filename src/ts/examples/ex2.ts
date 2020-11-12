@@ -4,6 +4,7 @@
  *
  * This example displays a camera view with 4 lines pointing from each corner.
  * to points on the surface of the Earth.
+ *
  * @packageDocumentation
  */
 

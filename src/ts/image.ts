@@ -11,6 +11,7 @@ export default class image {
 
     /**
      * Constructs an image object
+     *
      * @param viewModel - The CameraViewModel object that the image EXIF should modify
      */
     constructor(viewModel : CameraViewModel){
@@ -27,7 +28,8 @@ export default class image {
     /**
      * Called when a file is uploaded/ the upload file has changed,
      * This only uploads a file if one was selected
-     * @param event The input event
+     *
+     * @param event - The input event
      */
     onUploadImage(event: Event): void {
         console.log("onUploadImage");
@@ -42,7 +44,8 @@ export default class image {
     /**
      * Sets the "target" image in html to display the uploaded image
      * once the uploaded image has been loaded
-     * @param file The file url to upload
+     *
+     * @param file - The file url to upload
      */
     showUploadedImage(file: File): void {
         let img : HTMLImageElement;
@@ -61,6 +64,9 @@ export default class image {
         ////////////////////////
         const localViewModel = this.viewModel as CameraViewModel;
         const fileReader = new FileReader();
+        /**
+         * @param e - TODO
+         */
         fileReader.onload = function(e) {
             // Switch Image to display the loaded image
             if(e.target) {
@@ -99,7 +105,6 @@ export default class image {
 /**
  * It reads the image and draws it on the Canvas
  */
-
 function createImageOnCanvas(){
     const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
     const context = canvas.getContext("2d");

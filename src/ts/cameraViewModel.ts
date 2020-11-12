@@ -23,7 +23,8 @@ class CameraViewModel {
 
     /**
      * Constructs a CameraviewModel object
-     * @param cesiumRoot The cesium viewer to be used (should this be scene)
+     *
+     * @param cesiumRoot - The cesium viewer to be used (should this be scene)
      */
     constructor(cesiumRoot: Cesium.Viewer) {
         this.cesiumRoot = cesiumRoot;
@@ -41,6 +42,9 @@ class CameraViewModel {
         this.rerender();
     }
 
+    /**
+     *
+     */
     rerender(): void {
         const cameraPos = Cesium.Cartesian3.fromDegrees(this.cameraData.lng, this.cameraData.lat, this.cameraData.height);
 
@@ -60,8 +64,9 @@ class CameraViewModel {
 
     /**
      * Set the latitude and longitude coordinates
-     * @param lat The latitude
-     * @param lng The longitude
+     *
+     * @param lat - The latitude
+     * @param lng - The longitude
      */
     setLatLng(lat: number, lng: number): void {
         this.cameraData.lat = lat;
@@ -92,7 +97,7 @@ class CameraViewModel {
 
     /**
      * @returns the height of the camera
-    */
+     */
     public get height(): number {
         return this.cameraData.height;
     }
@@ -107,7 +112,7 @@ class CameraViewModel {
 
     /**
      * @returns the heading of the camera
-    */
+     */
     public get heading(): number {
         return this.cameraData.heading;
     }
@@ -123,7 +128,7 @@ class CameraViewModel {
 
     /**
      * @returns the tilt of the camera
-    */
+     */
     public get tilt(): number {
         return this.cameraData.tilt;
     }
@@ -138,7 +143,7 @@ class CameraViewModel {
 
     /**
      * @returns the Horizontal FOV of the camera
-    */
+     */
     public get fovHor(): number {
         return this.cameraData.fovH;
     }
@@ -153,13 +158,14 @@ class CameraViewModel {
 
     /**
      * @returns the Vertical FOV of the camera
-    */
+     */
     public get fovVer(): number {
         return this.cameraData.fovV;
     }
 
     /**
      *  Draws a point on the map from image click.
+     *
      * @param imgPosX - percentage of x coord where image was clicked positing in % (0.0-1.0)
      * @param imgPosY - percentage of y coord where image was clicked positing in % (0.0-1.0)
      */
@@ -171,10 +177,12 @@ class CameraViewModel {
     /**
      * Adds a point to the map using the current data that is stored in cameraData struct
      * For Alex: Doc Function and add missing param comments
-     * @param imgPosX ??
-     * @param imgPosY ??
-     * @param camerapos Current camera position
-     * @param oldPlaceholder placeholder entity to update (optional)
+     *
+     * @param imgPosX - ??
+     * @param imgPosY - ??
+     * @param camerapos - Current camera position
+     * @param oldPlaceholder - placeholder entity to update (optional)
+     * @returns The entity of the polyline to the point on the surface of the sphere
      */
     private drawDot(
         imgPosX: number, imgPosY: number, camerapos: Cesium.Cartesian3, oldPlaceholder?: Cesium.Entity

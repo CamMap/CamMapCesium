@@ -125,7 +125,9 @@ module.exports = {
           'checkConstructors': false
           }
         ],
-        "jsdoc/require-returns-type": "error",
+        "jsdoc/require-returns-description": "error",
+        "jsdoc/require-returns-type": "off",
+        "jsdoc/require-returns": "error",
         "jsdoc/require-param": ["error", {
             'checkConstructors': false,
             'checkDestructured': false
@@ -133,6 +135,9 @@ module.exports = {
         "jsdoc/require-param-type": 0,
         "jsdoc/check-param-names": ["error", {
             'checkDestructured': false
+        }],
+        "jsdoc/check-tag-names": ["warn", {
+            "definedTags": ["packageDocumentation"]
         }],
         "tsdoc/syntax": "error",
     },

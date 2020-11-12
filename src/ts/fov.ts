@@ -1,7 +1,8 @@
 /**
  * Functions for drawing a Field of View
+ *
  * @packageDocumentation
-*/
+ */
 
 import { Cartesian2, Cartesian3, Cartographic, default as Cesium, HeadingPitchRoll, Matrix3 } from "cesium_source/Cesium";
 
@@ -26,10 +27,11 @@ export class FOV {
 
     /**
      * Constructs an FOV object, call draw() to draw it in a scene
+     *
      * @param viewer - The cesium viewer to be used (should this be scene)
-     * @param lat -  The laditude of the camera position
-     * @param long - The longditude of the camera position
-     * @param elevation - The elevation of the camera position
+     * @param lat_long_elevation -  The laditude, longtitude and elevation of the camera position
+     * @param fov - The FOV of the camera
+     * @param aspectRatio - The aspect ratio of the camera
      * @param theta - The bearing of the camera
      * @param phi - The tilt of the camera
      * @param roll - The roll of the camera
@@ -78,6 +80,7 @@ export class FOV {
 
     /**
      * Draw a FOV in a cesium scene
+     *
      * @param scene - The cesium scene in which the object should be drawn
      */
     draw(scene: Cesium.Scene): void {
@@ -119,6 +122,7 @@ export class FOV {
 
     /**
      * Calculate the rotation matrix to align the object to the surface of a sphere
+     *
      * @param lat - The latitude of the position on the sphere
      * @param long - The longditude of the position on the sphere
      * @param elevation - The elevation of the position on the sphere
@@ -148,6 +152,7 @@ export class FOV {
      * Get the plane tangent to the sphere, where the x axis is tangent to
      * the latitude axis, the y axis is tangent to the longditude and
      * the z axis is pointing directly up towards space.
+     *
      * @param lat - The latitude of the position on the sphere
      * @param long - The longditude of the position on the sphere
      * @param elevation - The elevation of the position on the sphere
@@ -183,6 +188,7 @@ export class FOV {
     /**
      * Draw a debug camera, usful for determining if the FOV Frustrum and Camera have comes
      * out of sync
+     *
      * @param scene - The scene in which to draw the debug camera
      */
     drawDebugCamera(scene: Cesium.Scene): void {
@@ -195,6 +201,8 @@ export class FOV {
 
     /**
      * This is only an approximation rectangle from cesium, using a polygon would usually be more accurate
+     *
+     * @param ellipsoid - The ellipsoid onto which to project the rectangle
      * @returns the rectangle of what the camera can see projected onto the Earth
      */
     getCameraRect(ellipsoid: Cesium.Ellipsoid): Cesium.Rectangle | undefined {
@@ -204,6 +212,7 @@ export class FOV {
     /**
      * Draws a line from the a pixel on the camera screen to the point that pixel maps to
      * on an ellipsoid
+     *
      * @param viewer - The cesium viewer
      * @param pixel - The pixel coordinate on the camera screen
      * @param ellipsoid - The ellopsoid the point shoudl map to
@@ -234,8 +243,10 @@ export class FOV {
 
     /**
      * Map a point from the camera screen to a sphere point
+     *
      * @param pixel - The pixel to on the camera screen
      * @param ellipsoid - The sphere to map the camera screen to
+     * @returns The point on the sphere where the ray hits
      */
     getPointOnSphereFromScreen(pixel: Cartesian2, ellipsoid: Cesium.Ellipsoid): Cartesian3 | undefined {
         return this.camera.pickEllipsoid(pixel, ellipsoid);
@@ -243,7 +254,9 @@ export class FOV {
 
     /**
      * Project a ray from the camera to a set distance
-     * @param pixel the camera pixel to project the ray from
+     *
+     * @param pixel - the camera pixel to project the ray from
+     * @returns The cesium ray from the point on the pixel on the screen
      */
     getRayFromScreen(pixel: Cartesian2): Cesium.Ray {
         return this.camera.getPickRay(pixel);
@@ -251,8 +264,10 @@ export class FOV {
 
     /**
      * Get a point a set distance away from the camera which goes through a ray of a set pixel
+     *
      * @param pixel - The camera pixel to project the ray from
      * @param dist - The distance away from the camera where the point is located
+     * @returns The point a set distance away from the camera pointing from a pixel on the screen
      */
     getPointAtDistFromScreen(pixel: Cartesian2, dist: number): Cesium.Cartesian3 {
         return Cesium.Ray.getPoint(this.getRayFromScreen(pixel), dist);
@@ -261,6 +276,8 @@ export class FOV {
     /**
      * A convience function to draw a point at a set distance away from the camera on a
      * ray projected through the camera screen
+     *
+     * @param viewer - The cesium viewer
      * @param pixel - The camera pixel to project the ray from
      * @param dist - The distance away from the camera where the point is located
      */
@@ -290,6 +307,7 @@ export class FOV {
     /**
      * Draws a line from the a percent(0.0 - 1.0) on the camera screen to the point that pixel maps to
      * on an ellipsoid
+     *
      * @param viewer - The cesium viewer
      * @param percent - The percent coordinate on the camera screen, bewteen 0.0 and 1.0
      * @param ellipsoid - The ellopsoid the point shoudl map to
@@ -303,6 +321,7 @@ export class FOV {
 
     /**
      * Move the camera to a specified location
+     *
      * @param location - The location to move the camera to
      */
     moveCameraToCartesian(location: Cartesian3): void {
@@ -312,6 +331,7 @@ export class FOV {
 
     /**
      * Moves the camera to the specified location
+     *
      * @param cart - The position in Cartographic coordinates
      */
     moveCameraToCartographic(cart: Cartographic): void {
@@ -344,7 +364,9 @@ export class FOV {
 
     /**
      * Computes the intersection of the view and a bounding box
+     *
      * @param boundingVolume - The bounding volume of the object of which to check the intersection
+     * @returns The cesium intersect with the object, in essence if the object is within the FOV viewcone
      */
     checkIntersection(boundingVolume: Cesium.BoundingRectangle | Cesium.BoundingSphere | Cesium.AxisAlignedBoundingBox | Cesium.OrientedBoundingBox): Cesium.Intersect {
         return this.camera.frustum.computeCullingVolume(this.camera.position, this.cameraDirection, this.cameraUp).computeVisibility(boundingVolume);

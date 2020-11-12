@@ -4,6 +4,7 @@
  *
  * This example draws a red sphere and a line comming out of it.
  * The camera also flys to and centers on the red circle.
+ *
  * @packageDocumentation
  */
 
