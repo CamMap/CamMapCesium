@@ -139,6 +139,7 @@ module.exports = {
         "jsdoc/check-tag-names": ["warn", {
             "definedTags": ["packageDocumentation"]
         }],
+        "jsdoc/require-hyphen-before-param-description": ["error"],
         "tsdoc/syntax": "error",
     },
    "settings": {
