@@ -4,26 +4,206 @@
  * @packageDocumentation
  */
 
-import { Cartesian2, Cartesian3, Cartographic, default as Cesium, HeadingPitchRoll, Matrix3 } from "cesium_source/Cesium";
+import * as Cesium from "cesium_source/Cesium";
+import { Cartesian2, Cartesian3, Cartographic, HeadingPitchRoll, Matrix3, PerspectiveFrustum } from "cesium_source/Cesium";
+
 
 /**
  * A wrapper around cesium camera viewer.
  */
 export class FOV {
-    position: Cesium.Cartesian3;
+    _position: Cesium.Cartesian3;
     camera: Cesium.Camera;
     cameraUp: Cesium.Cartesian3;
     cameraDirection: Cesium.Cartesian3;
-    lat: number;
     long: number;
-    elevation: number;
+    lat: number;
+    _elevation: number;
     theta: number;
     phi: number;
     roll: number;
     viewer: Cesium.Viewer;
     fov: number;
+    camPoly: Cesium.PrimitiveCollection;
+
+    /** Should lines be drawn at the corners of the screen */
+    shouldDrawEdgeLines: boolean;
+    linesToEdges: Cesium.Entity[];
+    pointsToEdges: Cesium.PointPrimitiveCollection[];
 
     curDrawn: Cesium.Primitive | null;
+
+    posFns: { (val: number): void; }[];
+    headingFns: { (val: number): void; }[];
+    tiltFns: { (val: number): void; }[];
+    fovFns: { (val: number): void; }[];
+    aspectRatioFns: { (val: number): void; }[];
+
+    /* Getters & Setters */
+
+    /**
+     * @param pos - Set the position of the camera
+     */
+    public set position(pos: Cesium.Cartesian3){
+        this.camera.position = pos;
+
+        const cartoPos = Cesium.Cartographic.fromCartesian(pos);
+        this.lat = Cesium.Math.toDegrees(cartoPos.latitude);
+        this.long = Cesium.Math.toDegrees(cartoPos.longitude);
+        this._elevation = Cesium.Math.toDegrees(cartoPos.height);
+
+        this.viewer.scene.primitives.remove(this.curDrawn);
+        this.draw(this.viewer.scene);
+        this.redrawLinesToEdges();
+    }
+
+    /** @returns The position of the camera */
+    public get position(): Cesium.Cartesian3{
+        return this.camera.position;
+    }
+
+    /** Set the elevation of the camera, in meters */
+    public set elevation(ele: number){
+        const posCarto = this.camera.positionCartographic;
+        posCarto.height = ele;
+        this.camera.position = Cesium.Cartographic.toCartesian(posCarto);
+
+        this._elevation = ele;
+
+        this.viewer.scene.primitives.remove(this.curDrawn);
+        this.draw(this.viewer.scene);
+        this.redrawLinesToEdges();
+    }
+
+    /** @returns The elevation of the camera, in meters */
+    public get elevation(): number{
+        return this._elevation;
+    }
+
+    /** Set the latitude of the camera, in degrees */
+    public set latitude(lat: number){
+        const posCarto = this.camera.positionCartographic;
+        posCarto.latitude = Cesium.Math.toRadians(lat);
+        this.camera.position = Cesium.Cartographic.toCartesian(posCarto);
+
+        this.lat = lat;
+
+        this.viewer.scene.primitives.remove(this.curDrawn);
+        this.draw(this.viewer.scene);
+        this.redrawLinesToEdges();
+    }
+
+    /** @returns The latitude of the camera, in degrees */
+    public get latitude(): number{
+        return this.lat;
+    }
+
+    /** Set the latitude of the camera, in degrees */
+    public set longitude(long: number){
+        const posCarto = this.camera.positionCartographic;
+        posCarto.longitude = Cesium.Math.toRadians(long);
+        this.camera.position = Cesium.Cartographic.toCartesian(posCarto);
+
+        this.long = long;
+
+        this.viewer.scene.primitives.remove(this.curDrawn);
+        this.draw(this.viewer.scene);
+        this.redrawLinesToEdges();
+    }
+
+    /** @returns The latitude of the camera, in degrees */
+    public get longitude(): number{
+        return this.long;
+    }
+
+    /**
+     * Set the heading of the camera, in radians
+     *
+     *  @param h - The heading in radians
+     */
+    public set heading(h: number){
+        this.theta = h;
+
+        this.camera.setView({
+            orientation: {
+                heading : this.theta,
+                pitch : this.phi,
+                roll : this.roll + Cesium.Math.PI_OVER_TWO,
+            },
+        });
+
+        this.viewer.scene.primitives.remove(this.curDrawn);
+        this.draw(this.viewer.scene);
+        this.redrawLinesToEdges();
+    }
+
+    /** @returns The heading of the camera, in radians */
+    public get heading(): number{
+        return this.theta;
+    }
+
+    /**
+     * Set the tilt of the camera, in radians
+     *
+     * @param t - The heading in radians
+     */
+    public set tilt(t: number){
+        this.phi = t;
+
+        this.camera.setView({
+            orientation: {
+                heading : this.theta,
+                pitch : this.phi,
+                roll : this.roll + Cesium.Math.PI_OVER_TWO,
+            },
+        });
+
+        this.viewer.scene.primitives.remove(this.curDrawn);
+        this.draw(this.viewer.scene);
+        this.redrawLinesToEdges();
+    }
+
+    /** @returns The tilt of the camera, in radians */
+    public get tilt(): number{
+        return this.phi;
+    }
+
+
+    /**
+     *  Set the fov of the camera, in radians
+     *
+     *  @param f - The fov in radians
+     */
+    public set fovDeg(f: number){
+        (this.camera.frustum as PerspectiveFrustum).fov = f;
+
+        this.viewer.scene.primitives.remove(this.curDrawn);
+        this.draw(this.viewer.scene);
+        this.redrawLinesToEdges();
+    }
+
+    /** @returns The fov of the camera, in radians */
+    public get fovDeg(): number{
+        return (this.camera.frustum as PerspectiveFrustum).fov;
+    }
+
+    /**
+     *  Set the aspect ratio of the camera
+     *
+     *  @param ar - The new aspect ratio
+     */
+    public set aspectRatio(ar: number){
+        (this.camera.frustum as PerspectiveFrustum).aspectRatio = ar;
+
+        this.viewer.scene.primitives.remove(this.curDrawn);
+        this.draw(this.viewer.scene);
+        this.redrawLinesToEdges();
+    }
+
+    /** @returns The aspect ratio of the camera */
+    public get aspectRatio(): number{
+        return (this.camera.frustum as PerspectiveFrustum).aspectRatio;
+    }
 
     /**
      * Constructs an FOV object, call draw() to draw it in a scene
@@ -39,18 +219,30 @@ export class FOV {
      * @param far - The far plane distance of the camera
      */
     constructor(
-        viewer: Cesium.Viewer, [lat, long, elevation]: [number, number, number], fov: number, aspectRatio: number, theta: number, phi: number, roll: number, near: number, far: number
+        viewer: Cesium.Viewer, [long, lat, elevation]: [number, number, number], fov: number, aspectRatio: number, theta: number, phi: number, roll: number, near: number, far: number
     ) {
-        this.position = Cesium.Cartesian3.fromDegrees(lat, long, elevation);
+        this._position = Cesium.Cartesian3.fromDegrees(long, lat, elevation);
         this.viewer = viewer;
-        this.lat = lat;
         this.long = long;
-        this.elevation = elevation;
+        this.lat = lat;
+        this._elevation = elevation;
         this.theta = Cesium.Math.toRadians(theta);
         this.phi = Cesium.Math.toRadians(phi);
         this.roll = Cesium.Math.toRadians(roll);
         this.fov = Cesium.Math.toRadians(fov);
         this.curDrawn = null;
+        this.camPoly = this.viewer.scene.primitives.add(new Cesium.PrimitiveCollection());
+
+        this.linesToEdges = [];
+
+        this.pointsToEdges = [];
+        this.shouldDrawEdgeLines = false;
+
+        this.posFns = [];
+        this.headingFns = [];
+        this.tiltFns = [];
+        this.fovFns = [];
+        this.aspectRatioFns = [];
 
         this.camera = new Cesium.Camera(viewer.scene);
         const frustum = new Cesium.PerspectiveFrustum({
@@ -60,22 +252,34 @@ export class FOV {
             far: far,
         });
 
-        const [, yAxisNew, zAxisNew] = this.getSurfaceTransform(lat, long, elevation);
+        const [, yAxisNew, zAxisNew] = this.getSurfaceTransform(long, lat, elevation);
 
         const rotationMatrix = this.getSurfaceRotationMatrix(
-            lat, long, elevation, this.theta, this.phi - Cesium.Math.PI_OVER_TWO, this.roll
+            long, lat, elevation, this.theta, this.phi - Cesium.Math.PI_OVER_TWO, this.roll
         );
         this.camera.frustum = frustum;
-        this.camera.position = Cesium.Cartesian3.fromDegrees(lat, long, elevation);
+        this.camera.position = Cesium.Cartesian3.fromDegrees(long, lat, elevation);
         this.camera.up = Cesium.Cartesian3.clone(zAxisNew);
         this.camera.right = Cesium.Cartesian3.clone(yAxisNew);
-
+        //
         const xOnNewAxis = Cartesian3.clone(Cartesian3.ZERO);
         Cesium.Matrix3.multiplyByVector(rotationMatrix, Cesium.Cartesian3.UNIT_X, xOnNewAxis);
         this.camera.direction = xOnNewAxis;
 
+
         this.cameraUp = this.camera.up;
         this.cameraDirection = this.camera.direction;
+
+        this.camera.setView({
+            orientation: {
+                heading : this.theta,
+                pitch : this.phi,
+                roll : this.roll + Cesium.Math.PI_OVER_TWO,
+            },
+        });
+        this.viewer.scene.primitives.remove(this.curDrawn);
+        this.draw(this.viewer.scene);
+        this.redrawLinesToEdges();
     }
 
     /**
@@ -85,12 +289,12 @@ export class FOV {
      */
     draw(scene: Cesium.Scene): void {
         const rotationMatrix = this.getSurfaceRotationMatrix(
-            this.lat, this.long, this.elevation, this.theta, this.phi, this.roll
+            this.long, this.lat, this._elevation, this.theta, this.phi, this.roll
         );
 
         const geom: Cesium.Geometry | undefined = Cesium.FrustumGeometry.createGeometry(new Cesium.FrustumGeometry({
             frustum: this.camera.frustum as Cesium.PerspectiveFrustum,
-            origin: Cesium.Cartesian3.fromDegrees(this.lat, this.long, this.elevation),
+            origin: Cesium.Cartesian3.fromDegrees(this.long, this.lat, this._elevation),
             orientation: Cesium.Quaternion.fromRotationMatrix(rotationMatrix),
         }));
 
@@ -114,6 +318,111 @@ export class FOV {
     }
 
     /**
+     * Set if the edge lines should be drawn
+     *
+     * @param b - Set if the edge lines of the camera should be drawn
+     */
+    setShouldDrawEdgeLines(b: boolean): void{
+        this.shouldDrawEdgeLines = b;
+    }
+
+    /**
+     * Draw lines to the edges of the camera
+     */
+    redrawLinesToEdges(): void{
+        //First remove the lines ot the edges
+        this.removeLinesToEdges();
+        this.camPoly.removeAll();
+
+        // Draw line to Top Right, Top Left
+        let returnLine = this.drawLineFromPercentToScreen(this.viewer,
+            new Cesium.Cartesian2(0.0, 0.0),
+            this.viewer.scene.globe.ellipsoid);
+        if(returnLine != null){
+            const [l, p] = returnLine;
+            this.linesToEdges.push(l);
+            this.pointsToEdges.push(p);
+        }
+
+        // Draw line to Bottom Right, Top Left
+        returnLine = this.drawLineFromPercentToScreen(this.viewer,
+            new Cesium.Cartesian2(1.0, 0.0),
+            this.viewer.scene.globe.ellipsoid);
+        if(returnLine != null){
+            const [l, p] = returnLine;
+            this.linesToEdges.push(l);
+            this.pointsToEdges.push(p);
+        }
+
+        // Draw line to Top Right, Bottom Left
+        returnLine = this.drawLineFromPercentToScreen(this.viewer,
+            new Cesium.Cartesian2(0.0, 1.0),
+            this.viewer.scene.globe.ellipsoid);
+        if(returnLine != null){
+            const [l, p] = returnLine;
+            this.linesToEdges.push(l);
+            this.pointsToEdges.push(p);
+        }
+
+        // Draw line to Bottom Right, Bottom Left
+        returnLine = this.drawLineFromPercentToScreen(this.viewer,
+            new Cesium.Cartesian2(1.0, 1.0),
+            this.viewer.scene.globe.ellipsoid);
+        if(returnLine != null){
+            const [l, p] = returnLine;
+            this.linesToEdges.push(l);
+            this.pointsToEdges.push(p);
+        }
+        this.drawCamPolygon();
+    }
+
+    /**
+     * Draw the polygon of what the camera can see on the surface of the Earth
+     */
+    drawCamPolygon(): void{
+        // Get edge points, then draw polygon
+        const topLeft = this.getCamPointPercent(this.viewer, new Cartesian2(0, 0), this.viewer.scene.globe.ellipsoid);
+        const topRight = this.getCamPointPercent(this.viewer, new Cartesian2(0, 1), this.viewer.scene.globe.ellipsoid);
+        const bottomLeft = this.getCamPointPercent(this.viewer, new Cartesian2(1, 0), this.viewer.scene.globe.ellipsoid);
+        const bottomRight = this.getCamPointPercent(this.viewer, new Cartesian2(1, 1), this.viewer.scene.globe.ellipsoid);
+        const POINT_FIVE = 0.5;
+
+        if(topLeft != undefined && topRight != undefined && bottomLeft != undefined && bottomRight != undefined){
+            this.camPoly.add(new Cesium.Primitive({
+                geometryInstances: new Cesium.GeometryInstance({
+                    geometry: new Cesium.PolygonGeometry({
+                        polygonHierarchy: new Cesium.PolygonHierarchy([topLeft, topRight, bottomRight, bottomLeft]),
+                        perPositionHeight: false,
+                        closeTop:true,
+                    }),
+                    id: "cam tri 1",
+                    attributes: {
+                        // Blue
+                        color: new Cesium.ColorGeometryInstanceAttribute(
+                            0, 0, 1, POINT_FIVE
+                        ),
+                    },
+                }),
+                appearance: new Cesium.PerInstanceColorAppearance({
+                    closed: true,
+                }),
+            }));
+        }
+    }
+
+    /**
+     *
+     */
+    removeLinesToEdges(): void{
+        for(const l of this.linesToEdges){
+            this.viewer.entities.remove(l);
+        }
+        for(const p of this.pointsToEdges){
+            this.viewer.scene.primitives.remove(p);
+        }
+    }
+
+    /**
      * Destroys the view object so it is no longer present in the scene
      */
     destroy(): void {
@@ -123,8 +432,8 @@ export class FOV {
     /**
      * Calculate the rotation matrix to align the object to the surface of a sphere
      *
-     * @param lat - The latitude of the position on the sphere
      * @param long - The longditude of the position on the sphere
+     * @param lat - The latitude of the position on the sphere
      * @param elevation - The elevation of the position on the sphere
      * @param theta - the bearing of the camera
      * @param phi - the tilt of the camera
@@ -132,7 +441,7 @@ export class FOV {
      * @returns The rotation matrix to put the obect on the surface of a sphere
      */
     getSurfaceRotationMatrix(
-        lat: number, long: number, elevation: number, theta: number, phi: number, roll: number
+        long: number, lat: number, elevation: number, theta: number, phi: number, roll: number
     ): Matrix3 {
         const [xAxisNew, yAxisNew, zAxisNew] = this.getSurfaceTransform(lat, long, elevation);
 
@@ -153,12 +462,12 @@ export class FOV {
      * the latitude axis, the y axis is tangent to the longditude and
      * the z axis is pointing directly up towards space.
      *
-     * @param lat - The latitude of the position on the sphere
      * @param long - The longditude of the position on the sphere
+     * @param lat - The latitude of the position on the sphere
      * @param elevation - The elevation of the position on the sphere
      * @returns The new [x axis, y axis, z axis] normalized vectors
      */
-    getSurfaceTransform(lat: number, long: number, elevation: number): [Cartesian3, Cartesian3, Cartesian3] {
+    getSurfaceTransform(long: number, lat: number, elevation: number): [Cartesian3, Cartesian3, Cartesian3] {
         // The point in cartesian coordinates
         const cartesianPoint = Cartesian3.fromDegrees(lat, long, elevation);
         const smallChange = 0.0001;
@@ -200,6 +509,141 @@ export class FOV {
     }
 
     /**
+     * Sets up the event listeners for the position of the camera
+     *
+     * @param positionEv - The HTML input event to change the position
+     * TODO Generalise this so it takes an event with a value, not just HTML events, perhaps use a different function for generic event
+     */
+    setUpPosListener(positionEv: HTMLInputElement): void{
+        positionEv.oninput = e => {
+            this.elevation = Number((e.target as HTMLInputElement).value);
+            console.log("Updated Elevation");
+
+            // Call event listeners
+            for(const fn of this.posFns){
+                fn(this.elevation);
+            }
+        };
+    }
+
+    /**
+     * Run a function when the position is changed
+     *
+     * @param fun - function to run when the position is changed, val is the new position
+     */
+    onPosChanged(fun: (val: number) => void): void{
+        this.posFns.push(fun);
+    }
+
+    /**
+     * Sets up the event listeners for the heading of the camera
+     *
+     * @param headingEv - The HTML input event to change the position
+     * TODO Generalise this so it takes an event with a value, not just HTML events, perhaps use a different function for generic event
+     */
+    setUpHeadingListener(headingEv: HTMLInputElement): void{
+        headingEv.oninput = e => {
+            this.heading = Cesium.Math.toRadians(Number((e.target as HTMLInputElement).value));
+            console.log("Updated Elevation");
+
+            // Call event listeners
+            for(const fn of this.headingFns){
+                fn(this.heading);
+            }
+        };
+    }
+
+    /**
+     * Run a function when the heading has changed
+     *
+     * @param fun - function to run when the heading has changed, val is the new heading
+     */
+    onHeadingChanged(fun: (val: number) => void): void{
+        this.headingFns.push(fun);
+    }
+
+    /**
+     * Sets up the event listeners for the tilt of the camera
+     *
+     * @param tiltEv - The HTML input event to change the tilt
+     * TODO Generalise this so it takes an event with a value, not just HTML events, perhaps use a different function for generic event
+     */
+    setUpTiltListener(tiltEv: HTMLInputElement): void{
+        tiltEv.oninput = e => {
+            this.tilt = Cesium.Math.toRadians(Number((e.target as HTMLInputElement).value));
+            console.log("Updated Tilt");
+
+            // Call event listeners
+            for(const fn of this.tiltFns){
+                fn(this.tilt);
+            }
+        };
+    }
+
+    /**
+     * Run a function when the position is changed
+     *
+     * @param fun - function to run when the tilt is changed, val is the new tilt
+     */
+    onTiltChanged(fun: (val: number) => void): void{
+        this.tiltFns.push(fun);
+    }
+
+    /**
+     * Sets up the event listeners for the tilt of the camera
+     *
+     * @param fovEv - The HTML input event to change the fov
+     * TODO Generalise this so it takes an event with a value, not just HTML events, perhaps use a different function for generic event
+     */
+    setUpFOVListener(fovEv: HTMLInputElement): void{
+        fovEv.oninput = e => {
+            this.fovDeg = Cesium.Math.toRadians(Number((e.target as HTMLInputElement).value));
+            console.log("Updated FOV");
+
+            // Call event listeners
+            for(const fn of this.fovFns){
+                fn(this.fovDeg);
+            }
+        };
+    }
+
+    /**
+     * Run a function when the position is changed
+     *
+     * @param fun - function to run when the fov is changed, val is the new fov
+     */
+    onFOVChanged(fun: (val: number) => void): void{
+        this.fovFns.push(fun);
+    }
+
+    /**
+     * Sets up the event listeners for the aspect ratio of the camera
+     *
+     * @param arEv - The HTML input event to change the aspect ratio
+     * TODO Generalise this so it takes an event with a value, not just HTML events, perhaps use a different function for generic event
+     */
+    setUpAspectRatioListener(arEv: HTMLInputElement): void{
+        arEv.oninput = e => {
+            this.aspectRatio = Number((e.target as HTMLInputElement).value);
+            console.log("Updated Aspect Ratio");
+
+            // Call event listeners
+            for(const fn of this.aspectRatioFns){
+                fn(this.aspectRatio);
+            }
+        };
+    }
+
+    /**
+     * Run a function when the aspect ratio is changed
+     *
+     * @param fun - function to run when the aspect ratio is changed, val is the new aspect ratio
+     */
+    onAspectRatioChanged(fun: (val: number) => void): void{
+        this.aspectRatioFns.push(fun);
+    }
+
+    /**
      * This is only an approximation rectangle from cesium, using a polygon would usually be more accurate
      *
      * @param ellipsoid - The ellipsoid onto which to project the rectangle
@@ -215,16 +659,17 @@ export class FOV {
      *
      * @param viewer - The cesium viewer
      * @param pixel - The pixel coordinate on the camera screen
-     * @param ellipsoid - The ellopsoid the point shoudl map to
+     * @param ellipsoid - The ellopsoid the point should map to
+     * @returns The line and point drawn to the sphere
      */
-    drawLineFromPixelToScreen(viewer: Cesium.Viewer, pixel: Cartesian2, ellipsoid: Cesium.Ellipsoid): void {
+    drawLineFromPixelToScreen(viewer: Cesium.Viewer, pixel: Cartesian2, ellipsoid: Cesium.Ellipsoid): [Cesium.Entity, Cesium.PointPrimitiveCollection] | null {
         let pointOnSphere = this.camera.pickEllipsoid(pixel, ellipsoid);
         if(pointOnSphere != undefined) {
             pointOnSphere = pointOnSphere as Cesium.Cartesian3;
-            viewer.entities.add({
+            const line = viewer.entities.add({
                 name: "Cam Line",
                 polyline: {
-                    positions: [Cesium.Cartesian3.fromDegrees(this.lat, this.long, this.elevation), pointOnSphere],
+                    positions: [Cesium.Cartesian3.fromDegrees(this.long, this.lat, this._elevation), pointOnSphere],
                     width: 10,
                     arcType: Cesium.ArcType.NONE,
                     material: new Cesium.PolylineArrowMaterialProperty(Cesium.Color.GREEN),
@@ -238,7 +683,9 @@ export class FOV {
                 color: Cesium.Color.GREEN,
                 pixelSize: 10,
             });
+            return [line, points];
         }
+        return null;
     }
 
     /**
@@ -288,7 +735,7 @@ export class FOV {
         viewer.entities.add({
             name: "Cam Line to ray distance",
             polyline: {
-                positions: [Cesium.Cartesian3.fromDegrees(this.lat, this.long, this.elevation), point],
+                positions: [Cesium.Cartesian3.fromDegrees(this.long, this.lat, this._elevation), point],
                 width: 10,
                 arcType: Cesium.ArcType.NONE,
                 material: new Cesium.PolylineArrowMaterialProperty(Cesium.Color.GREEN),
@@ -310,13 +757,27 @@ export class FOV {
      *
      * @param viewer - The cesium viewer
      * @param percent - The percent coordinate on the camera screen, bewteen 0.0 and 1.0
-     * @param ellipsoid - The ellopsoid the point shoudl map to
+     * @param ellipsoid - The ellopsoid the point should map to
+     * @returns The line and point drawn to the sphere
      */
-    drawLineFromPercentToScreen(viewer: Cesium.Viewer, percent: Cartesian2, ellipsoid: Cesium.Ellipsoid): void {
+    drawLineFromPercentToScreen(viewer: Cesium.Viewer, percent: Cartesian2, ellipsoid: Cesium.Ellipsoid): [Cesium.Entity, Cesium.PointPrimitiveCollection] | null {
         const maxHeight = viewer.canvas.clientHeight;
         const maxWidth = viewer.canvas.clientWidth;
         const pixel = new Cesium.Cartesian2(maxWidth * percent.x, maxHeight * percent.y);
-        this.drawLineFromPixelToScreen(viewer, pixel, ellipsoid);
+        return this.drawLineFromPixelToScreen(viewer, pixel, ellipsoid);
+    }
+
+    /**
+     * @param viewer - The cesium viewer
+     * @param percent - The percent coordinate on the camera screen, bewteen 0.0 and 1.0
+     * @param ellipsoid - The ellopsoid the point should map to
+     * @returns The point on the sphere the pixel on the screen maps to
+     */
+    getCamPointPercent(viewer: Cesium.Viewer, percent: Cartesian2, ellipsoid: Cesium.Ellipsoid): Cesium.Cartesian3 | undefined{
+        const maxHeight = viewer.canvas.clientHeight;
+        const maxWidth = viewer.canvas.clientWidth;
+        const pixel = new Cesium.Cartesian2(maxWidth * percent.x, maxHeight * percent.y);
+        return this.camera.pickEllipsoid(pixel, ellipsoid);
     }
 
     /**
@@ -325,7 +786,7 @@ export class FOV {
      * @param location - The location to move the camera to
      */
     moveCameraToCartesian(location: Cartesian3): void {
-        // Switch Camera to lat, long, elevation and move it
+        // Switch Camera to long, lat, elevation and move it
         this.moveCameraToCartographic(Cartographic.fromCartesian(location));
     }
 
@@ -338,8 +799,8 @@ export class FOV {
         // First destroy drawn 3d object
         this.destroy();
 
-        const lat = cart.latitude;
         const long = cart.longitude;
+        const lat = cart.latitude;
         const elevation = cart.height;
 
         const [, yAxisNew, zAxisNew] = this.getSurfaceTransform(lat, long, elevation);

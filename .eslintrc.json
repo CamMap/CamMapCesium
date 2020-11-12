@@ -57,7 +57,7 @@
             "error"
         ],
         "@typescript-eslint/no-duplicate-imports": [
-            "error"
+            "off"
         ],
         "@typescript-eslint/no-empty-function": [
             "error"

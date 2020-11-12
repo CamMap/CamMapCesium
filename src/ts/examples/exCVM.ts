@@ -1,10 +1,6 @@
 import * as Cesium from "cesium_source/Cesium";
 import CameraViewModel from "./../cameraViewModel";
 import image from "./../image";
-//TODO: someone migrate this to ES6 later on
-require("../../css/main.css");
-require("cesium_source/Widgets/widgets.css");
-require("./../image");
 
 //Sliders
 const camHeight = document.getElementById("cam_height") as HTMLInputElement;

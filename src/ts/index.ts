@@ -3,4 +3,4 @@ require("../css/main.css");
 require("cesium_source/Widgets/widgets.css");
 require("./image");
 
-require("./examples/exCVM");
+require("./examples/ex2");

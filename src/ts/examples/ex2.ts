@@ -31,34 +31,61 @@ const viewer = new Cesium.Viewer("cesiumContainer", {
 
 // Create a new fov
 const fovCam = new FOV(
-    viewer, [-107.0, 40.0, 100000.0], 60, 1, 90, -45, 0, 10000, 300000
+    viewer, [ -107.0, 40.0, 100000.0], 60, 1, 90, -45, 0, 10000, 300000
 );
 
 // Draw a the actual camera view
-fovCam.draw(viewer.scene);
+//FovCam.draw(viewer.scene);
 
 // Draw a debug camera view to make sure they are kept in check
 fovCam.drawDebugCamera(viewer.scene);
 
-// Draw line to Top Right, Top Left
-fovCam.drawLineFromPercentToScreen(viewer,
-    new Cesium.Cartesian2(0.0, 0.0),
-    viewer.scene.globe.ellipsoid);
+fovCam.setUpPosListener(document.getElementById("cam_height") as HTMLInputElement);
+fovCam.onPosChanged((val) => {
+    (document.getElementById("cam_height_result") as HTMLOutputElement).value = String(val); console.log("Called");
+});
 
-// Draw line to Bottom Right, Top Left
-fovCam.drawLineFromPercentToScreen(viewer,
-    new Cesium.Cartesian2(1.0, 0.0),
-    viewer.scene.globe.ellipsoid);
+fovCam.setUpHeadingListener(document.getElementById("cam_heading") as HTMLInputElement);
+fovCam.onHeadingChanged((val) => {
+    (document.getElementById("cam_heading_result") as HTMLOutputElement).value = String(val);
+});
 
-// Draw line to Top Right, Bottom Left
-fovCam.drawLineFromPercentToScreen(viewer,
-    new Cesium.Cartesian2(0.0, 1.0),
-    viewer.scene.globe.ellipsoid);
+fovCam.setUpTiltListener(document.getElementById("cam_tilt") as HTMLInputElement);
+fovCam.onTiltChanged((val) => {
+    (document.getElementById("cam_tilt_result") as HTMLOutputElement).value = String(val);
+});
 
-// Draw line to Bottom Right, Bottom Left
-fovCam.drawLineFromPercentToScreen(viewer,
-    new Cesium.Cartesian2(1.0, 1.0),
-    viewer.scene.globe.ellipsoid);
+fovCam.setUpFOVListener(document.getElementById("fov_hor") as HTMLInputElement);
+fovCam.onFOVChanged((val) => {
+    (document.getElementById("fov_hor_result") as HTMLOutputElement).value = String(val);
+});
+
+fovCam.setUpAspectRatioListener(document.getElementById("aspect_ratio") as HTMLInputElement);
+fovCam.onAspectRatioChanged((val) => {
+    (document.getElementById("aspect_ratio_result") as HTMLOutputElement).value = String(val);
+});
+//
+// // Draw line to Top Right, Top Left
+// FovCam.drawLineFromPercentToScreen(viewer,
+//     New Cesium.Cartesian2(0.0, 0.0),
+//     Viewer.scene.globe.ellipsoid);
+//
+// // Draw line to Bottom Right, Top Left
+// FovCam.drawLineFromPercentToScreen(viewer,
+//     New Cesium.Cartesian2(1.0, 0.0),
+//     Viewer.scene.globe.ellipsoid);
+//
+// // Draw line to Top Right, Bottom Left
+// FovCam.drawLineFromPercentToScreen(viewer,
+//     New Cesium.Cartesian2(0.0, 1.0),
+//     Viewer.scene.globe.ellipsoid);
+//
+// // Draw line to Bottom Right, Bottom Left
+// FovCam.drawLineFromPercentToScreen(viewer,
+//     New Cesium.Cartesian2(1.0, 1.0),
+//     Viewer.scene.globe.ellipsoid);
+//
+fovCam.setShouldDrawEdgeLines(true);
 
 // Set the camera to look at the view cone
 viewer.camera.setView({
