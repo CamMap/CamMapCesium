@@ -1,5 +1,12 @@
 # Thales Mapping Project
 
+
+
+<a href="https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/cs22-main-cesium/-/commits/master"><img alt="pipeline status" src="https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/cs22-main-cesium/badges/master/pipeline.svg" /></a>
+
+
+<a href="https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/cs22-main-cesium/-/commits/master"><img alt="coverage report" src="https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/cs22-main-cesium/badges/master/coverage.svg" /></a>
+
 ## Screenshot
 <!--<img src= "Screenshot.png">-->
 <img src= "Screenshot2.png">
