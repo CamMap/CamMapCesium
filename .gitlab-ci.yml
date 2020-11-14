@@ -9,6 +9,7 @@ before_script:
 
 stages:
   - lint
+  - test
   - build
 
 lint:
@@ -16,6 +17,18 @@ lint:
     - docker
   stage: lint
   script: "npm run lint"
+
+
+test:
+  tags:
+    - docker
+  stage: test
+  script: "npm run test"
+  artifacts:
+    when: always
+    paths:
+      - coverage
+    expire_in: 30 days
 
 build:
   tags:

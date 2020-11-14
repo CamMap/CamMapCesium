@@ -9,6 +9,10 @@ module.exports = {
     moduleNameMapper: {
       "cesium_source/Cesium": "<rootDir>/node_modules/cesium/Build/CesiumUnminified/Cesium"
     },
-    preset: "ts-jest"
+    preset: "ts-jest",
+    collectCoverage: true,
+    collectCoverageFrom: ['src/**/*.ts', '!**/node_modules/**'],
+    coverageDirectory: './coverage',
+    coverageReporters: ['html', 'text', 'text-summary'],
 }
   
