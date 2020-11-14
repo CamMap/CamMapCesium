@@ -17,10 +17,10 @@ module.exports = {
     mode: 'development',
     module: {
         rules: [{
-            test: /\.tsx?$/,
+            test: /^(?!.*(test)).*ts$/,
             use: 'ts-loader',
             include: path.resolve(__dirname, 'src'),
-            exclude: /node_modules/
+            exclude: ["/node_modules/", "/\..test.ts"],
         }, {
             test: /\.css$/,
             use: ['style-loader', 'css-loader']
