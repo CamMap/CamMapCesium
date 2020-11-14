@@ -23,7 +23,7 @@ test:
   tags:
     - docker
   stage: test
-  script: "npm run test"
+  script: "npm run test -- --no-color"
   artifacts:
     when: always
     paths:
