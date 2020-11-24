@@ -5,7 +5,7 @@
  */
 
 import * as Cesium from "cesium_source/Cesium";
-import { Cartesian2, Cartesian3, Cartographic, HeadingPitchRoll, Matrix3, PerspectiveFrustum } from "cesium_source/Cesium";
+import { Cartesian2, Cartesian3, HeadingPitchRoll, Matrix3, PerspectiveFrustum } from "cesium_source/Cesium";
 
 
 /**
@@ -778,49 +778,6 @@ export class FOV {
         const maxWidth = viewer.canvas.clientWidth;
         const pixel = new Cesium.Cartesian2(maxWidth * percent.x, maxHeight * percent.y);
         return this.camera.pickEllipsoid(pixel, ellipsoid);
-    }
-
-    /**
-     * Move the camera to a specified location
-     *
-     * @param location - The location to move the camera to
-     */
-    moveCameraToCartesian(location: Cartesian3): void {
-        // Switch Camera to long, lat, elevation and move it
-        this.moveCameraToCartographic(Cartographic.fromCartesian(location));
-    }
-
-    /**
-     * Moves the camera to the specified location
-     *
-     * @param cart - The position in Cartographic coordinates
-     */
-    moveCameraToCartographic(cart: Cartographic): void {
-        // First destroy drawn 3d object
-        this.destroy();
-
-        const long = cart.longitude;
-        const lat = cart.latitude;
-        const elevation = cart.height;
-
-        const [, yAxisNew, zAxisNew] = this.getSurfaceTransform(lat, long, elevation);
-
-        const rotationMatrix = this.getSurfaceRotationMatrix(
-            lat, long, elevation, this.theta, this.phi - Cesium.Math.PI_OVER_TWO, this.roll
-        );
-        this.camera.position = Cesium.Cartesian3.fromDegrees(lat, long, elevation);
-        this.camera.up = Cesium.Cartesian3.clone(zAxisNew);
-        this.camera.right = Cesium.Cartesian3.clone(yAxisNew);
-
-        const xOnNewAxis = new Cartesian3(0, 0, 0);
-        Cesium.Matrix3.multiplyByVector(rotationMatrix, Cesium.Cartesian3.UNIT_X, xOnNewAxis);
-        this.camera.direction = xOnNewAxis;
-
-        this.cameraUp = this.camera.up;
-        this.cameraDirection = this.camera.direction;
-
-        // Then redraw after changing position
-        this.draw(this.viewer.scene);
     }
 
     /**
