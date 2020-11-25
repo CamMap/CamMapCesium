@@ -1,6 +1,5 @@
 import * as Cesium from "cesium_source/Cesium";
 import CameraViewModel from "./../cameraViewModel";
-import image from "./../image";
 
 //Sliders
 const camHeight = document.getElementById("cam_height") as HTMLInputElement;
@@ -37,7 +36,6 @@ cesiumRoot.camera.setView({
 });
 
 const viewModel = new CameraViewModel(cesiumRoot);
-const imageHandler = new image(viewModel);
 
 //Set sliders to default value
 camHeight.value = String(viewModel.height);
@@ -51,9 +49,6 @@ fovVert.value = String(viewModel.fovVer);
 camHeading.value = String(viewModel.heading);
 (document.getElementById("cam_heading_result") as HTMLOutputElement).value = String(viewModel.heading);
 
-//This could probably have been done in the image class
-//But it works and I dont have time to refactor before the costumer day
-imageHandler.uploadFile.onchange = imageHandler.onUploadImage.bind(imageHandler);
 
 /**
  * Sets the height attribute for the viewModel from slider value
