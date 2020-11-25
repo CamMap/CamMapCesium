@@ -1,11 +1,25 @@
 # Thales Mapping Project
 
+---
 
+<div align="center">
+<img src="images/CamMapLogo.svg">
+</div>
+<br/>
 
-<a href="https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/cs22-main-cesium/-/commits/master"><img alt="pipeline status" src="https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/cs22-main-cesium/badges/master/pipeline.svg" /></a>
+<div align="center">
+<img src="images/CamMapText2.svg">
+</div>
+<br/>
 
-
+<div align="center">
+<a ref="https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/cs22-main-cesium/-/commits/master"><img alt="pipeline status" src="https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/cs22-main-cesium/badges/master/pipeline.svg" /></a> &nbsp; 
 <a href="https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/cs22-main-cesium/-/commits/master"><img alt="coverage report" src="https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/cs22-main-cesium/badges/master/coverage.svg" /></a>
+&nbsp; 
+<a href="https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/cs22-main-cesium/-/commits/master"><img alt="coverage report" src="./images/version.svg" /></a>
+</div>
+<br/>
+
 
 ## Screenshot
 <!--<img src= "Screenshot.png">-->
@@ -15,7 +29,7 @@
 To run, make sure you have node(npm) > 6.0.0 (https://nodejs.org/en/), the most recent one will work well, then open a terminal at the directory and run
 ```
 npm install
-``` 
+```
 That will install all the required packages, it should show what it's doing in the terminal
 ```
 npm run start
@@ -24,7 +38,7 @@ This will start a server on localhost:8080, which it should tell you.  Go there 
 
 This is build in Typescript and Cesium(both open-source).  Typescript is just Javascript with types, which is very helpful for code completion and debugging(it won't even compile if you have used the wrong type).  The best editor to use with Typescript is VSCode, I think, and with it you can hover over varibles to see their types and the options/examples associated with them.
 
-You should only be concerned with the '/src' folder, the rest is just webpack and ts stuff which should work (it was a bit difficult to get ts working with cesium, hence Cesium.d.ts is in the root dir, but hopefully now it all works correctly).  In the src folder, there is html/css/ts, the typescript file 'index.ts' is where cesium loads the map and adds the elements, so it is probably the only one we need to look at, at this stage. 
+You should only be concerned with the '/src' folder, the rest is just webpack and ts stuff which should work (it was a bit difficult to get ts working with cesium, hence Cesium.d.ts is in the root dir, but hopefully now it all works correctly).  In the src folder, there is html/css/ts, the typescript file 'index.ts' is where cesium loads the map and adds the elements, so it is probably the only one we need to look at, at this stage.
 
 If you make a modification to any files in src while npm run start is running, the project will automatically be rebuilt and the webpage will be reloaded(Hot reloading), so you can see your changes in real time.
 
