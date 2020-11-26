@@ -23,7 +23,7 @@
 
 ## Screenshot
 <!--<img src= "Screenshot.png">-->
-<img src= "Screenshot2.png">
+<img src= "Screenshot4.png">
 
 ## Instructions
 To run, make sure you have node(npm) > 6.0.0 (https://nodejs.org/en/), the most recent one will work well, then open a terminal at the directory and run
