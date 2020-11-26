@@ -88,6 +88,14 @@ export class FOV {
 
         this.lat = lat;
 
+        this.camera.setView({
+            orientation: {
+                heading : this.theta,
+                pitch : this.phi,
+                roll : this.roll + Cesium.Math.PI_OVER_TWO,
+            },
+        });
+
         this.viewer.scene.primitives.remove(this.curDrawn);
         this.draw(this.viewer.scene);
         this.redrawLinesToEdges();
@@ -105,6 +113,14 @@ export class FOV {
         this.camera.position = Cesium.Cartographic.toCartesian(posCarto);
 
         this.long = long;
+
+        this.camera.setView({
+            orientation: {
+                heading : this.theta,
+                pitch : this.phi,
+                roll : this.roll + Cesium.Math.PI_OVER_TWO,
+            },
+        });
 
         this.viewer.scene.primitives.remove(this.curDrawn);
         this.draw(this.viewer.scene);
