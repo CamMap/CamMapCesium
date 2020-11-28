@@ -5,9 +5,10 @@ import exifr from "exifr";
 /**
  * When an image is loaded into page, modifies specied FOV
  */
-export default class image {
-    viewModel : FOV;
-    public uploadFile : HTMLInputElement;
+export class Image {
+    /// The FOV which should be modified when an image is uploaded
+    /// TODO - do this through event listeners, abstract away from FOV
+    private viewModel : FOV;
 
     /**
      * Constructs an image object
@@ -18,25 +19,35 @@ export default class image {
         this.viewModel = viewModel;
         const uploadFile = document.getElementById("uploadFile");
         if(uploadFile != null) {
-            this.uploadFile = uploadFile as HTMLInputElement;
+            uploadFile.onchange = (e) => this.onUploadImage(e);
         } else {
-            throw console.error("Could not get 'uploadFile' element, is it in HTML");
+            console.error("[error] Could not get the file input element which would open an image uploading box.  This means something went wrong with the html.  This is a bug, to fix it try restarting the application.  If that does not help, submit a bug report.");
         }
     }
 
     /**
-     * Called when a file is uploaded/ the upload file has changed,
-     * This only uploads a file if one was selected
+     * Called when a file is uploaded, only uploads a file if one was selected
      *
-     * @param event - The input event
+     * @param event - The file open event, retunred from the file opening box
      */
-    onUploadImage(event: Event): void {
-        console.log("onUploadImage");
-        if(event.target && event.target instanceof HTMLInputElement) {
+    private onUploadImage(event: Event): void {
+        console.log("Uploaded Image");
+        if(event.target != null && event.target instanceof HTMLInputElement) {
             const files = event.target.files;
-            if(files && files.length) {
+            if(files != null) {
+                if(files.length == 0){
+                    console.warn("[warning] You not selected any images and so none will be used.  If you did select an image and are seeing this message, this is most likely a problem with the browser.");
+                    return;
+                }
+                if(files.length > 1){
+                    console.warn("[warning] You have selected multiple images, the first one will be the only one used.  This application does not support multiple images.");
+                }
                 this.showUploadedImage(files[0]);
+            } else {
+                console.error("[error] The filelist containing the file selected returned null.  To fix this, try selecting the file again.  If that doesn't work, submit a bug report.");
             }
+        } else {
+            console.error("[error] The event target for uploading the image was not a HTMLInputElement.  This is a bug and should not have happened, submit a bug report.  This function is most likely being used incorrectly internally.");
         }
     }
 
@@ -44,68 +55,76 @@ export default class image {
      * Sets the "target" image in html to display the uploaded image
      * once the uploaded image has been loaded
      *
-     * @param file - The file url to upload
+     * @param imageFile - The image file to read/upload
      */
-    showUploadedImage(file: File): void {
-        let img : HTMLImageElement;
-        const tempImg = document.getElementById("target");
-        if(tempImg != null) {
-            img = tempImg as HTMLImageElement;
+    showUploadedImage(imageFile: File): void {
+        const imageElement = document.getElementById("target");
+        if(imageElement != null) {
+            const fileReader = new FileReader();
+
+            fileReader.onload = (e) => this.onImageRead(e, imageFile, imageElement as HTMLImageElement);
+            fileReader.readAsDataURL(imageFile);
         } else {
-            throw console.error("Could not get 'target' element, is it in HTML");
+            console.error("[error] Could not get the image element on which to display the video.  This means something went wrong with the html.  This is a bug, to fix it try restarting the application.  If that does not help, submit a bug report.");
         }
-
-        ///////////////////////
-        // For putting the data to a canvas which will be helpful for
-        // Pixel click events use
-        // Ctx.putImageData(??, 0, 0);
-        ////////////////////////
-        const localViewModel = this.viewModel as FOV;
-        const fileReader = new FileReader();
-        /**
-         * @param e - TODO
-         */
-        fileReader.onload = function(e) {
-            // Switch Image to display the loaded image
-            if(e.target) {
-                console.log(e.target, img);
-                img.onload = createImageOnCanvas;
-                img.src = e.target.result as string;
-
-                // Attempt to get the heading
-                exifr.parse(file).then(output => {
-                    const heading = output.GPSImgDirection as number;
-                    if(heading) {
-                        localViewModel.heading = Cesium.Math.toRadians(heading);
-                    }
-                }).catch(() => {
-                    console.error("Heading could not be found");
-                    return;
-                });
-
-                // Attempt to get the GPS cordinates
-                exifr.gps(img.src).then((gps) => {
-                    localViewModel.latitude = gps.latitude;
-                    localViewModel.longitude = gps.longitude;
-                }).catch(() => {
-                    console.error("Couldn't read image GPS coordinates");
-                    return;
-                });
-            }
-        };
-        fileReader.readAsDataURL(file);
     }
 
     /**
-     *  Draws a line from the FOV camera to the map when the cavas is clicked
+     * @param fileReader - The file reader for the image
+     * @param imageFile - The file to load the image from, this must be an image that the webbrowser can load e.g .png, .jpeg, .tiff...
+     * @param imageElement - The html image element on which to display the image
+     * @returns A boolean representing whether the opperation of reading the image was successful, true if it was, false if it wasn't
      */
-    addPoints():void{
+    public onImageRead(fileReader: ProgressEvent<FileReader>, imageFile: File, imageElement: HTMLImageElement) : boolean{
+        // Display the loaded image
+        if(fileReader.target) {
+            imageElement.onload = createImageOnCanvas;
+            if(fileReader.target.result != null){
+                // The user selected an image file
+                imageElement.src = fileReader.target.result as string;
+
+                // Attempt to get the heading
+                exifr.parse(imageFile).then(output => {
+                    const heading = output.GPSImgDirection;
+                    if(heading != null) {
+                        this.viewModel.heading = Cesium.Math.toRadians(heading as number);
+                    } else {
+                        console.warn("[warning] Heading of uploaded image could not be found, the image most likely does not have this(i.e the image does not have heading metadata).  To fix this, check that the image does have heading metadata and if it does, submit a bug report.  This is to do with the orientation of the image.");
+                    }
+                }).catch(() => {
+                    console.warn("[warning] The image metadata could not be parsed, is the image metadata in the correct format.  If it is, submit a bug report.  However, this is most likely a problem with the image.");
+                });
+
+                // Attempt to get the GPS cordinates
+                exifr.gps(imageElement.src).then((gps) => {
+                    if(gps.latitude != null && gps.longitude != null){
+                        this.viewModel.latitude = gps.latitude;
+                        this.viewModel.longitude = gps.longitude;
+                    } else {
+                        console.warn("[warning] GPS coordinates of image could not be found, the image most likely does not have this(i.e the image is not geolocated).  To fix this, check that the image does have latitude and lontitude metadata and if it does, submit a bug report.");
+                    }
+                }).catch(() => {
+                    console.warn("[warning] The image metadata could not be parsed, is the image metadata in the correct format.  If it is, submit a bug report.  However, this is most likely a problem with the image.");
+                });
+                return true;
+            }
+        }
+        // Failure, reading the image was not successful
+        return false;
+    }
+
+    /**
+     * Draws a line from the FOV camera to the 3D map when the cavas is clicked
+     * TODO - Do this through event listeners where FOV draws the line only through
+     * event listeners
+     */
+    addPoints(): void{
         const localViewModel = this.viewModel as FOV;
         const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
         if(canvas){
             canvas.addEventListener("click", function(e){
                 const span = document.getElementById("image-cord");
-                const points = getCursorPosition(canvas, e);
+                const points = getCanvasCursorPosition(canvas, e);
                 if(span){
                     span.innerText = `X: ${points[0]}, Y: ${points[1]}`;
                 }
@@ -115,15 +134,11 @@ export default class image {
                 localViewModel.drawLineFromPercentToScreen(localViewModel.viewer, precentPoints, localViewModel.viewer.scene.globe.ellipsoid);
             });
         }
-
-        document.getElementById("drawImage")?.addEventListener("click", ()=>{
-            createImageOnCanvas();
-        });
     }
 }
 
 /**
- * It reads the image and draws it on the Canvas
+ * Draw the image in the image element on the Canvas
  */
 function createImageOnCanvas(){
     const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
@@ -144,7 +159,7 @@ function createImageOnCanvas(){
  * @param event - The mouse click event that triggered eventlistener
  * @returns [x,y] coordinates in a number array where [0,0] is the top left corner and [canvas.width, canvas.height] is the bottom right
  */
-function getCursorPosition(canvas: HTMLCanvasElement, event: MouseEvent): [number, number]{
+function getCanvasCursorPosition(canvas: HTMLCanvasElement, event: MouseEvent): [number, number]{
     const rect = canvas.getBoundingClientRect();
     const x = -(event.clientX - rect.right);
     const y = event.clientY - rect.top;

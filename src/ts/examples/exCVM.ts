@@ -114,7 +114,7 @@ function createImageOnCanvas(){
  * @returns The cursor position
  *
  */
-function getCursorPosition(canvas: HTMLCanvasElement, event: MouseEvent): [number, number]{
+function getCanvasCursorPosition(canvas: HTMLCanvasElement, event: MouseEvent): [number, number]{
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = -(event.clientY - rect.bottom);
@@ -128,7 +128,7 @@ window.onload = ()=>{
         canvas.addEventListener("click", function(e){
             console.log("click event called.");
             const span = document.getElementById("image-cord");
-            const points = getCursorPosition(document.getElementById("myCanvas") as HTMLCanvasElement, e);
+            const points = getCanvasCursorPosition(document.getElementById("myCanvas") as HTMLCanvasElement, e);
             if(span){
                 span.innerText = `X: ${points[0]}, Y: ${points[1]}`;
             }
