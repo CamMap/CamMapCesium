@@ -34,4 +34,4 @@ build:
   tags:
     - docker
   stage: build
-  script: "npm run quicktestbuild"
+  script: "npm run build"
