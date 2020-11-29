@@ -32,13 +32,16 @@
         </div>
         <div id="vid">
             <div class="input-area">
-                <label>Choose an image</label>
+                <label>Choose an image/video</label>
                 <input type="file" id="uploadFile" name="image" />
+                <input type="file" id="uploadVideo" name="videoUpload" />
                 <span id="image-cord"></span>
             </div>
             <div class="previewImage">
                 <img id="target" alt="" />
-                <canvas id="myCanvas" height="300" width="350"></canvas>
+                <video id="videoUploaded"></video>
+                <!--TODO: Change to imageVideoCanvas -->
+                <canvas id="myCanvas" width="300" height="300"></canvas>
             </div>
         </div>
     </div>

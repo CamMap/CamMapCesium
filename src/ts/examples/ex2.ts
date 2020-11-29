@@ -11,6 +11,7 @@
 import * as Cesium from "cesium_source/Cesium";
 import { FOV } from "./../fov";
 import { Image } from "./../image";
+import { Video } from "../video";
 /* eslint @typescript-eslint/no-magic-numbers: off */
 
 // Set up basic viewer
@@ -36,9 +37,10 @@ const fovCam = new FOV(
 
 //Create a new imageHandler
 const imageHandler = new Image(fovCam);
+new Video();
 
 //Listen for click events on the canvas
-window.onload = ()=>{
+window.onload = () =>{
     imageHandler.addPoints();
 };
 

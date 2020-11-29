@@ -2,5 +2,6 @@
 require("../css/main.css");
 require("cesium_source/Widgets/widgets.css");
 require("./image");
+require("./video");
 
 require("./examples/ex2");

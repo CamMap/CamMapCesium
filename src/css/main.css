@@ -77,6 +77,14 @@ img {
     justify-content: center;
 }
 
+#videoUploaded{
+    position: relative;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
 .input-area{
     flex: 20%;
     flex-direction: column;
