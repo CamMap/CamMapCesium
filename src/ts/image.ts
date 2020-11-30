@@ -1,5 +1,6 @@
 import Cesium from "cesium_source/Cesium";
 import { FOV } from "./fov";
+import {ImageLogger} from "./logger";
 import exifr from "exifr";
 
 /**
@@ -21,7 +22,7 @@ export class Image {
         if(uploadFile != null) {
             uploadFile.onchange = (e) => this.onUploadImage(e);
         } else {
-            console.error("[error] Could not get the file input element which would open an image uploading box.  This means something went wrong with the html.  This is a bug, to fix it try restarting the application.  If that does not help, submit a bug report.");
+            ImageLogger.error("Could not get the file input element which would open an image uploading box.  This means something went wrong with the html.  This is a bug, to fix it try restarting the application.  If that does not help, submit a bug report.");
         }
     }
 
@@ -31,23 +32,23 @@ export class Image {
      * @param event - The file open event, retunred from the file opening box
      */
     private onUploadImage(event: Event): void {
-        console.log("Uploaded Image");
+        ImageLogger.info("Uploaded Image");
         if(event.target != null && event.target instanceof HTMLInputElement) {
             const files = event.target.files;
             if(files != null) {
                 if(files.length == 0){
-                    console.warn("[warning] You not selected any images and so none will be used.  If you did select an image and are seeing this message, this is most likely a problem with the browser.");
+                    ImageLogger.warn("You not selected any images and so none will be used.  If you did select an image and are seeing this message, this is most likely a problem with the browser.");
                     return;
                 }
                 if(files.length > 1){
-                    console.warn("[warning] You have selected multiple images, the first one will be the only one used.  This application does not support multiple images.");
+                    ImageLogger.warn("You have selected multiple images, the first one will be the only one used.  This application does not support multiple images.");
                 }
                 this.showUploadedImage(files[0]);
             } else {
-                console.error("[error] The filelist containing the file selected returned null.  To fix this, try selecting the file again.  If that doesn't work, submit a bug report.");
+                ImageLogger.error("The filelist containing the file selected returned null.  To fix this, try selecting the file again.  If that doesn't work, submit a bug report.");
             }
         } else {
-            console.error("[error] The event target for uploading the image was not a HTMLInputElement.  This is a bug and should not have happened, submit a bug report.  This function is most likely being used incorrectly internally.");
+            ImageLogger.error("The event target for uploading the image was not a HTMLInputElement.  This is a bug and should not have happened, submit a bug report.  This function is most likely being used incorrectly internally.");
         }
     }
 
@@ -65,7 +66,7 @@ export class Image {
             fileReader.onload = (e) => this.onImageRead(e, imageFile, imageElement as HTMLImageElement);
             fileReader.readAsDataURL(imageFile);
         } else {
-            console.error("[error] Could not get the image element on which to display the video.  This means something went wrong with the html.  This is a bug, to fix it try restarting the application.  If that does not help, submit a bug report.");
+            ImageLogger.error("Could not get the image element on which to display the video.  This means something went wrong with the html.  This is a bug, to fix it try restarting the application.  If that does not help, submit a bug report.");
         }
     }
 
@@ -89,10 +90,10 @@ export class Image {
                     if(heading != null) {
                         this.viewModel.heading = Cesium.Math.toRadians(heading as number);
                     } else {
-                        console.warn("[warning] Heading of uploaded image could not be found, the image most likely does not have this(i.e the image does not have heading metadata).  To fix this, check that the image does have heading metadata and if it does, submit a bug report.  This is to do with the orientation of the image.");
+                        ImageLogger.warn("Heading of uploaded image could not be found, the image most likely does not have this(i.e the image does not have heading metadata).  To fix this, check that the image does have heading metadata and if it does, submit a bug report.  This is to do with the orientation of the image.");
                     }
                 }).catch(() => {
-                    console.warn("[warning] The image metadata could not be parsed, is the image metadata in the correct format.  If it is, submit a bug report.  However, this is most likely a problem with the image.");
+                    ImageLogger.warn("The image metadata could not be parsed, is the image metadata in the correct format.  If it is, submit a bug report.  However, this is most likely a problem with the image.");
                 });
 
                 // Attempt to get the GPS cordinates
@@ -101,10 +102,10 @@ export class Image {
                         this.viewModel.latitude = gps.latitude;
                         this.viewModel.longitude = gps.longitude;
                     } else {
-                        console.warn("[warning] GPS coordinates of image could not be found, the image most likely does not have this(i.e the image is not geolocated).  To fix this, check that the image does have latitude and lontitude metadata and if it does, submit a bug report.");
+                        ImageLogger.warn("GPS coordinates of image could not be found, the image most likely does not have this(i.e the image is not geolocated).  To fix this, check that the image does have latitude and lontitude metadata and if it does, submit a bug report.");
                     }
                 }).catch(() => {
-                    console.warn("[warning] The image metadata could not be parsed, is the image metadata in the correct format.  If it is, submit a bug report.  However, this is most likely a problem with the image.");
+                    ImageLogger.warn("The image metadata could not be parsed, is the image metadata in the correct format.  If it is, submit a bug report.  However, this is most likely a problem with the image.");
                 });
                 return true;
             }
@@ -130,7 +131,7 @@ export class Image {
                 }
 
                 const precentPoints = new Cesium.Cartesian2(points[1] / canvas.height, points[0] / canvas.width);
-                console.log(precentPoints);
+                ImageLogger.info("Clicked image " + precentPoints);
                 localViewModel.drawLineFromPercentToScreen(localViewModel.viewer, precentPoints, localViewModel.viewer.scene.globe.ellipsoid);
             });
         }
