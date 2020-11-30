@@ -70,10 +70,10 @@ fovCam.onFOVChanged((val) => {
     (document.getElementById("fov_hor_result") as HTMLOutputElement).value = String(val);
 });
 
-fovCam.setUpAspectRatioListener(document.getElementById("aspect_ratio") as HTMLInputElement);
-fovCam.onAspectRatioChanged((val) => {
-    (document.getElementById("aspect_ratio_result") as HTMLOutputElement).value = String(val);
-});
+//FovCam.setUpAspectRatioListener(document.getElementById("aspect_ratio") as HTMLInputElement);
+//FovCam.onAspectRatioChanged((val) => {
+//    (document.getElementById("aspect_ratio_result") as HTMLOutputElement).value = String(val);
+//});
 //
 // // Draw line to Top Right, Top Left
 // FovCam.drawLineFromPercentToScreen(viewer,
