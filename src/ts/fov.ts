@@ -6,6 +6,7 @@
 
 import * as Cesium from "cesium_source/Cesium";
 import { Cartesian2, Cartesian3, HeadingPitchRoll, Matrix3, PerspectiveFrustum } from "cesium_source/Cesium";
+import { FOVLogger } from "./logger";
 
 
 /**
@@ -533,7 +534,7 @@ export class FOV {
     setUpPosListener(positionEv: HTMLInputElement): void{
         positionEv.oninput = e => {
             this.elevation = Number((e.target as HTMLInputElement).value);
-            console.log("Updated Elevation");
+            FOVLogger.debug("Updated Elevation");
 
             // Call event listeners
             for(const fn of this.posFns){
@@ -560,7 +561,7 @@ export class FOV {
     setUpHeadingListener(headingEv: HTMLInputElement): void{
         headingEv.oninput = e => {
             this.heading = Cesium.Math.toRadians(Number((e.target as HTMLInputElement).value));
-            console.log("Updated Elevation");
+            FOVLogger.debug("Updated Heading");
 
             // Call event listeners
             for(const fn of this.headingFns){
@@ -587,7 +588,7 @@ export class FOV {
     setUpTiltListener(tiltEv: HTMLInputElement): void{
         tiltEv.oninput = e => {
             this.tilt = Cesium.Math.toRadians(Number((e.target as HTMLInputElement).value));
-            console.log("Updated Tilt");
+            FOVLogger.debug("Updated Tilt");
 
             // Call event listeners
             for(const fn of this.tiltFns){
@@ -614,7 +615,7 @@ export class FOV {
     setUpFOVListener(fovEv: HTMLInputElement): void{
         fovEv.oninput = e => {
             this.fovDeg = Cesium.Math.toRadians(Number((e.target as HTMLInputElement).value));
-            console.log("Updated FOV");
+            FOVLogger.debug("Updated FOV");
 
             // Call event listeners
             for(const fn of this.fovFns){
@@ -641,7 +642,7 @@ export class FOV {
     setUpAspectRatioListener(arEv: HTMLInputElement): void{
         arEv.oninput = e => {
             this.aspectRatio = Number((e.target as HTMLInputElement).value);
-            console.log("Updated Aspect Ratio");
+            FOVLogger.debug("Updated Aspect Ratio");
 
             // Call event listeners
             for(const fn of this.aspectRatioFns){
