@@ -1,3 +1,5 @@
+import {VideoLogger} from "./logger";
+
 /**
  * Hold a video which can be loaded into the application
  */
@@ -43,16 +45,13 @@ export class Video {
                 if(uploadVideoElement != null){
                     uploadVideoElement.onchange = () => this.onVideoSelected(uploadVideoElement as HTMLInputElement, this);
                 } else {
-                    console.error("[error] HTML upload video button for uploading the video was not found, this is a bug.  Try restarting the application, if that doesn't work, submit a bug report.");
+                    VideoLogger.error("[error] HTML upload video button for uploading the video was not found, this is a bug.  Try restarting the application, if that doesn't work, submit a bug report.");
                 }
-
-                console.info("Video set up correctly");
-                console.log(this.videoHTML);
+                VideoLogger.info("Video set up correctly");
             }
         } else {
-            console.error("[error] HTML Canvas for displaying the video was not found, this is a bug.  Try restarting the application, if that doesn't work, submit a bug report.");
+            VideoLogger.error("[error] HTML Canvas for displaying the video was not found, this is a bug.  Try restarting the application, if that doesn't work, submit a bug report.");
         }
-        console.log(this.videoHTML);
     }
 
     /**
