@@ -142,15 +142,21 @@ export class Image {
  * Draw the image in the image element on the Canvas
  */
 function createImageOnCanvas(){
-    const canvas = document.getElementById("imageVideoCanvas") as HTMLCanvasElement;
-    const context = canvas.getContext("2d");
-    const target = document.getElementById("target") as HTMLImageElement;
-    const canvasX = 350;
-    const canvasY = 300;
-    context?.drawImage(
-        target, 0, 0, canvasX, canvasY
-    );
-    target.style.display = "none";
+    const canvas = document.getElementById("imageVideoCanvas");
+    if(canvas != null){
+        const context = (canvas as HTMLCanvasElement).getContext("2d");
+        if(context != null){
+            const target = document.getElementById("target");
+            if(target != null){
+                context.drawImage(
+                    target as HTMLImageElement, 0, 0, canvas.clientWidth, canvas.clientHeight
+                );
+                target.style.display = "none";
+            }
+        }
+    } else {
+        ImageLogger.error("Unable to find canvas element.  This is an error, to fix it, try restarting the application.  If that does not work, submit a bug report.");
+    }
 }
 
 /**
