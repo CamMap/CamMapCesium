@@ -97,7 +97,7 @@ const canvasY = 300;
  * It reads the image and draws it on the Canvas
  */
 function createImageOnCanvas(){
-    const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
+    const canvas = document.getElementById("imageVideoCanvas") as HTMLCanvasElement;
     const context = canvas.getContext("2d");
     const target = document.getElementById("target") as HTMLImageElement;
     console.log(target);
@@ -123,12 +123,12 @@ function getCanvasCursorPosition(canvas: HTMLCanvasElement, event: MouseEvent): 
 
 window.onload = ()=>{
     console.log("on load fired");
-    const canvas = document.getElementById("myCanvas");
+    const canvas = document.getElementById("imageVideoCanvas");
     if(canvas){
         canvas.addEventListener("click", function(e){
             console.log("click event called.");
             const span = document.getElementById("image-cord");
-            const points = getCanvasCursorPosition(document.getElementById("myCanvas") as HTMLCanvasElement, e);
+            const points = getCanvasCursorPosition(document.getElementById("imageVideoCanvas") as HTMLCanvasElement, e);
             if(span){
                 span.innerText = `X: ${points[0]}, Y: ${points[1]}`;
             }

@@ -121,7 +121,7 @@ export class Image {
      */
     addPoints(): void{
         const localViewModel = this.viewModel as FOV;
-        const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
+        const canvas = document.getElementById("imageVideoCanvas") as HTMLCanvasElement;
         if(canvas){
             canvas.addEventListener("click", function(e){
                 const span = document.getElementById("image-cord");
@@ -142,7 +142,7 @@ export class Image {
  * Draw the image in the image element on the Canvas
  */
 function createImageOnCanvas(){
-    const canvas = document.getElementById("myCanvas") as HTMLCanvasElement;
+    const canvas = document.getElementById("imageVideoCanvas") as HTMLCanvasElement;
     const context = canvas.getContext("2d");
     const target = document.getElementById("target") as HTMLImageElement;
     const canvasX = 350;

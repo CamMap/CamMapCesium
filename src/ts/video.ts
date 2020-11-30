@@ -18,7 +18,7 @@ export class Video {
         this.fps = 30;
         this.canPlayVideo = false;
         this.canvasScaleVideo = 1;
-        const canvas = document.getElementById("myCanvas");
+        const canvas = document.getElementById("imageVideoCanvas");
 
         if(canvas != null){
             this.videoCanvas = canvas as HTMLCanvasElement;
