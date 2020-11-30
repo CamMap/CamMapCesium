@@ -32,7 +32,7 @@ export class Video {
 
             const videoHTML = document.getElementById("videoUploaded");
             if(videoHTML == null){
-                console.error("Failed to create a video element");
+                VideoLogger.error("Failed to create a video element");
             } else {
                 this.videoHTML = videoHTML as HTMLVideoElement;
                 // This is purposeful, do not display the video, display the canvas instead
@@ -84,7 +84,7 @@ export class Video {
      * @param video - The video class to attach the video to
      */
     private onVideoSelected(elem: HTMLInputElement, video: this):void {
-        console.info("Selected video, processing...");
+        VideoLogger.info("Selected video, processing...");
         const fileReader = new FileReader();
         fileReader.onload = (fr) => this.onUploadVideo(fr, video);
         if(elem && elem.files){
@@ -100,16 +100,16 @@ export class Video {
      * @param video - The video class to attach the video to
      */
     private onUploadVideo(fileReader: ProgressEvent<FileReader>, video: this):void {
-        console.info("Checking can upload video");
+        VideoLogger.info("Checking can upload video");
         if(fileReader.target != null && video.videoHTML != undefined){
-            console.info("Uploading video");
+            VideoLogger.info("Uploading video");
             video.videoHTML.src = fileReader.target.result as string;
         } else {
             if(fileReader.target == null){
-                console.error("[error] The video upload failed.  Try again, if this does not work, submit a bug report.");
+                VideoLogger.error("[error] The video upload failed.  Try again, if this does not work, submit a bug report.");
             }
             if(this.videoHTML == undefined){
-                console.error("[error] The video html element is not working correctly.  Try again, if this does not work, submit a bug report.  If the program is here, it generally should not error.");
+                VideoLogger.error("[error] The video html element is not working correctly.  Try again, if this does not work, submit a bug report.  If the program is here, it generally should not error.");
             }
         }
     }
@@ -121,11 +121,11 @@ export class Video {
      */
     private playVideo(video: this){
         if(video.videoCanvas != undefined && video.videoHTML != undefined){
-            console.info("Playing video");
+            VideoLogger.info("Playing video");
             video.canvasScaleVideo = this.getScaleVideoOnCanvas(video.videoCanvas, video.videoHTML.videoWidth, video.videoHTML.videoHeight);
             requestAnimationFrame(() => this.updateCanvas(video));
         } else {
-            console.error("[error] Either the video element did not initialise correctly or the canvas element did not.  Try restarting the application, if that does not help, submit a bug report.");
+            VideoLogger.error("[error] Either the video element did not initialise correctly or the canvas element did not.  Try restarting the application, if that does not help, submit a bug report.");
         }
     }
 
