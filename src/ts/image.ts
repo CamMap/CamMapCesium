@@ -1,4 +1,5 @@
-import Cesium from "cesium_source/Cesium";
+import * as Cesium from "cesium_source/Cesium";
+import { Cartesian2 } from "cesium_source/Cesium";
 import { FOV } from "./fov";
 import {ImageLogger} from "./logger";
 import exifr from "exifr";
@@ -120,20 +121,21 @@ export class Image {
      * event listeners
      */
     addPoints(): void{
-        const localViewModel = this.viewModel as FOV;
-        const canvas = document.getElementById("imageVideoCanvas") as HTMLCanvasElement;
-        if(canvas){
+        const localViewModel = this.viewModel;
+        const canvasNull = document.getElementById("imageVideoCanvas");
+        if(canvasNull != null){
+            const canvas = canvasNull as HTMLCanvasElement;
             canvas.addEventListener("click", function(e){
                 const span = document.getElementById("image-cord");
                 const points = getCanvasCursorPosition(canvas, e);
-                if(span){
+                if(span != null){
                     span.innerText = `X: ${points[0]}, Y: ${points[1]}`;
                 }
-
-                const precentPoints = new Cesium.Cartesian2(points[1] / canvas.height, points[0] / canvas.width);
-                ImageLogger.info("Clicked image " + precentPoints);
+                const precentPoints = new Cartesian2(Number(points[1] / canvas.clientHeight), Number(points[0] / canvas.clientWidth));
                 localViewModel.drawLineFromPercentToScreen(localViewModel.viewer, precentPoints, localViewModel.viewer.scene.globe.ellipsoid);
             });
+        } else {
+            ImageLogger.error("Could not get the canvas on which to display the image.  This means something went wrong with the html.  This is a bug, to fix it try restarting the application.  If that does not help, submit a bug report.");
         }
     }
 }
