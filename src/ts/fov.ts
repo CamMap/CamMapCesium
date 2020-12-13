@@ -727,6 +727,18 @@ export class FOV {
     }
 
     /**
+     * Project a ray from the camera position to a set heading/tilt/bearing
+     *
+     * @param bearing - The bearing from the camera to project the ray
+     * @param tilt - The tilt from the camera to project the ray
+     * @param heading - The heading from the camera to project the ray
+     * @returns The ray with this orientation from the camera position
+     */
+    projectRayFromCameraPos(bearing: number, tilt: number, heading:number): Cesium.Ray{
+        return new Cesium.Ray(this.position, new Cartesian3(bearing, tilt, heading));
+    }
+
+    /**
      * Get a point a set distance away from the camera which goes through a ray of a set pixel
      *
      * @param pixel - The camera pixel to project the ray from
