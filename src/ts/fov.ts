@@ -7,6 +7,8 @@
 import * as Cesium from "cesium_source/Cesium";
 import { Cartesian2, Cartesian3, HeadingPitchRoll, Matrix3, PerspectiveFrustum } from "cesium_source/Cesium";
 import { FOVLogger } from "./logger";
+import { VGIPReciever } from "./vgipReciever";
+import { VideoGeoData } from "./vgip";
 
 
 /**
@@ -39,6 +41,11 @@ export class FOV {
     tiltFns: { (val: number): void; }[];
     fovFns: { (val: number): void; }[];
     aspectRatioFns: { (val: number): void; }[];
+
+    // TODO, shuold there be a seperate wrapper class for something like this?
+    // So as FOV is not dependent on vgip reciever.
+    // There should, do this with the setUpListeners functions
+    vgipReciever: VGIPReciever;
 
     /* Getters & Setters */
 
@@ -261,6 +268,8 @@ export class FOV {
         this.fovFns = [];
         this.aspectRatioFns = [];
 
+        this.vgipReciever = new VGIPReciever();
+
         this.camera = new Cesium.Camera(viewer.scene);
         const frustum = new Cesium.PerspectiveFrustum({
             fov: this.fov,
@@ -297,6 +306,23 @@ export class FOV {
         this.viewer.scene.primitives.remove(this.curDrawn);
         this.draw(this.viewer.scene);
         this.redrawLinesToEdges();
+    }
+
+    /**
+     * Set up a websocket to recieve geolocation data and dynamically modify the camera based on it
+     *
+     * @param address - The URL of the websocket which serves the geodata
+     */
+    public setUpVGIPWebSocket(address: string): void{
+        this.vgipReciever.addWebSocketWithAddress(address);
+        this.vgipReciever.onRecieveData((geoData: VideoGeoData) => {
+            // Modify the lat, long, heading ... depending on what was recieved
+
+            // Only do latitude right now, to test it works
+            if(geoData.latitude != null && geoData.latitude != undefined){
+                this.latitude = geoData.latitude;
+            }
+        });
     }
 
     /**
