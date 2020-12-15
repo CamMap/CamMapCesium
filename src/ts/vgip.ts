@@ -8,7 +8,7 @@
 /**
  * The video geolocation data that the program can store
  */
-interface VideoGeoData{
+export interface VideoGeoData{
     latitude?: number | null,
     longitude?: number | null,
     heading?: number | null,
@@ -29,7 +29,7 @@ interface FrameData{
  * beacuse the values can "carry over" from the
  * previous value given how the vgip protocol is implemented
  */
-export class vgip{
+export class VGIP{
     private prevLatitude: number | undefined;
     private prevLongitiude: number | undefined;
     private prevBearing: number | undefined;
