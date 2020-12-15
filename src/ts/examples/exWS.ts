@@ -71,7 +71,7 @@ fovCam.onFOVChanged((val) => {
 });
 
 fovCam.setShouldDrawEdgeLines(true);
-fovCam.setUpVGIPWebSocket("localhost:3023");
+fovCam.setUpVGIPWebSocket("ws://localhost:8081");
 
 // Set the camera to look at the view cone
 viewer.camera.setView({

@@ -5,7 +5,7 @@
  */
 
 import { VGIP, VideoGeoData } from "./vgip";
-import ws from "ws";
+//Import ws from "ws";
 
 
 /**
@@ -25,7 +25,7 @@ export class VGIPReciever{
      *
      * @param webSocketToAdd - The websocket to add to recieve geolocation data
      */
-    public addWebSocket(webSocketToAdd: ws): void{
+    public addWebSocket(webSocketToAdd: WebSocket): void{
         // On incomming data, run the functions to run on recieve data
         webSocketToAdd.onmessage = d => {
             // Parse the data to VGIP
@@ -36,13 +36,16 @@ export class VGIPReciever{
                 fn(dataSent);
             }
         };
+
+        //WebSocketToAdd.once("open", () => console.log("Connected"));
     }
 
     /**
      * @param address - The URL of the websocket server to connect to
      */
     public addWebSocketWithAddress(address: string): void{
-        this.addWebSocket(new ws(address));
+        const websocket = new WebSocket(address);
+        this.addWebSocket(websocket);
     }
 
     /**

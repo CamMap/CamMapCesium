@@ -7,4 +7,4 @@ require("./video");
 import {GeneralLogger} from "./logger";
 GeneralLogger.info("Everything imported correctly");
 
-require("./examples/ex2");
+require("./examples/exWS");

@@ -75,76 +75,81 @@ export class VGIP{
      * @returns VideoGeoData interface, the parsed geolocation data
      */
     public parseXML(xmlString: string): VideoGeoData{
-        const parsedXMLString = new DOMParser().parseFromString(xmlString, "text/xml");
+        try {
+            const parsedXMLString = new DOMParser().parseFromString(xmlString, "text/xml");
 
-        const frame: Element = parsedXMLString.getElementsByTagName("frame")[0];
+            const frame: Element = parsedXMLString.getElementsByTagName("frame")[0];
 
-        const frameNum = frame.getAttribute("number");
-        if(frameNum != null){
+            const frameNum = frame.getAttribute("number");
+            if(frameNum != null){
             // Get frame integer and bits, TODO
             // Then can syncronise these with the video to give coherent output (i.e not de-syncronised)
             //Const _frameInt = parseInt(frameNum);
-        }
-
-        let latitude = this.parseGeoElement(frame.getElementsByTagName("latitude")[0]);
-        if(latitude == null){
-            // Use previous value
-            if(this.prevLatitude != undefined){
-                latitude = this.prevLatitude;
             }
-        } else {
-            this.prevLongitiude = latitude;
-        }
 
-        let longitude = this.parseGeoElement(frame.getElementsByTagName("longitude")[0]);
-        if(longitude == null){
+            let latitude = this.parseGeoElement(frame.getElementsByTagName("latitude")[0]);
+            if(latitude == null){
             // Use previous value
-            if(this.prevLongitiude != undefined){
-                longitude = this.prevLongitiude;
+                if(this.prevLatitude != undefined){
+                    latitude = this.prevLatitude;
+                }
+            } else {
+                this.prevLongitiude = latitude;
             }
-        } else {
-            this.prevLongitiude = longitude;
-        }
 
-
-        let heading = this.parseGeoElement(frame.getElementsByTagName("heading")[0]);
-        if(heading == null){
+            let longitude = this.parseGeoElement(frame.getElementsByTagName("longitude")[0]);
+            if(longitude == null){
             // Use previous value
-            if(this.prevHeading != undefined){
-                heading = this.prevHeading;
+                if(this.prevLongitiude != undefined){
+                    longitude = this.prevLongitiude;
+                }
+            } else {
+                this.prevLongitiude = longitude;
             }
-        } else {
-            this.prevHeading = heading;
-        }
 
-        let tilt = this.parseGeoElement(frame.getElementsByTagName("tilt")[0]);
-        if(tilt == null){
+
+            let heading = this.parseGeoElement(frame.getElementsByTagName("heading")[0]);
+            if(heading == null){
             // Use previous value
-            if(this.prevTilt != undefined){
-                tilt = this.prevTilt;
+                if(this.prevHeading != undefined){
+                    heading = this.prevHeading;
+                }
+            } else {
+                this.prevHeading = heading;
             }
-        } else {
-            this.prevTilt = tilt;
-        }
 
-        let bearing = this.parseGeoElement(frame.getElementsByTagName("bearing")[0]);
-        if(bearing == null){
+            let tilt = this.parseGeoElement(frame.getElementsByTagName("tilt")[0]);
+            if(tilt == null){
             // Use previous value
-            if(this.prevBearing != undefined){
-                bearing = this.prevBearing;
+                if(this.prevTilt != undefined){
+                    tilt = this.prevTilt;
+                }
+            } else {
+                this.prevTilt = tilt;
             }
-        } else {
-            this.prevBearing = bearing;
+
+            let bearing = this.parseGeoElement(frame.getElementsByTagName("bearing")[0]);
+            if(bearing == null){
+            // Use previous value
+                if(this.prevBearing != undefined){
+                    bearing = this.prevBearing;
+                }
+            } else {
+                this.prevBearing = bearing;
+            }
+
+            return {
+                latitude: latitude,
+                longitude: longitude,
+                heading: heading,
+                tilt: tilt,
+                bearing: bearing,
+
+            };
+        } catch (e){
+            console.log(e);
+            return {};
         }
-
-        return {
-            latitude: latitude,
-            longitude: longitude,
-            heading: heading,
-            tilt: tilt,
-            bearing: bearing,
-
-        };
     }
 
     /**
@@ -154,17 +159,19 @@ export class VGIP{
      * @param XMLtag - The XML Geo tag to parse, the format must be in the form expected by VGIP
      * @returns the Geo data
      */
-    private parseGeoElement(XMLtag: Element): number | null {
-        const xmlValStr = XMLtag.getAttribute("value");
-        if(xmlValStr != null){
+    private parseGeoElement(XMLtag: Element | null): number | null {
+        if(XMLtag != null){
+            const xmlValStr = XMLtag.getAttribute("value");
+            if(xmlValStr != null){
             // Latitude was given
-            const valFloat = parseFloat(xmlValStr);
-            if(Number.isNaN(valFloat)){
+                const valFloat = parseFloat(xmlValStr);
+                if(Number.isNaN(valFloat)){
                 // Malformed input, report and continue with
                 // Prev value
-                console.log("[VGIP][warning] Malformed input for " + XMLtag.tagName);
-            } else {
-                return valFloat;
+                    console.log("[VGIP][warning] Malformed input for " + XMLtag.tagName);
+                } else {
+                    return valFloat;
+                }
             }
         }
         return null;
