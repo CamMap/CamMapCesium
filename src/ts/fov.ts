@@ -15,37 +15,37 @@ import { VideoGeoData } from "./vgip";
  * A wrapper around cesium camera viewer.
  */
 export class FOV {
-    _position: Cesium.Cartesian3;
-    camera: Cesium.Camera;
-    cameraUp: Cesium.Cartesian3;
-    cameraDirection: Cesium.Cartesian3;
-    long: number;
-    lat: number;
-    _elevation: number;
-    theta: number;
-    phi: number;
-    roll: number;
-    viewer: Cesium.Viewer;
-    fov: number;
-    camPoly: Cesium.PrimitiveCollection;
+    private _position: Cesium.Cartesian3;
+    private camera: Cesium.Camera;
+    private cameraUp: Cesium.Cartesian3;
+    private cameraDirection: Cesium.Cartesian3;
+    private long: number;
+    private lat: number;
+    private _elevation: number;
+    private theta: number;
+    private phi: number;
+    private roll: number;
+    private viewer: Cesium.Viewer;
+    private fov: number;
+    private camPoly: Cesium.PrimitiveCollection;
 
     /** Should lines be drawn at the corners of the screen */
-    shouldDrawEdgeLines: boolean;
-    linesToEdges: Cesium.Entity[];
-    pointsToEdges: Cesium.PointPrimitiveCollection[];
+    private shouldDrawEdgeLines: boolean;
+    private linesToEdges: Cesium.Entity[];
+    private pointsToEdges: Cesium.PointPrimitiveCollection[];
 
-    curDrawn: Cesium.Primitive | null;
+    private curDrawn: Cesium.Primitive | null;
 
-    posFns: { (val: number): void; }[];
-    headingFns: { (val: number): void; }[];
-    tiltFns: { (val: number): void; }[];
-    fovFns: { (val: number): void; }[];
-    aspectRatioFns: { (val: number): void; }[];
+    private posFns: { (val: number): void; }[];
+    private headingFns: { (val: number): void; }[];
+    private tiltFns: { (val: number): void; }[];
+    private fovFns: { (val: number): void; }[];
+    private aspectRatioFns: { (val: number): void; }[];
 
     // TODO, shuold there be a seperate wrapper class for something like this?
     // So as FOV is not dependent on vgip reciever.
     // There should, do this with the setUpListeners functions
-    vgipReciever: VGIPReciever;
+    private vgipReciever: VGIPReciever;
 
     /* Getters & Setters */
 
@@ -346,7 +346,7 @@ export class FOV {
      *
      * @param scene - The cesium scene in which the object should be drawn
      */
-    draw(scene: Cesium.Scene): void {
+    private draw(scene: Cesium.Scene): void {
         const rotationMatrix = this.getSurfaceRotationMatrix(
             this.long, this.lat, this._elevation, this.theta, this.phi, this.roll
         );
@@ -381,14 +381,14 @@ export class FOV {
      *
      * @param b - Set if the edge lines of the camera should be drawn
      */
-    setShouldDrawEdgeLines(b: boolean): void{
+    public setShouldDrawEdgeLines(b: boolean): void{
         this.shouldDrawEdgeLines = b;
     }
 
     /**
      * Draw lines to the edges of the camera
      */
-    redrawLinesToEdges(): void{
+    private redrawLinesToEdges(): void{
         //First remove the lines ot the edges
         this.removeLinesToEdges();
         this.camPoly.removeAll();
@@ -438,7 +438,7 @@ export class FOV {
     /**
      * Draw the polygon of what the camera can see on the surface of the Earth
      */
-    drawCamPolygon(): void{
+    private drawCamPolygon(): void{
         // Get edge points, then draw polygon
         const topLeft = this.getCamPointPercent(this.viewer, new Cartesian2(0, 0), this.viewer.scene.globe.ellipsoid);
         const topRight = this.getCamPointPercent(this.viewer, new Cartesian2(0, 1), this.viewer.scene.globe.ellipsoid);
@@ -472,7 +472,7 @@ export class FOV {
     /**
      *
      */
-    removeLinesToEdges(): void{
+    private removeLinesToEdges(): void{
         for(const l of this.linesToEdges){
             this.viewer.entities.remove(l);
         }
@@ -484,7 +484,7 @@ export class FOV {
     /**
      * Destroys the view object so it is no longer present in the scene
      */
-    destroy(): void {
+    private destroy(): void {
         if(this.curDrawn !== null) this.curDrawn.destroy();
     }
 
@@ -499,7 +499,7 @@ export class FOV {
      * @param roll - the roll of the camera
      * @returns The rotation matrix to put the obect on the surface of a sphere
      */
-    getSurfaceRotationMatrix(
+    public getSurfaceRotationMatrix(
         long: number, lat: number, elevation: number, theta: number, phi: number, roll: number
     ): Matrix3 {
         const [xAxisNew, yAxisNew, zAxisNew] = this.getSurfaceTransform(lat, long, elevation);
@@ -526,7 +526,7 @@ export class FOV {
      * @param elevation - The elevation of the position on the sphere
      * @returns The new [x axis, y axis, z axis] normalized vectors
      */
-    getSurfaceTransform(long: number, lat: number, elevation: number): [Cartesian3, Cartesian3, Cartesian3] {
+    public getSurfaceTransform(long: number, lat: number, elevation: number): [Cartesian3, Cartesian3, Cartesian3] {
         // The point in cartesian coordinates
         const cartesianPoint = Cartesian3.fromDegrees(lat, long, elevation);
         const smallChange = 0.0001;
@@ -559,7 +559,7 @@ export class FOV {
      *
      * @param scene - The scene in which to draw the debug camera
      */
-    drawDebugCamera(scene: Cesium.Scene): void {
+    public drawDebugCamera(scene: Cesium.Scene): void {
         scene.primitives.add(new Cesium.DebugCameraPrimitive({
             camera: this.camera,
             color: Cesium.Color.YELLOW,
@@ -573,7 +573,7 @@ export class FOV {
      * @param positionEv - The HTML input event to change the position
      * TODO Generalise this so it takes an event with a value, not just HTML events, perhaps use a different function for generic event
      */
-    setUpPosListener(positionEv: HTMLInputElement): void{
+    public setUpPosListener(positionEv: HTMLInputElement): void{
         positionEv.oninput = e => {
             this.elevation = Number((e.target as HTMLInputElement).value);
             FOVLogger.debug("Updated Elevation");
@@ -590,7 +590,7 @@ export class FOV {
      *
      * @param fun - function to run when the position is changed, val is the new position
      */
-    onPosChanged(fun: (val: number) => void): void{
+    public onPosChanged(fun: (val: number) => void): void{
         this.posFns.push(fun);
     }
 
@@ -600,7 +600,7 @@ export class FOV {
      * @param headingEv - The HTML input event to change the position
      * TODO Generalise this so it takes an event with a value, not just HTML events, perhaps use a different function for generic event
      */
-    setUpHeadingListener(headingEv: HTMLInputElement): void{
+    public setUpHeadingListener(headingEv: HTMLInputElement): void{
         headingEv.oninput = e => {
             this.heading = Cesium.Math.toRadians(Number((e.target as HTMLInputElement).value));
             FOVLogger.debug("Updated Heading");
@@ -617,7 +617,7 @@ export class FOV {
      *
      * @param fun - function to run when the heading has changed, val is the new heading
      */
-    onHeadingChanged(fun: (val: number) => void): void{
+    public onHeadingChanged(fun: (val: number) => void): void{
         this.headingFns.push(fun);
     }
 
@@ -627,7 +627,7 @@ export class FOV {
      * @param tiltEv - The HTML input event to change the tilt
      * TODO Generalise this so it takes an event with a value, not just HTML events, perhaps use a different function for generic event
      */
-    setUpTiltListener(tiltEv: HTMLInputElement): void{
+    public setUpTiltListener(tiltEv: HTMLInputElement): void{
         tiltEv.oninput = e => {
             this.tilt = Cesium.Math.toRadians(Number((e.target as HTMLInputElement).value));
             FOVLogger.debug("Updated Tilt");
@@ -644,7 +644,7 @@ export class FOV {
      *
      * @param fun - function to run when the tilt is changed, val is the new tilt
      */
-    onTiltChanged(fun: (val: number) => void): void{
+    public onTiltChanged(fun: (val: number) => void): void{
         this.tiltFns.push(fun);
     }
 
@@ -654,7 +654,7 @@ export class FOV {
      * @param fovEv - The HTML input event to change the fov
      * TODO Generalise this so it takes an event with a value, not just HTML events, perhaps use a different function for generic event
      */
-    setUpFOVListener(fovEv: HTMLInputElement): void{
+    public setUpFOVListener(fovEv: HTMLInputElement): void{
         fovEv.oninput = e => {
             this.fovDeg = Cesium.Math.toRadians(Number((e.target as HTMLInputElement).value));
             FOVLogger.debug("Updated FOV");
@@ -671,7 +671,7 @@ export class FOV {
      *
      * @param fun - function to run when the fov is changed, val is the new fov
      */
-    onFOVChanged(fun: (val: number) => void): void{
+    public onFOVChanged(fun: (val: number) => void): void{
         this.fovFns.push(fun);
     }
 
@@ -681,7 +681,7 @@ export class FOV {
      * @param arEv - The HTML input event to change the aspect ratio
      * TODO Generalise this so it takes an event with a value, not just HTML events, perhaps use a different function for generic event
      */
-    setUpAspectRatioListener(arEv: HTMLInputElement): void{
+    public setUpAspectRatioListener(arEv: HTMLInputElement): void{
         arEv.oninput = e => {
             this.aspectRatio = Number((e.target as HTMLInputElement).value);
             FOVLogger.debug("Updated Aspect Ratio");
@@ -698,7 +698,7 @@ export class FOV {
      *
      * @param fun - function to run when the aspect ratio is changed, val is the new aspect ratio
      */
-    onAspectRatioChanged(fun: (val: number) => void): void{
+    public onAspectRatioChanged(fun: (val: number) => void): void{
         this.aspectRatioFns.push(fun);
     }
 
@@ -708,7 +708,7 @@ export class FOV {
      * @param ellipsoid - The ellipsoid onto which to project the rectangle
      * @returns the rectangle of what the camera can see projected onto the Earth
      */
-    getCameraRect(ellipsoid: Cesium.Ellipsoid): Cesium.Rectangle | undefined {
+    public getCameraRect(ellipsoid: Cesium.Ellipsoid): Cesium.Rectangle | undefined {
         return this.camera.computeViewRectangle(ellipsoid);
     }
 
@@ -721,7 +721,7 @@ export class FOV {
      * @param ellipsoid - The ellopsoid the point should map to
      * @returns The line and point drawn to the sphere
      */
-    drawLineFromPixelToScreen(viewer: Cesium.Viewer, pixel: Cartesian2, ellipsoid: Cesium.Ellipsoid): [Cesium.Entity, Cesium.PointPrimitiveCollection] | null {
+    public drawLineFromPixelToScreen(viewer: Cesium.Viewer, pixel: Cartesian2, ellipsoid: Cesium.Ellipsoid): [Cesium.Entity, Cesium.PointPrimitiveCollection] | null {
         let pointOnSphere = this.camera.pickEllipsoid(pixel, ellipsoid);
         if(pointOnSphere != undefined) {
             pointOnSphere = pointOnSphere as Cesium.Cartesian3;
@@ -754,7 +754,7 @@ export class FOV {
      * @param ellipsoid - The sphere to map the camera screen to
      * @returns The point on the sphere where the ray hits
      */
-    getPointOnSphereFromScreen(pixel: Cartesian2, ellipsoid: Cesium.Ellipsoid): Cartesian3 | undefined {
+    public getPointOnSphereFromScreen(pixel: Cartesian2, ellipsoid: Cesium.Ellipsoid): Cartesian3 | undefined {
         return this.camera.pickEllipsoid(pixel, ellipsoid);
     }
 
@@ -764,7 +764,7 @@ export class FOV {
      * @param pixel - the camera pixel to project the ray from
      * @returns The cesium ray from the point on the pixel on the screen
      */
-    getRayFromScreen(pixel: Cartesian2): Cesium.Ray {
+    public getRayFromScreen(pixel: Cartesian2): Cesium.Ray {
         return this.camera.getPickRay(pixel);
     }
 
@@ -776,7 +776,7 @@ export class FOV {
      * @param heading - The heading from the camera to project the ray
      * @returns The ray with this orientation from the camera position
      */
-    projectRayFromCameraPos(bearing: number, tilt: number, heading:number): Cesium.Ray{
+    public projectRayFromCameraPos(bearing: number, tilt: number, heading:number): Cesium.Ray{
         return new Cesium.Ray(this.position, new Cartesian3(bearing, tilt, heading));
     }
 
@@ -787,7 +787,7 @@ export class FOV {
      * @param dist - The distance away from the camera where the point is located
      * @returns The point a set distance away from the camera pointing from a pixel on the screen
      */
-    getPointAtDistFromScreen(pixel: Cartesian2, dist: number): Cesium.Cartesian3 {
+    public getPointAtDistFromScreen(pixel: Cartesian2, dist: number): Cesium.Cartesian3 {
         return Cesium.Ray.getPoint(this.getRayFromScreen(pixel), dist);
     }
 
@@ -799,7 +799,7 @@ export class FOV {
      * @param pixel - The camera pixel to project the ray from
      * @param dist - The distance away from the camera where the point is located
      */
-    placePointAtDistFromScreen(viewer: Cesium.Viewer, pixel: Cartesian2, dist: number): void {
+    public placePointAtDistFromScreen(viewer: Cesium.Viewer, pixel: Cartesian2, dist: number): void {
         const point = this.getPointAtDistFromScreen(pixel, dist);
 
         // Add the polylien
@@ -831,7 +831,7 @@ export class FOV {
      * @param ellipsoid - The ellopsoid the point should map to
      * @returns The line and point drawn to the sphere
      */
-    drawLineFromPercentToScreen(viewer: Cesium.Viewer, percent: Cartesian2, ellipsoid: Cesium.Ellipsoid): [Cesium.Entity, Cesium.PointPrimitiveCollection] | null {
+    public drawLineFromPercentToScreen(viewer: Cesium.Viewer, percent: Cartesian2, ellipsoid: Cesium.Ellipsoid): [Cesium.Entity, Cesium.PointPrimitiveCollection] | null {
         const maxHeight = viewer.canvas.clientHeight;
         const maxWidth = viewer.canvas.clientWidth;
         const pixel = new Cesium.Cartesian2(maxWidth * percent.x, maxHeight * percent.y);
@@ -844,7 +844,7 @@ export class FOV {
      * @param ellipsoid - The ellopsoid the point should map to
      * @returns The point on the sphere the pixel on the screen maps to
      */
-    getCamPointPercent(viewer: Cesium.Viewer, percent: Cartesian2, ellipsoid: Cesium.Ellipsoid): Cesium.Cartesian3 | undefined{
+    public getCamPointPercent(viewer: Cesium.Viewer, percent: Cartesian2, ellipsoid: Cesium.Ellipsoid): Cesium.Cartesian3 | undefined{
         const maxHeight = viewer.canvas.clientHeight;
         const maxWidth = viewer.canvas.clientWidth;
         const pixel = new Cesium.Cartesian2(maxWidth * percent.x, maxHeight * percent.y);
@@ -857,7 +857,7 @@ export class FOV {
      * @param boundingVolume - The bounding volume of the object of which to check the intersection
      * @returns The cesium intersect with the object, in essence if the object is within the FOV viewcone
      */
-    checkIntersection(boundingVolume: Cesium.BoundingRectangle | Cesium.BoundingSphere | Cesium.AxisAlignedBoundingBox | Cesium.OrientedBoundingBox): Cesium.Intersect {
+    public checkIntersection(boundingVolume: Cesium.BoundingRectangle | Cesium.BoundingSphere | Cesium.AxisAlignedBoundingBox | Cesium.OrientedBoundingBox): Cesium.Intersect {
         return this.camera.frustum.computeCullingVolume(this.camera.position, this.cameraDirection, this.cameraUp).computeVisibility(boundingVolume);
     }
 }
