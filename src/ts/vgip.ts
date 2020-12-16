@@ -5,6 +5,8 @@
  * @packageDocumentation
  */
 
+import { VGIPLogger } from "./logger";
+
 /**
  * The video geolocation data that the program can store
  */
@@ -78,76 +80,83 @@ export class VGIP{
         try {
             const parsedXMLString = new DOMParser().parseFromString(xmlString, "text/xml");
 
-            const frame: Element = parsedXMLString.getElementsByTagName("frame")[0];
+            const frames = parsedXMLString.getElementsByTagName("frame");
 
-            const frameNum = frame.getAttribute("number");
-            if(frameNum != null){
-            // Get frame integer and bits, TODO
-            // Then can syncronise these with the video to give coherent output (i.e not de-syncronised)
-            //Const _frameInt = parseInt(frameNum);
-            }
+            if(frames.length != 0){
+                const frame: Element = frames[0];
 
-            let latitude = this.parseGeoElement(frame.getElementsByTagName("latitude")[0]);
-            if(latitude == null){
-            // Use previous value
-                if(this.prevLatitude != undefined){
-                    latitude = this.prevLatitude;
+                const frameNum = frame.getAttribute("number");
+                if(frameNum != null){
+                    // Get frame integer and bits, TODO
+                    // Then can syncronise these with the video to give coherent output (i.e not de-syncronised)
+                    //Const _frameInt = parseInt(frameNum);
                 }
-            } else {
-                this.prevLongitiude = latitude;
-            }
 
-            let longitude = this.parseGeoElement(frame.getElementsByTagName("longitude")[0]);
-            if(longitude == null){
-            // Use previous value
-                if(this.prevLongitiude != undefined){
-                    longitude = this.prevLongitiude;
+                let latitude = this.parseGeoElement(frame.getElementsByTagName("latitude")[0]);
+                if(latitude == null){
+                    // Use previous value
+                    if(this.prevLatitude != undefined){
+                        latitude = this.prevLatitude;
+                    }
+                } else {
+                    this.prevLongitiude = latitude;
                 }
-            } else {
-                this.prevLongitiude = longitude;
-            }
 
-
-            let heading = this.parseGeoElement(frame.getElementsByTagName("heading")[0]);
-            if(heading == null){
-            // Use previous value
-                if(this.prevHeading != undefined){
-                    heading = this.prevHeading;
+                let longitude = this.parseGeoElement(frame.getElementsByTagName("longitude")[0]);
+                if(longitude == null){
+                    // Use previous value
+                    if(this.prevLongitiude != undefined){
+                        longitude = this.prevLongitiude;
+                    }
+                } else {
+                    this.prevLongitiude = longitude;
                 }
-            } else {
-                this.prevHeading = heading;
-            }
 
-            let tilt = this.parseGeoElement(frame.getElementsByTagName("tilt")[0]);
-            if(tilt == null){
-            // Use previous value
-                if(this.prevTilt != undefined){
-                    tilt = this.prevTilt;
+
+                let heading = this.parseGeoElement(frame.getElementsByTagName("heading")[0]);
+                if(heading == null){
+                    // Use previous value
+                    if(this.prevHeading != undefined){
+                        heading = this.prevHeading;
+                    }
+                } else {
+                    this.prevHeading = heading;
                 }
-            } else {
-                this.prevTilt = tilt;
-            }
 
-            let bearing = this.parseGeoElement(frame.getElementsByTagName("bearing")[0]);
-            if(bearing == null){
-            // Use previous value
-                if(this.prevBearing != undefined){
-                    bearing = this.prevBearing;
+                let tilt = this.parseGeoElement(frame.getElementsByTagName("tilt")[0]);
+                if(tilt == null){
+                    // Use previous value
+                    if(this.prevTilt != undefined){
+                        tilt = this.prevTilt;
+                    }
+                } else {
+                    this.prevTilt = tilt;
                 }
+
+                let bearing = this.parseGeoElement(frame.getElementsByTagName("bearing")[0]);
+                if(bearing == null){
+                    // Use previous value
+                    if(this.prevBearing != undefined){
+                        bearing = this.prevBearing;
+                    }
+                } else {
+                    this.prevBearing = bearing;
+                }
+
+                return {
+                    latitude: latitude,
+                    longitude: longitude,
+                    heading: heading,
+                    tilt: tilt,
+                    bearing: bearing,
+
+                };
             } else {
-                this.prevBearing = bearing;
+                VGIPLogger.error("Malformed VGIP input, there was no 'frame' element found in the XML.");
+                return {};
             }
-
-            return {
-                latitude: latitude,
-                longitude: longitude,
-                heading: heading,
-                tilt: tilt,
-                bearing: bearing,
-
-            };
         } catch (e){
-            console.log(e);
+            VGIPLogger.error("Error encountered when parsing VGIP input: " + e);
             return {};
         }
     }
@@ -168,11 +177,15 @@ export class VGIP{
                 if(Number.isNaN(valFloat)){
                 // Malformed input, report and continue with
                 // Prev value
-                    console.log("[VGIP][warning] Malformed input for " + XMLtag.tagName);
+                    VGIPLogger.warn("Malformed input value for " + XMLtag.tagName + ", input was " + valFloat);
                 } else {
                     return valFloat;
                 }
+            } else {
+                VGIPLogger.warn("Malformed input for " + XMLtag.tagName + ", could not find 'value' attribute");
             }
+        } else {
+            VGIPLogger.error("The XML tag to get the value of is null, unable to get value");
         }
         return null;
     }
@@ -234,6 +247,8 @@ export class VGIP{
             const ele = xmlDoc.createElement(str);
             xmlElement.setAttribute("value", String(val));
             xmlElement.appendChild(ele);
+        } else {
+            VGIPLogger.debug("Value to put in the XML for the geodata element " + str + " was either null or undefined, this is ok, this element simply will not be added to the VGIP packet being sent");
         }
     }
 }

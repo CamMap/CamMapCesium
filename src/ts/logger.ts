@@ -126,3 +126,6 @@ export const ImageLogger = new CustomLogger({prefix: "[Image]"});
 /// Logger for FOV related things
 export const FOVLogger = new CustomLogger({prefix: "[FOV]"});
 
+/// Logger for VGIP related things
+export const VGIPLogger = new CustomLogger({prefix: "[VGIP]"});
+
