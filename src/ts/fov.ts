@@ -25,7 +25,7 @@ export class FOV {
     private theta: number;
     private phi: number;
     private roll: number;
-    private viewer: Cesium.Viewer;
+    public viewer: Cesium.Viewer;
     private fov: number;
     private camPoly: Cesium.PrimitiveCollection;
 

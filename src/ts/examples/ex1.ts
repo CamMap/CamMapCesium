@@ -34,7 +34,7 @@ const fovCam = new FOV(
 );
 
 // Draw a the actual camera view
-fovCam.draw(viewer.scene);
+//FovCam.draw(viewer.scene);
 
 // Draw a debug camera view to make sure they are kept in check
 fovCam.drawDebugCamera(viewer.scene);
