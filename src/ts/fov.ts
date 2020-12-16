@@ -192,7 +192,6 @@ export class FOV {
         return this.phi;
     }
 
-
     /**
      *  Set the fov of the camera, in radians
      *
@@ -318,9 +317,26 @@ export class FOV {
         this.vgipReciever.onRecieveData((geoData: VideoGeoData) => {
             // Modify the lat, long, heading ... depending on what was recieved
 
-            // Only do latitude right now, to test it works
             if(geoData.latitude != null && geoData.latitude != undefined){
                 this.latitude = geoData.latitude;
+            }
+
+            if(geoData.longitude != null && geoData.longitude != undefined){
+                this.longitude = geoData.longitude;
+            }
+
+            if(geoData.bearing != null && geoData.bearing != undefined){
+                this.heading = geoData.bearing;
+            }
+
+            if(geoData.tilt != null && geoData.tilt != undefined){
+                this.tilt = geoData.tilt;
+            }
+
+            if(geoData.heading != null && geoData.heading != undefined){
+                // TODO, this does NOT work because there is no setter for this
+                // Make a roll setter and it should work
+                this.roll = geoData.heading;
             }
         });
     }
