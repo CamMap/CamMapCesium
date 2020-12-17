@@ -17,22 +17,86 @@ enum LogLevel{
 }
 
 /**
+ * Type for the logging printers, i.e where to print to
+ */
+interface Printer{
+    debug(message: string): void;
+    info(message: string): void;
+    warn(message: string): void;
+    error(message: string): void;
+    fatal(message: string): void;
+    custom(message: string): void;
+}
+
+/**
+ * A printer for the logger to log to the web console
+ */
+class ConsolePrinter implements Printer{
+    /**
+     * @param message - The message to print to the console
+     */
+    public debug(message: string){
+        console.debug(message);
+    }
+
+    /**
+     * @param message - The message to print to the console
+     */
+    public info(message: string){
+        console.info(message);
+    }
+
+    /**
+     * @param message - The message to print to the console
+     */
+    public warn(message: string){
+        console.warn(message);
+    }
+
+    /**
+     * @param message - The message to print to the console
+     */
+    public error(message: string){
+        console.error(message);
+    }
+
+    /**
+     * @param message - The message to print to the console
+     */
+    public fatal(message: string){
+        console.error(message);
+    }
+
+    /**
+     * @param message - The message to print to the console
+     */
+    public custom(message: string){
+        console.log(message);
+    }
+}
+
+/**
  * A custom logger to standardise logging,
  * there doesn't seem to be a suitable maintained alternative on npm
  */
 class CustomLogger{
     prefix: string;
     level: LogLevel;
+    printer: Printer;
 
-    constructor(opts?: {prefix?: string, level?: LogLevel}){
+    constructor(opts?: {prefix?: string, level?: LogLevel, printer?: Printer}){
         this.prefix = "";
         this.level = LogLevel.Debug;
+        this.printer = new ConsolePrinter();
         if(opts != undefined){
             if(opts.prefix != undefined){
                 this.prefix = opts.prefix;
             }
             if(opts.level != undefined){
                 this.level = opts.level;
+            }
+            if(opts.printer != undefined){
+                this.printer = opts.printer;
             }
         }
     }
@@ -55,7 +119,7 @@ class CustomLogger{
      */
     public info(message: string){
         if(LogLevel.Info <= this.level){
-            console.info("[INFO]" + this.prefix + " " + message);
+            this.printer.info("[INFO]" + this.prefix + " " + message);
         }
     }
 
@@ -66,7 +130,7 @@ class CustomLogger{
      */
     public error(message: string){
         if(LogLevel.Error <= this.level){
-            console.error("[ERROR]" + this.prefix + " " + message);
+            this.printer.error("[ERROR]" + this.prefix + " " + message);
         }
     }
 
@@ -77,7 +141,7 @@ class CustomLogger{
      */
     public fatal(message: string){
         if(LogLevel.Fatal <= this.level){
-            console.error("[FATAL]" + this.prefix + " " + message);
+            this.printer.fatal("[FATAL]" + this.prefix + " " + message);
         }
     }
 
@@ -88,7 +152,7 @@ class CustomLogger{
      */
     public warn(message: string){
         if(LogLevel.Warning <= this.level){
-            console.warn("[WARNING]" + this.prefix + " " + message);
+            this.printer.warn("[WARNING]" + this.prefix + " " + message);
         }
     }
 
@@ -99,7 +163,7 @@ class CustomLogger{
      */
     public debug(message: string){
         if(LogLevel.Debug <= this.level){
-            console.debug("[DEBUG]" + this.prefix + " " + message);
+            this.printer.debug("[DEBUG]" + this.prefix + " " + message);
         }
     }
 
@@ -110,7 +174,7 @@ class CustomLogger{
      * @param message -  The message to log
      */
     public custom(prefix: string, message: string){
-        console.debug(prefix + this.prefix + " " + message);
+        this.printer.custom(prefix + this.prefix + " " + message);
     }
 }
 
@@ -128,4 +192,3 @@ export const FOVLogger = new CustomLogger({prefix: "[FOV]"});
 
 /// Logger for VGIP related things
 export const VGIPLogger = new CustomLogger({prefix: "[VGIP]"});
-
