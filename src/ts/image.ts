@@ -4,9 +4,9 @@ import {ImageLogger} from "./logger";
 import exifr from "exifr";
 
 export interface LoadedGeoMetadata{
-    latitude?: number;
-    longtitude?: number;
-    bearing?: number;
+    latitude?: number | null;
+    longtitude?: number | null;
+    bearing?: number | null;
 }
 
 /**
