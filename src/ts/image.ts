@@ -3,6 +3,12 @@ import { FOV } from "./fov";
 import {ImageLogger} from "./logger";
 import exifr from "exifr";
 
+export interface LoadedGeoMetadata{
+    latitude?: number;
+    longtitude?: number;
+    bearing?: number;
+}
+
 /**
  * When an image is loaded into page, modifies specied FOV
  */
@@ -10,6 +16,7 @@ export class Image {
     /// The FOV which should be modified when an image is uploaded
     /// TODO - do this through event listeners, abstract away from FOV
     private viewModel : FOV;
+    private metadataFuns: { (data: LoadedGeoMetadata): void; }[];
 
     /**
      * Constructs an image object
@@ -18,6 +25,7 @@ export class Image {
      */
     constructor(viewModel : FOV){
         this.viewModel = viewModel;
+        this.metadataFuns = [];
         const uploadFile = document.getElementById("uploadFile");
         if(uploadFile != null) {
             uploadFile.onchange = (e) => this.onUploadImage(e);
@@ -63,7 +71,7 @@ export class Image {
         if(imageElement != null) {
             const fileReader = new FileReader();
 
-            fileReader.onload = (e) => this.onImageRead(e, imageFile, imageElement as HTMLImageElement);
+            fileReader.onload = (e) => this.onImageUploaded(e, imageFile, imageElement as HTMLImageElement);
             fileReader.readAsDataURL(imageFile);
         } else {
             ImageLogger.error("Could not get the image element on which to display the video.  This means something went wrong with the html.  This is a bug, to fix it try restarting the application.  If that does not help, submit a bug report.");
@@ -76,7 +84,7 @@ export class Image {
      * @param imageElement - The html image element on which to display the image
      * @returns A boolean representing whether the opperation of reading the image was successful, true if it was, false if it wasn't
      */
-    public onImageRead(fileReader: ProgressEvent<FileReader>, imageFile: File, imageElement: HTMLImageElement) : boolean{
+    public onImageUploaded(fileReader: ProgressEvent<FileReader>, imageFile: File, imageElement: HTMLImageElement) : boolean{
         // Display the loaded image
         if(fileReader.target) {
             imageElement.onload = createImageOnCanvas;
@@ -85,8 +93,11 @@ export class Image {
                 imageElement.src = fileReader.target.result as string;
 
                 // Attempt to get the heading
-                exifr.parse(imageFile).then(output => {
-                    const heading = output.GPSImgDirection;
+                exifr.parse(imageFile).then(parsedOutput => {
+                    const heading = parsedOutput.GPSImgDirection;
+                    for(const fn of this.metadataFuns){
+                        fn({latitude: parsedOutput.latitude, longtitude: parsedOutput.longitude, bearing: parsedOutput.GPSImgDirection});
+                    }
                     if(heading != null) {
                         this.viewModel.heading = Cesium.Math.toRadians(heading as number);
                     } else {
@@ -112,6 +123,15 @@ export class Image {
         }
         // Failure, reading the image was not successful
         return false;
+    }
+
+    /**
+     * Run a function when the metadata of the image is read
+     *
+     * @param fun - The function to run, taking an object of the image bearing, latitude and longtitude, which may not all be present
+     */
+    public onImageMetadataRead(fun: (data: LoadedGeoMetadata) => void): void{
+        this.metadataFuns.push(fun);
     }
 }
 
