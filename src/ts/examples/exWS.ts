@@ -18,6 +18,12 @@ import { Video } from "../video";
 
 /* eslint @typescript-eslint/no-magic-numbers: off */
 
+// The tiles used below are open source at https://github.com/stamen/terrain-classic
+const terrainProvider = new Cesium.UrlTemplateImageryProvider({
+    url : "http://tile.stamen.com/terrain/{z}/{x}/{y}.jpg",
+    credit : "Map tiles by Stamen, licenced under CC BY 3.0.",
+});
+
 // Set up basic viewer
 const viewer = new Cesium.Viewer("cesiumContainer", {
     animation: false,
@@ -27,7 +33,9 @@ const viewer = new Cesium.Viewer("cesiumContainer", {
     infoBox: false,
     vrButton: false,
     fullscreenButton: false,
+    imageryProvider: terrainProvider,
 });
+
 
 //
 // See https://www.cesium.com/docs/tutorials/creating-entities/
