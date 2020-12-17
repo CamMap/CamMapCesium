@@ -1,5 +1,3 @@
-import * as Cesium from "cesium_source/Cesium";
-import { FOV } from "./fov";
 import {ImageLogger} from "./logger";
 import exifr from "exifr";
 
@@ -13,18 +11,12 @@ export interface LoadedGeoMetadata{
  * When an image is loaded into page, modifies specied FOV
  */
 export class Image {
-    /// The FOV which should be modified when an image is uploaded
-    /// TODO - do this through event listeners, abstract away from FOV
-    private viewModel : FOV;
     private metadataFuns: { (data: LoadedGeoMetadata): void; }[];
 
     /**
      * Constructs an image object
-     *
-     * @param viewModel - The FOV object that the image EXIF should modify
      */
-    constructor(viewModel : FOV){
-        this.viewModel = viewModel;
+    constructor(){
         this.metadataFuns = [];
         const uploadFile = document.getElementById("uploadFile");
         if(uploadFile != null) {
@@ -92,36 +84,19 @@ export class Image {
                 // The user selected an image file
                 imageElement.src = fileReader.target.result as string;
 
-                // Attempt to get the heading
+                // Attempt to get the metadata
                 exifr.parse(imageFile).then(parsedOutput => {
-                    const heading = parsedOutput.GPSImgDirection;
                     for(const fn of this.metadataFuns){
                         fn({latitude: parsedOutput.latitude, longtitude: parsedOutput.longitude, bearing: parsedOutput.GPSImgDirection});
                     }
-                    if(heading != null) {
-                        this.viewModel.heading = Cesium.Math.toRadians(heading as number);
-                    } else {
-                        ImageLogger.warn("Heading of uploaded image could not be found, the image most likely does not have this(i.e the image does not have heading metadata).  To fix this, check that the image does have heading metadata and if it does, submit a bug report.  This is to do with the orientation of the image.");
-                    }
                 }).catch(() => {
-                    ImageLogger.warn("The image metadata could not be parsed, is the image metadata in the correct format.  If it is, submit a bug report.  However, this is most likely a problem with the image.");
-                });
-
-                // Attempt to get the GPS cordinates
-                exifr.gps(imageElement.src).then((gps) => {
-                    if(gps.latitude != null && gps.longitude != null){
-                        this.viewModel.latitude = gps.latitude;
-                        this.viewModel.longitude = gps.longitude;
-                    } else {
-                        ImageLogger.warn("GPS coordinates of image could not be found, the image most likely does not have this(i.e the image is not geolocated).  To fix this, check that the image does have latitude and lontitude metadata and if it does, submit a bug report.");
-                    }
-                }).catch(() => {
-                    ImageLogger.warn("The image metadata could not be parsed, is the image metadata in the correct format.  If it is, submit a bug report.  However, this is most likely a problem with the image.");
+                    ImageLogger.warn("The image metadata could not be parsed, is the image metadata in the correct format?  If it is, submit a bug report.  However, this is most likely a problem with the image.");
+                    return false;
                 });
                 return true;
             }
         }
-        // Failure, reading the image was not successful
+        // There was no filereader target
         return false;
     }
 

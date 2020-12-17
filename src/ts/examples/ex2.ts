@@ -36,7 +36,7 @@ const fovCam = new FOV(
 );
 
 //Create a new imageHandler
-new Image(fovCam);
+new Image();
 new Video();
 
 // Draw a the actual camera view

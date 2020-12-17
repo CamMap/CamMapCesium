@@ -12,6 +12,7 @@ import * as Cesium from "cesium_source/Cesium";
 import { CanvasHandler } from "../canvasHandler";
 import { Cartesian2 } from "cesium_source/Cesium";
 import { FOV } from "./../fov";
+import { GeneralLogger } from "../logger";
 import { Image } from "./../image";
 import { Video } from "../video";
 
@@ -39,7 +40,25 @@ const fovCam = new FOV(
 );
 
 //Create a new imageHandler
-new Image(fovCam);
+const imageHandler = new Image();
+imageHandler.onImageMetadataRead((imageGeoMetadata) => {
+    if(imageGeoMetadata.latitude != null){
+        fovCam.latitude = imageGeoMetadata.latitude;
+    } else {
+        GeneralLogger.warn("No latitude metadata parsed in the image");
+    }
+    if(imageGeoMetadata.longtitude != null){
+        fovCam.longitude = imageGeoMetadata.longtitude;
+    } else {
+        GeneralLogger.warn("No longtitude metadata parsed in the image");
+    }
+    if(imageGeoMetadata.bearing != null){
+        fovCam.heading = imageGeoMetadata.bearing;
+    } else {
+        GeneralLogger.warn("No bearing/heading metadata parsed in the image");
+    }
+});
+
 new Video();
 
 // Get the canvas and listen for clicks
@@ -55,6 +74,7 @@ if(canvas != null && canvas instanceof HTMLCanvasElement){
         fovCam.drawLineFromPercentToScreen(fovCam.viewer, precentPoints, fovCam.viewer.scene.globe.ellipsoid);
     });
 }
+
 
 // Draw a the actual camera view
 //FovCam.draw(viewer.scene);
