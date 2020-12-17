@@ -81,6 +81,11 @@ export class FOV {
         this.viewer.scene.primitives.remove(this.curDrawn);
         this.draw(this.viewer.scene);
         this.redrawLinesToEdges();
+
+        // Call event listeners
+        for(const fn of this.posFns){
+            fn(this.elevation);
+        }
     }
 
     /** @returns The elevation of the camera, in meters */
@@ -159,6 +164,12 @@ export class FOV {
         this.viewer.scene.primitives.remove(this.curDrawn);
         this.draw(this.viewer.scene);
         this.redrawLinesToEdges();
+
+
+        // Call event listeners
+        for(const fn of this.headingFns){
+            fn(this.heading);
+        }
     }
 
     /** @returns The heading of the camera, in radians */
@@ -185,6 +196,11 @@ export class FOV {
         this.viewer.scene.primitives.remove(this.curDrawn);
         this.draw(this.viewer.scene);
         this.redrawLinesToEdges();
+
+        // Call event listeners
+        for(const fn of this.tiltFns){
+            fn(this.tilt);
+        }
     }
 
     /** @returns The tilt of the camera, in radians */
@@ -203,6 +219,11 @@ export class FOV {
         this.viewer.scene.primitives.remove(this.curDrawn);
         this.draw(this.viewer.scene);
         this.redrawLinesToEdges();
+
+        // Call event listeners
+        for(const fn of this.fovFns){
+            fn(this.fovDeg);
+        }
     }
 
     /** @returns The fov of the camera, in radians */
@@ -221,6 +242,11 @@ export class FOV {
         this.viewer.scene.primitives.remove(this.curDrawn);
         this.draw(this.viewer.scene);
         this.redrawLinesToEdges();
+
+        // Call event listeners
+        for(const fn of this.aspectRatioFns){
+            fn(this.aspectRatio);
+        }
     }
 
     /** @returns The aspect ratio of the camera */
@@ -577,11 +603,6 @@ export class FOV {
         positionEv.oninput = e => {
             this.elevation = Number((e.target as HTMLInputElement).value);
             FOVLogger.debug("Updated Elevation");
-
-            // Call event listeners
-            for(const fn of this.posFns){
-                fn(this.elevation);
-            }
         };
     }
 
@@ -604,11 +625,6 @@ export class FOV {
         headingEv.oninput = e => {
             this.heading = Cesium.Math.toRadians(Number((e.target as HTMLInputElement).value));
             FOVLogger.debug("Updated Heading");
-
-            // Call event listeners
-            for(const fn of this.headingFns){
-                fn(this.heading);
-            }
         };
     }
 
@@ -631,11 +647,6 @@ export class FOV {
         tiltEv.oninput = e => {
             this.tilt = Cesium.Math.toRadians(Number((e.target as HTMLInputElement).value));
             FOVLogger.debug("Updated Tilt");
-
-            // Call event listeners
-            for(const fn of this.tiltFns){
-                fn(this.tilt);
-            }
         };
     }
 
@@ -658,11 +669,6 @@ export class FOV {
         fovEv.oninput = e => {
             this.fovDeg = Cesium.Math.toRadians(Number((e.target as HTMLInputElement).value));
             FOVLogger.debug("Updated FOV");
-
-            // Call event listeners
-            for(const fn of this.fovFns){
-                fn(this.fovDeg);
-            }
         };
     }
 
@@ -685,11 +691,6 @@ export class FOV {
         arEv.oninput = e => {
             this.aspectRatio = Number((e.target as HTMLInputElement).value);
             FOVLogger.debug("Updated Aspect Ratio");
-
-            // Call event listeners
-            for(const fn of this.aspectRatioFns){
-                fn(this.aspectRatio);
-            }
         };
     }
 
