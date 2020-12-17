@@ -1,5 +1,4 @@
 import * as Cesium from "cesium_source/Cesium";
-import { Cartesian2 } from "cesium_source/Cesium";
 import { FOV } from "./fov";
 import {ImageLogger} from "./logger";
 import exifr from "exifr";
@@ -114,30 +113,6 @@ export class Image {
         // Failure, reading the image was not successful
         return false;
     }
-
-    /**
-     * Draws a line from the FOV camera to the 3D map when the cavas is clicked
-     * TODO - Do this through event listeners where FOV draws the line only through
-     * event listeners
-     */
-    addPoints(): void{
-        const localViewModel = this.viewModel;
-        const canvasNull = document.getElementById("imageVideoCanvas");
-        if(canvasNull != null){
-            const canvas = canvasNull as HTMLCanvasElement;
-            canvas.addEventListener("click", function(e){
-                const span = document.getElementById("image-cord");
-                const points = getCanvasCursorPosition(canvas, e);
-                if(span != null){
-                    span.innerText = `X: ${points[0]}, Y: ${points[1]}`;
-                }
-                const precentPoints = new Cartesian2(Number(points[1] / canvas.clientHeight), Number(points[0] / canvas.clientWidth));
-                localViewModel.drawLineFromPercentToScreen(localViewModel.viewer, precentPoints, localViewModel.viewer.scene.globe.ellipsoid);
-            });
-        } else {
-            ImageLogger.error("Could not get the canvas on which to display the image.  This means something went wrong with the html.  This is a bug, to fix it try restarting the application.  If that does not help, submit a bug report.");
-        }
-    }
 }
 
 /**
@@ -159,18 +134,4 @@ function createImageOnCanvas(){
     } else {
         ImageLogger.error("Unable to find canvas element.  This is an error, to fix it, try restarting the application.  If that does not work, submit a bug report.");
     }
-}
-
-/**
- * Get the x and y points of the canvas where it was clicked
- *
- * @param canvas - The canvas the image is drawn onto
- * @param event - The mouse click event that triggered eventlistener
- * @returns [x,y] coordinates in a number array where [0,0] is the top left corner and [canvas.width, canvas.height] is the bottom right
- */
-function getCanvasCursorPosition(canvas: HTMLCanvasElement, event: MouseEvent): [number, number]{
-    const rect = canvas.getBoundingClientRect();
-    const x = -(event.clientX - rect.right);
-    const y = event.clientY - rect.top;
-    return [x, y];
 }

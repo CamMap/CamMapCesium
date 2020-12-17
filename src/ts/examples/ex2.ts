@@ -36,13 +36,8 @@ const fovCam = new FOV(
 );
 
 //Create a new imageHandler
-const imageHandler = new Image(fovCam);
+new Image(fovCam);
 new Video();
-
-//Listen for click events on the canvas
-window.onload = () =>{
-    imageHandler.addPoints();
-};
 
 // Draw a the actual camera view
 //FovCam.draw(viewer.scene);

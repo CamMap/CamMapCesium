@@ -9,9 +9,12 @@
  */
 
 import * as Cesium from "cesium_source/Cesium";
+import { CanvasHandler } from "../canvasHandler";
+import { Cartesian2 } from "cesium_source/Cesium";
 import { FOV } from "./../fov";
 import { Image } from "./../image";
 import { Video } from "../video";
+
 /* eslint @typescript-eslint/no-magic-numbers: off */
 
 // Set up basic viewer
@@ -36,13 +39,22 @@ const fovCam = new FOV(
 );
 
 //Create a new imageHandler
-const imageHandler = new Image(fovCam);
+new Image(fovCam);
 new Video();
 
-//Listen for click events on the canvas
-window.onload = () =>{
-    imageHandler.addPoints();
-};
+// Get the canvas and listen for clicks
+const canvas = document.getElementById("imageVideoCanvas");
+if(canvas != null && canvas instanceof HTMLCanvasElement){
+    const ch = new CanvasHandler(canvas);
+    const span = document.getElementById("image-cord");
+    ch.onClick(([x, y]) => {
+        if(span != null){
+            span.innerText = `X: ${x}, Y: ${y}`;
+        }
+        const precentPoints = new Cartesian2(Number(y / canvas.clientHeight), Number(x / canvas.clientWidth));
+        fovCam.drawLineFromPercentToScreen(fovCam.viewer, precentPoints, fovCam.viewer.scene.globe.ellipsoid);
+    });
+}
 
 // Draw a the actual camera view
 //FovCam.draw(viewer.scene);
