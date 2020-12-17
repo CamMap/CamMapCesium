@@ -92,22 +92,22 @@ fovCam.drawDebugCamera(viewer.scene);
 
 fovCam.setUpPosListener(document.getElementById("cam_height") as HTMLInputElement);
 fovCam.onPosChanged((val) => {
-    (document.getElementById("cam_height_result") as HTMLOutputElement).value = String(val); console.log("Called");
+    (document.getElementById("cam_height_result") as HTMLOutputElement).value = val.toFixed(2);
 });
 
 fovCam.setUpHeadingListener(document.getElementById("cam_heading") as HTMLInputElement);
 fovCam.onHeadingChanged((val) => {
-    (document.getElementById("cam_heading_result") as HTMLOutputElement).value = String(val);
+    (document.getElementById("cam_heading_result") as HTMLOutputElement).value = Cesium.Math.toDegrees(val).toFixed(2);
 });
 
 fovCam.setUpTiltListener(document.getElementById("cam_tilt") as HTMLInputElement);
 fovCam.onTiltChanged((val) => {
-    (document.getElementById("cam_tilt_result") as HTMLOutputElement).value = String(val);
+    (document.getElementById("cam_tilt_result") as HTMLOutputElement).value = Cesium.Math.toDegrees(val).toFixed(2);
 });
 
 fovCam.setUpFOVListener(document.getElementById("fov_hor") as HTMLInputElement);
 fovCam.onFOVChanged((val) => {
-    (document.getElementById("fov_hor_result") as HTMLOutputElement).value = String(val);
+    (document.getElementById("fov_hor_result") as HTMLOutputElement).value = val.toFixed(2);
 });
 
 fovCam.setShouldDrawEdgeLines(true);
