@@ -226,6 +226,11 @@ export class FOV {
         this.viewer.scene.primitives.remove(this.curDrawn);
         this.draw(this.viewer.scene);
         this.redrawLinesToEdges();
+
+        // Call event listeners
+        for(const fn of this.rollFns){
+            fn(this._roll);
+        }
     }
 
     /**
@@ -562,8 +567,11 @@ export class FOV {
             xAxisNew.z, yAxisNew.z, zAxisNew.z,
         );
 
-        const rotMatrix = Matrix3.fromHeadingPitchRoll(new HeadingPitchRoll(theta - Cesium.Math.PI_OVER_TWO, -phi + Cesium.Math.PI_OVER_TWO, roll));
+        const rotMatrix = Matrix3.fromHeadingPitchRoll(new HeadingPitchRoll(theta - Cesium.Math.PI_OVER_TWO, -phi + Cesium.Math.PI_OVER_TWO, 0));
         Matrix3.multiply(rotationMatrix, rotMatrix, rotationMatrix);
+
+        const rollMatrix = Matrix3.fromRotationZ(roll);
+        Matrix3.multiply(rotationMatrix, rollMatrix, rotationMatrix);
 
         return rotationMatrix;
     }
@@ -693,7 +701,7 @@ export class FOV {
      */
     public setUpRollListener(rollEv: HTMLInputElement): void{
         rollEv.oninput = e => {
-            this.tilt = Cesium.Math.toRadians(Number((e.target as HTMLInputElement).value));
+            this.roll = Cesium.Math.toRadians(Number((e.target as HTMLInputElement).value));
             FOVLogger.debug("Updated Roll");
         };
     }
