@@ -24,7 +24,7 @@ export class FOV {
     private _elevation: number;
     private theta: number;
     private phi: number;
-    private roll: number;
+    private _roll: number;
     public viewer: Cesium.Viewer;
     private fov: number;
     private camPoly: Cesium.PrimitiveCollection;
@@ -105,7 +105,7 @@ export class FOV {
             orientation: {
                 heading : this.theta,
                 pitch : this.phi,
-                roll : this.roll + Cesium.Math.PI_OVER_TWO,
+                roll : this._roll + Cesium.Math.PI_OVER_TWO,
             },
         });
 
@@ -131,7 +131,7 @@ export class FOV {
             orientation: {
                 heading : this.theta,
                 pitch : this.phi,
-                roll : this.roll + Cesium.Math.PI_OVER_TWO,
+                roll : this._roll + Cesium.Math.PI_OVER_TWO,
             },
         });
 
@@ -157,7 +157,7 @@ export class FOV {
             orientation: {
                 heading : this.theta,
                 pitch : this.phi,
-                roll : this.roll + Cesium.Math.PI_OVER_TWO,
+                roll : this._roll + Cesium.Math.PI_OVER_TWO,
             },
         });
 
@@ -189,7 +189,7 @@ export class FOV {
             orientation: {
                 heading : this.theta,
                 pitch : this.phi,
-                roll : this.roll + Cesium.Math.PI_OVER_TWO,
+                roll : this._roll + Cesium.Math.PI_OVER_TWO,
             },
         });
 
@@ -206,6 +206,32 @@ export class FOV {
     /** @returns The tilt of the camera, in radians */
     public get tilt(): number{
         return this.phi;
+    }
+
+    /**
+     * @param r - The new roll
+     */
+    public set roll(r: number){
+        this._roll = r;
+
+        this.camera.setView({
+            orientation: {
+                heading : this.theta,
+                pitch : this.phi,
+                roll : this._roll + Cesium.Math.PI_OVER_TWO,
+            },
+        });
+
+        this.viewer.scene.primitives.remove(this.curDrawn);
+        this.draw(this.viewer.scene);
+        this.redrawLinesToEdges();
+    }
+
+    /**
+     * @returns the roll of the camera
+     */
+    public get roll(): number{
+        return this._roll;
     }
 
     /**
@@ -277,7 +303,7 @@ export class FOV {
         this._elevation = elevation;
         this.theta = Cesium.Math.toRadians(theta);
         this.phi = Cesium.Math.toRadians(phi);
-        this.roll = Cesium.Math.toRadians(roll);
+        this._roll = Cesium.Math.toRadians(roll);
         this.fov = Cesium.Math.toRadians(fov);
         this.curDrawn = null;
         this.camPoly = this.viewer.scene.primitives.add(new Cesium.PrimitiveCollection());
@@ -306,7 +332,7 @@ export class FOV {
         const [, yAxisNew, zAxisNew] = this.getSurfaceTransform(long, lat, elevation);
 
         const rotationMatrix = this.getSurfaceRotationMatrix(
-            long, lat, elevation, this.theta, this.phi - Cesium.Math.PI_OVER_TWO, this.roll
+            long, lat, elevation, this.theta, this.phi - Cesium.Math.PI_OVER_TWO, this._roll
         );
         this.camera.frustum = frustum;
         this.camera.position = Cesium.Cartesian3.fromDegrees(long, lat, elevation);
@@ -325,7 +351,7 @@ export class FOV {
             orientation: {
                 heading : this.theta,
                 pitch : this.phi,
-                roll : this.roll + Cesium.Math.PI_OVER_TWO,
+                roll : this._roll + Cesium.Math.PI_OVER_TWO,
             },
         });
         this.viewer.scene.primitives.remove(this.curDrawn);
@@ -362,7 +388,7 @@ export class FOV {
             if(geoData.heading != null && geoData.heading != undefined){
                 // TODO, this does NOT work because there is no setter for this
                 // Make a roll setter and it should work
-                this.roll = geoData.heading;
+                this._roll = geoData.heading;
             }
         });
     }
@@ -374,7 +400,7 @@ export class FOV {
      */
     private draw(scene: Cesium.Scene): void {
         const rotationMatrix = this.getSurfaceRotationMatrix(
-            this.long, this.lat, this._elevation, this.theta, this.phi, this.roll
+            this.long, this.lat, this._elevation, this.theta, this.phi, this._roll
         );
 
         const geom: Cesium.Geometry | undefined = Cesium.FrustumGeometry.createGeometry(new Cesium.FrustumGeometry({
