@@ -33,6 +33,9 @@ const viewer = new Cesium.Viewer("cesiumContainer", {
     infoBox: false,
     vrButton: false,
     fullscreenButton: false,
+    baseLayerPicker: false,
+    sceneModePicker: false,
+    homeButton: false,
     imageryProvider: terrainProvider,
 });
 
