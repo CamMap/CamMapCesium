@@ -39,6 +39,7 @@ export class FOV {
     private posFns: { (val: number): void; }[];
     private headingFns: { (val: number): void; }[];
     private tiltFns: { (val: number): void; }[];
+    private rollFns: { (val: number): void; }[];
     private fovFns: { (val: number): void; }[];
     private aspectRatioFns: { (val: number): void; }[];
 
@@ -316,6 +317,7 @@ export class FOV {
         this.posFns = [];
         this.headingFns = [];
         this.tiltFns = [];
+        this.rollFns = [];
         this.fovFns = [];
         this.aspectRatioFns = [];
 
@@ -386,8 +388,6 @@ export class FOV {
             }
 
             if(geoData.heading != null && geoData.heading != undefined){
-                // TODO, this does NOT work because there is no setter for this
-                // Make a roll setter and it should work
                 this.roll = geoData.heading;
             }
         });
@@ -683,6 +683,28 @@ export class FOV {
      */
     public onTiltChanged(fun: (val: number) => void): void{
         this.tiltFns.push(fun);
+    }
+
+    /**
+     * Sets up the event listeners for the roll of the camera
+     *
+     * @param rollEv - The HTML input event to change the roll
+     * TODO Generalise this so it takes an event with a value, not just HTML events, perhaps use a different function for generic event
+     */
+    public setUpRollListener(rollEv: HTMLInputElement): void{
+        rollEv.oninput = e => {
+            this.tilt = Cesium.Math.toRadians(Number((e.target as HTMLInputElement).value));
+            FOVLogger.debug("Updated Roll");
+        };
+    }
+
+    /**
+     * Run a function when the roll is changed
+     *
+     * @param fun - function to run when the roll is changed, val is the new roll
+     */
+    public onRollChanged(fun: (val: number) => void): void{
+        this.rollFns.push(fun);
     }
 
     /**
