@@ -7,12 +7,21 @@
  *
  * @packageDocumentation
  */
-
 import * as Cesium from "cesium_source/Cesium";
+import { CanvasHandler } from "../canvasHandler";
+import { Cartesian2 } from "cesium_source/Cesium";
 import { FOV } from "./../fov";
+import { GeneralLogger } from "../logger";
 import { Image } from "./../image";
 import { Video } from "../video";
+
 /* eslint @typescript-eslint/no-magic-numbers: off */
+
+// The tiles used below are open source at https://github.com/stamen/terrain-classic
+const terrainProvider = new Cesium.UrlTemplateImageryProvider({
+    url : "http://tile.stamen.com/terrain/{z}/{x}/{y}.jpg",
+    credit : "Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL.",
+});
 
 // Set up basic viewer
 const viewer = new Cesium.Viewer("cesiumContainer", {
@@ -23,8 +32,12 @@ const viewer = new Cesium.Viewer("cesiumContainer", {
     infoBox: false,
     vrButton: false,
     fullscreenButton: false,
+    imageryProvider: terrainProvider,
+    terrainProvider : new Cesium.CesiumTerrainProvider({
+        url : "http://localhost:8082/tilesets/test_full_OS",
+    }),
 });
-
+viewer.scene.globe.depthTestAgainstTerrain = true;
 //
 // See https://www.cesium.com/docs/tutorials/creating-entities/
 // For creating entities
@@ -36,8 +49,41 @@ const fovCam = new FOV(
 );
 
 //Create a new imageHandler
-new Image();
+const imageHandler = new Image();
+imageHandler.onImageMetadataRead((imageGeoMetadata) => {
+    if(imageGeoMetadata.latitude != null){
+        fovCam.latitude = imageGeoMetadata.latitude;
+    } else {
+        GeneralLogger.warn("No latitude metadata parsed in the image");
+    }
+    if(imageGeoMetadata.longtitude != null){
+        fovCam.longitude = imageGeoMetadata.longtitude;
+    } else {
+        GeneralLogger.warn("No longtitude metadata parsed in the image");
+    }
+    if(imageGeoMetadata.bearing != null){
+        fovCam.heading = imageGeoMetadata.bearing;
+    } else {
+        GeneralLogger.warn("No bearing/heading metadata parsed in the image");
+    }
+});
+
 new Video();
+
+// Get the canvas and listen for clicks
+const canvas = document.getElementById("imageVideoCanvas");
+if(canvas != null && canvas instanceof HTMLCanvasElement){
+    const ch = new CanvasHandler(canvas);
+    const span = document.getElementById("image-cord");
+    ch.onClick(([x, y]) => {
+        if(span != null){
+            span.innerText = `X: ${x}, Y: ${y}`;
+        }
+        const precentPoints = new Cartesian2(Number(y / canvas.clientHeight), Number(x / canvas.clientWidth));
+        fovCam.drawLineFromPercentToScreen(fovCam.viewer, precentPoints, fovCam.viewer.scene.globe.ellipsoid);
+    });
+}
+
 
 // Draw a the actual camera view
 //FovCam.draw(viewer.scene);
