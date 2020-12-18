@@ -388,7 +388,7 @@ export class FOV {
             if(geoData.heading != null && geoData.heading != undefined){
                 // TODO, this does NOT work because there is no setter for this
                 // Make a roll setter and it should work
-                this._roll = geoData.heading;
+                this.roll = geoData.heading;
             }
         });
     }
