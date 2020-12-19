@@ -1,23 +1,23 @@
 /**
  * Handles the clicks on the side bar button
  */
-function onClickSideBarButton(): void{
-    const sideBar = document.getElementById("SideBarContainer");
-    if(sideBar != null){
-        if(sideBar.className == "sideBarClosed"){
-            sideBar.className = "sideBarOpen";
+function onClicksideBarSlidersButton(): void{
+    const sideBarSliders = document.getElementById("sideBarSlidersContainer");
+    if(sideBarSliders != null){
+        if(sideBarSliders.className == "sideBarSlidersClosed"){
+            sideBarSliders.className = "sideBarSlidersOpen";
             console.log("Side bar opened");
         } else {
-            sideBar.className = "sideBarClosed";
+            sideBarSliders.className = "sideBarSlidersClosed";
             console.log("Side bar closed");
         }
     }
 }
 
 /* Set up the on click listener */
-const sideBar = document.getElementById("sideBarButton");
-if(sideBar != null){
-    sideBar.onclick = onClickSideBarButton;
+const sideBarSliders = document.getElementById("sideBarSlidersButton");
+if(sideBarSliders != null){
+    sideBarSliders.onclick = onClicksideBarSlidersButton;
 } else {
-    console.log("sideBar is null");
+    console.log("sideBarSliders is null");
 }
