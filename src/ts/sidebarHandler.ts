@@ -3,12 +3,15 @@
  */
 function onClicksideBarSlidersButton(): void{
     const sideBarSliders = document.getElementById("sideBarSlidersContainer");
-    if(sideBarSliders != null){
+    const sideBarSliderButtons = document.getElementById("sideBarSlidersButtonContainer");
+    if(sideBarSliders != null && sideBarSliderButtons != null){
         if(sideBarSliders.className == "sideBarSlidersClosed"){
             sideBarSliders.className = "sideBarSlidersOpen";
+            sideBarSliderButtons.className = "sideBarSlidersOpen";
             console.log("Side bar opened");
         } else {
             sideBarSliders.className = "sideBarSlidersClosed";
+            sideBarSliderButtons.className = "sideBarSlidersClosed";
             console.log("Side bar closed");
         }
     }

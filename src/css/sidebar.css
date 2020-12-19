@@ -5,7 +5,7 @@
     background-color: gray;
     opacity: 0.8;
     position: absolute;
-    left: -20px;
+    left: -410px; /*-70 -340*/
     top: 10px;
     display: inline-block;
     padding: 5px;
@@ -27,7 +27,7 @@
 #sideBarSliders{
     width: 300px;
     height: 100%;
-    margin-left: 50px;
+    margin-left: 0px;
     position: relative;
     padding: 20px;
     background-color: red;
@@ -44,6 +44,12 @@
 }
 
 #sideBarSlidersContainer{
+    position: fixed;
+    transition-duration: 0.5s;
+    z-index: 2;
+}
+
+#sideBarSlidersButtonContainer{
     position: fixed;
     transition-duration: 0.5s;
     z-index: 2;
