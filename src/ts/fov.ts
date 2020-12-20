@@ -28,6 +28,7 @@ export class FOV {
     public viewer: Cesium.Viewer;
     private fov: number;
     private camPoly: Cesium.PrimitiveCollection;
+    private _distance: number;
 
     /** Should lines be drawn at the corners of the screen */
     private shouldDrawEdgeLines: boolean;
@@ -42,6 +43,7 @@ export class FOV {
     private rollFns: { (val: number): void; }[];
     private fovFns: { (val: number): void; }[];
     private aspectRatioFns: { (val: number): void; }[];
+    private distFns: { (val: number): void; }[];
 
     // TODO, shuold there be a seperate wrapper class for something like this?
     // So as FOV is not dependent on vgip reciever.
@@ -69,6 +71,30 @@ export class FOV {
     /** @returns The position of the camera */
     public get position(): Cesium.Cartesian3{
         return this.camera.position;
+    }
+
+    /**
+     * Set the distance to the far plane of the camera
+     */
+    public set distance(dist: number){
+        this._distance = dist;
+        this.camera.frustum.far = dist;
+
+        this.viewer.scene.primitives.remove(this.curDrawn);
+        this.draw(this.viewer.scene);
+        this.redrawLinesToEdges();
+
+        // Call event listeners
+        for(const fn of this.distFns){
+            fn(this._distance);
+        }
+    }
+
+    /**
+     * @returns The distance to the far plane of the camera
+     */
+    public get distance(): number{
+        return this._distance;
     }
 
     /** Set the elevation of the camera, in meters */
@@ -313,6 +339,7 @@ export class FOV {
         this.fov = Cesium.Math.toRadians(fov);
         this.curDrawn = null;
         this.camPoly = this.viewer.scene.primitives.add(new Cesium.PrimitiveCollection());
+        this._distance = far;
 
         this.linesToEdges = [];
 
@@ -325,6 +352,7 @@ export class FOV {
         this.rollFns = [];
         this.fovFns = [];
         this.aspectRatioFns = [];
+        this.distFns = [];
 
         this.vgipReciever = new VGIPReciever();
 
@@ -747,6 +775,28 @@ export class FOV {
      */
     public onFOVChanged(fun: (val: number) => void): void{
         this.fovFns.push(fun);
+    }
+
+    /**
+     * Sets up the event listeners for the distance of the camera
+     *
+     * @param distEv - The HTML input event to change the camera far distance
+     * TODO Generalise this so it takes an event with a value, not just HTML events, perhaps use a different function for generic event
+     */
+    public setUpDistanceListener(distEv: HTMLInputElement): void{
+        distEv.oninput = e => {
+            this.distance = Number((e.target as HTMLInputElement).value);
+            FOVLogger.debug("Updated distance");
+        };
+    }
+
+    /**
+     * Run a function when the distance is changed
+     *
+     * @param fun - function to run when the distance is changed, val is the new distance
+     */
+    public onDistanceChanged(fun: (val: number) => void): void{
+        this.distFns.push(fun);
     }
 
     /**

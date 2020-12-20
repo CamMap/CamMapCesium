@@ -45,7 +45,7 @@ viewer.scene.globe.depthTestAgainstTerrain = true;
 
 // Create a new fov
 const fovCam = new FOV(
-    viewer, [ -107.0, 40.0, 100000.0], 60, 1, 90, -45, 0, 10000, 300000
+    viewer, [ -107.0, 40.0, 100000.0], 60, 1, 90, -45, 0, 100, 300000
 );
 
 //Create a new imageHandler
@@ -109,6 +109,11 @@ fovCam.onTiltChanged((val) => {
 fovCam.setUpFOVListener(document.getElementById("fov_hor") as HTMLInputElement);
 fovCam.onFOVChanged((val) => {
     (document.getElementById("fov_hor_result") as HTMLOutputElement).value = String(val);
+});
+
+fovCam.setUpDistanceListener(document.getElementById("cam_dist") as HTMLInputElement);
+fovCam.onDistanceChanged((val) => {
+    (document.getElementById("cam_dist_result") as HTMLOutputElement).value = String(val);
 });
 
 //FovCam.setUpAspectRatioListener(document.getElementById("aspect_ratio") as HTMLInputElement);
