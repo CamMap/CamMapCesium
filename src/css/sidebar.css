@@ -24,28 +24,29 @@
 }
 
 /* Make into a class if implementing several */
-#sideBarSliders{
+.sideBarContents{
     width: 300px;
-    height: 100%;
+    height: 100vh;
     margin-left: 0px;
-    position: relative;
+    position: absolute;
     padding: 20px;
     background-color: red;
     transition-duration: 0.5s;
     display: inline-block;
 }
 
-.sideBarSlidersClosed{
+.sideBarClosed{
     right: -340px;
 }
 
-.sideBarSlidersOpen{
+.sideBarOpen{
     right: 0px;
 }
 
 #sideBarSlidersContainer{
     position: fixed;
     transition-duration: 0.5s;
+    width: 300px;
     z-index: 2;
 }
 
@@ -54,4 +55,8 @@
     transition-duration: 0.5s;
     z-index: 2;
     width: 50px;
+}
+
+#sideBarFovOptions{
+    display: inline;
 }
