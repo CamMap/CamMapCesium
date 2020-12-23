@@ -58,7 +58,7 @@ function canvasSetUp(fov: FOV){
                 span.innerText = `X: ${x}, Y: ${y}`;
             }
             const precentPoints = new Cartesian2(Number(y / canvas.clientHeight), Number(x / canvas.clientWidth));
-            fov.drawLineFromPercentToScreen(fov.viewer, precentPoints, fov.viewer.scene.globe.ellipsoid);
+            fov.drawLineFromPercentToScreen(fov.scene, precentPoints, fov.scene.globe.ellipsoid);
         });
     }
 }
@@ -138,7 +138,7 @@ export function generalBaseSetup(): [Cesium.Viewer, FOV]{
 
     // Create a new fov
     const fovCam = new FOV(
-        viewer, [ -107.0, 40.0, 100000.0], 60, 1, 90, -45, 0, 10000, 300000
+        viewer.scene, [ -107.0, 40.0, 100000.0], 60, 1, 90, -45, 0, 10000, 300000
     );
 
     imageSetup(fovCam);

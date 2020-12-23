@@ -191,10 +191,6 @@
             "unix"
         ],
         "lines-between-class-members": "off",
-        "multiline-comment-style": [
-            "error",
-            "separate-lines"
-        ],
         "new-parens": [
             "error"
         ],

@@ -47,7 +47,7 @@ const viewer = new Cesium.Viewer("cesiumContainer", {
 
 // Create a new fov
 const fovCam = new FOV(
-    viewer, [ -107.0, 40.0, 100000.0], 60, 1, 90, -45, 0, 10000, 300000
+    viewer.scene, [ -107.0, 40.0, 100000.0], 60, 1, 90, -45, 0, 10000, 300000
 );
 
 //Create a new imageHandler
@@ -82,7 +82,7 @@ if(canvas != null && canvas instanceof HTMLCanvasElement){
             span.innerText = `X: ${x}, Y: ${y}`;
         }
         const precentPoints = new Cartesian2(Number(y / canvas.clientHeight), Number(x / canvas.clientWidth));
-        fovCam.drawLineFromPercentToScreen(fovCam.viewer, precentPoints, fovCam.viewer.scene.globe.ellipsoid);
+        fovCam.drawLineFromPercentToScreen(fovCam.scene, precentPoints, fovCam.scene.globe.ellipsoid);
     });
 }
 

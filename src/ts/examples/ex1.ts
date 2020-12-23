@@ -30,7 +30,7 @@ const viewer = new Cesium.Viewer("cesiumContainer", {
 
 // Create a new fov
 const fovCam = new FOV(
-    viewer, [40.0, -107.0, 100000.0], 60, 1, 90, -45, 0, 10000, 300000
+    viewer.scene, [40.0, -107.0, 100000.0], 60, 1, 90, -45, 0, 10000, 300000
 );
 
 // Draw a the actual camera view

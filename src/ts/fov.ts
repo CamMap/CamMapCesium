@@ -12,7 +12,7 @@ import { VideoGeoData } from "./vgip";
 
 
 /**
- * A wrapper around cesium camera viewer.
+ * A wrapper around cesium camera.
  */
 export class FOV {
     private _position: Cesium.Cartesian3;
@@ -25,14 +25,14 @@ export class FOV {
     private theta: number;
     private phi: number;
     private _roll: number;
-    public viewer: Cesium.Viewer;
+    //Public viewer: Cesium.Viewer;
+    public scene: Cesium.Scene;
     private fov: number;
     private camPoly: Cesium.PrimitiveCollection;
     private _distance: number;
 
     /** Should lines be drawn at the corners of the screen */
     private shouldDrawEdgeLines: boolean;
-    private linesToEdges: Cesium.Entity[];
     private pointsToEdges: Cesium.PointPrimitiveCollection[];
 
     private curDrawn: Cesium.Primitive | null;
@@ -63,8 +63,8 @@ export class FOV {
         this.long = Cesium.Math.toDegrees(cartoPos.longitude);
         this._elevation = Cesium.Math.toDegrees(cartoPos.height);
 
-        this.viewer.scene.primitives.remove(this.curDrawn);
-        this.draw(this.viewer.scene);
+        this.scene.primitives.remove(this.curDrawn);
+        this.draw(this.scene);
         this.redrawLinesToEdges();
     }
 
@@ -80,8 +80,8 @@ export class FOV {
         this._distance = dist;
         this.camera.frustum.far = dist;
 
-        this.viewer.scene.primitives.remove(this.curDrawn);
-        this.draw(this.viewer.scene);
+        this.scene.primitives.remove(this.curDrawn);
+        this.draw(this.scene);
         this.redrawLinesToEdges();
 
         // Call event listeners
@@ -105,8 +105,8 @@ export class FOV {
 
         this._elevation = ele;
 
-        this.viewer.scene.primitives.remove(this.curDrawn);
-        this.draw(this.viewer.scene);
+        this.scene.primitives.remove(this.curDrawn);
+        this.draw(this.scene);
         this.redrawLinesToEdges();
 
         // Call event listeners
@@ -136,8 +136,8 @@ export class FOV {
             },
         });
 
-        this.viewer.scene.primitives.remove(this.curDrawn);
-        this.draw(this.viewer.scene);
+        this.scene.primitives.remove(this.curDrawn);
+        this.draw(this.scene);
         this.redrawLinesToEdges();
     }
 
@@ -162,8 +162,8 @@ export class FOV {
             },
         });
 
-        this.viewer.scene.primitives.remove(this.curDrawn);
-        this.draw(this.viewer.scene);
+        this.scene.primitives.remove(this.curDrawn);
+        this.draw(this.scene);
         this.redrawLinesToEdges();
     }
 
@@ -188,8 +188,8 @@ export class FOV {
             },
         });
 
-        this.viewer.scene.primitives.remove(this.curDrawn);
-        this.draw(this.viewer.scene);
+        this.scene.primitives.remove(this.curDrawn);
+        this.draw(this.scene);
         this.redrawLinesToEdges();
 
 
@@ -220,8 +220,8 @@ export class FOV {
             },
         });
 
-        this.viewer.scene.primitives.remove(this.curDrawn);
-        this.draw(this.viewer.scene);
+        this.scene.primitives.remove(this.curDrawn);
+        this.draw(this.scene);
         this.redrawLinesToEdges();
 
         // Call event listeners
@@ -249,8 +249,8 @@ export class FOV {
             },
         });
 
-        this.viewer.scene.primitives.remove(this.curDrawn);
-        this.draw(this.viewer.scene);
+        this.scene.primitives.remove(this.curDrawn);
+        this.draw(this.scene);
         this.redrawLinesToEdges();
 
         // Call event listeners
@@ -274,8 +274,8 @@ export class FOV {
     public set fovDeg(f: number){
         (this.camera.frustum as PerspectiveFrustum).fov = f;
 
-        this.viewer.scene.primitives.remove(this.curDrawn);
-        this.draw(this.viewer.scene);
+        this.scene.primitives.remove(this.curDrawn);
+        this.draw(this.scene);
         this.redrawLinesToEdges();
 
         // Call event listeners
@@ -297,8 +297,8 @@ export class FOV {
     public set aspectRatio(ar: number){
         (this.camera.frustum as PerspectiveFrustum).aspectRatio = ar;
 
-        this.viewer.scene.primitives.remove(this.curDrawn);
-        this.draw(this.viewer.scene);
+        this.scene.primitives.remove(this.curDrawn);
+        this.draw(this.scene);
         this.redrawLinesToEdges();
 
         // Call event listeners
@@ -315,7 +315,7 @@ export class FOV {
     /**
      * Constructs an FOV object, call draw() to draw it in a scene
      *
-     * @param viewer - The cesium viewer to be used (should this be scene)
+     * @param scene - The cesium scene to be used (should this be scene)
      * @param lat_long_elevation -  The laditude, longtitude and elevation of the camera position
      * @param fov - The FOV of the camera
      * @param aspectRatio - The aspect ratio of the camera
@@ -326,10 +326,10 @@ export class FOV {
      * @param far - The far plane distance of the camera
      */
     constructor(
-        viewer: Cesium.Viewer, [long, lat, elevation]: [number, number, number], fov: number, aspectRatio: number, theta: number, phi: number, roll: number, near: number, far: number
+        scene: Cesium.Scene, [long, lat, elevation]: [number, number, number], fov: number, aspectRatio: number, theta: number, phi: number, roll: number, near: number, far: number
     ) {
         this._position = Cesium.Cartesian3.fromDegrees(long, lat, elevation);
-        this.viewer = viewer;
+        this.scene = scene;
         this.long = long;
         this.lat = lat;
         this._elevation = elevation;
@@ -338,10 +338,8 @@ export class FOV {
         this._roll = Cesium.Math.toRadians(roll);
         this.fov = Cesium.Math.toRadians(fov);
         this.curDrawn = null;
-        this.camPoly = this.viewer.scene.primitives.add(new Cesium.PrimitiveCollection());
+        this.camPoly = this.scene.primitives.add(new Cesium.PrimitiveCollection());
         this._distance = far;
-
-        this.linesToEdges = [];
 
         this.pointsToEdges = [];
         this.shouldDrawEdgeLines = false;
@@ -356,7 +354,7 @@ export class FOV {
 
         this.vgipReciever = new VGIPReciever();
 
-        this.camera = new Cesium.Camera(viewer.scene);
+        this.camera = new Cesium.Camera(scene);
         const frustum = new Cesium.PerspectiveFrustum({
             fov: this.fov,
             aspectRatio: aspectRatio,
@@ -389,8 +387,8 @@ export class FOV {
                 roll : this._roll + Cesium.Math.PI_OVER_TWO,
             },
         });
-        this.viewer.scene.primitives.remove(this.curDrawn);
-        this.draw(this.viewer.scene);
+        this.scene.primitives.remove(this.curDrawn);
+        this.draw(this.scene);
         this.redrawLinesToEdges();
     }
 
@@ -476,57 +474,53 @@ export class FOV {
     private redrawLinesToEdges(): void{
         //First remove the lines ot the edges
         this.removeLinesToEdges();
-        this.camPoly.removeAll();
 
         // Draw line to Top Right, Top Left
         let returnLine = this.drawLineFromPercentToScreen(
-            this.viewer,
+            this.scene,
             new Cesium.Cartesian2(0.0, 0.0),
-            this.viewer.scene.globe.ellipsoid,
+            this.scene.globe.ellipsoid,
             true
         );
         if(returnLine != null){
-            const [l, p] = returnLine;
-            this.linesToEdges.push(l);
+            const p = returnLine;
             this.pointsToEdges.push(p);
         }
 
         // Draw line to Bottom Right, Top Left
         returnLine = this.drawLineFromPercentToScreen(
-            this.viewer,
+            this.scene,
             new Cesium.Cartesian2(1.0, 0.0),
-            this.viewer.scene.globe.ellipsoid,
+            this.scene.globe.ellipsoid,
             true
         );
         if(returnLine != null){
-            const [l, p] = returnLine;
-            this.linesToEdges.push(l);
+            const p = returnLine;
             this.pointsToEdges.push(p);
         }
 
         // Draw line to Top Right, Bottom Left
         returnLine = this.drawLineFromPercentToScreen(
-            this.viewer,
+            this.scene,
             new Cesium.Cartesian2(0.0, 1.0),
-            this.viewer.scene.globe.ellipsoid,
+            this.scene.globe.ellipsoid,
             true
         );
         if(returnLine != null){
-            const [l, p] = returnLine;
-            this.linesToEdges.push(l);
+            const p = returnLine;
             this.pointsToEdges.push(p);
         }
 
         // Draw line to Bottom Right, Bottom Left
         returnLine = this.drawLineFromPercentToScreen(
-            this.viewer,
+            this.scene,
             new Cesium.Cartesian2(1.0, 1.0),
-            this.viewer.scene.globe.ellipsoid,
+            this.scene.globe.ellipsoid,
             true
         );
         if(returnLine != null){
-            const [l, p] = returnLine;
-            this.linesToEdges.push(l);
+            const p = returnLine;
+
             this.pointsToEdges.push(p);
         }
         this.drawCamPolygon();
@@ -537,10 +531,10 @@ export class FOV {
      */
     private drawCamPolygon(): void{
         // Get edge points, then draw polygon
-        const topLeft = this.getCamPointPercent(this.viewer, new Cartesian2(0, 0), this.viewer.scene.globe.ellipsoid);
-        const topRight = this.getCamPointPercent(this.viewer, new Cartesian2(0, 1), this.viewer.scene.globe.ellipsoid);
-        const bottomLeft = this.getCamPointPercent(this.viewer, new Cartesian2(1, 0), this.viewer.scene.globe.ellipsoid);
-        const bottomRight = this.getCamPointPercent(this.viewer, new Cartesian2(1, 1), this.viewer.scene.globe.ellipsoid);
+        const topLeft = this.getCamPointPercent(this.scene, new Cartesian2(0, 0), this.scene.globe.ellipsoid);
+        const topRight = this.getCamPointPercent(this.scene, new Cartesian2(0, 1), this.scene.globe.ellipsoid);
+        const bottomLeft = this.getCamPointPercent(this.scene, new Cartesian2(1, 0), this.scene.globe.ellipsoid);
+        const bottomRight = this.getCamPointPercent(this.scene, new Cartesian2(1, 1), this.scene.globe.ellipsoid);
         const POINT_FIVE = 0.5;
 
         if(topLeft != undefined && topRight != undefined && bottomLeft != undefined && bottomRight != undefined){
@@ -572,11 +566,9 @@ export class FOV {
      *
      */
     private removeLinesToEdges(): void{
-        for(const l of this.linesToEdges){
-            this.viewer.entities.remove(l);
-        }
+        this.camPoly.removeAll();
         for(const p of this.pointsToEdges){
-            this.viewer.scene.primitives.remove(p);
+            this.scene.primitives.remove(p);
         }
     }
 
@@ -640,8 +632,10 @@ export class FOV {
         const phiGrad = new Cartesian3(0, 0, 0);
         Cartesian3.subtract(cartesianPoint, Cartesian3.fromDegrees(lat, long + smallChange, elevation), phiGrad);
 
-        // Create a new axis where the x basis vector is pointing tangent to the theta axis
-        // And y basis vector is pointing tangent to the phi axis
+        /*
+         * Create a new axis where the x basis vector is pointing tangent to the theta axis
+         * And y basis vector is pointing tangent to the phi axis
+         */
         const xAxisNew = new Cartesian3(0, 0, 0);
         Cartesian3.normalize(thetaGrad, xAxisNew);
 
@@ -837,40 +831,45 @@ export class FOV {
      * Draws a line from the a pixel on the camera screen to the point that pixel maps to
      * on an ellipsoid
      *
-     * @param viewer - The cesium viewer
+     * @param scene - The cesium scene
      * @param pixel - The pixel coordinate on the camera screen
      * @param ellipsoid - The ellopsoid the point should map to
      * @param frustrum - If the line/point is part of the frustum or not
      * @returns The line and point drawn to the sphere
      */
     public drawLineFromPixelToScreen(
-        viewer: Cesium.Viewer, pixel: Cartesian2, ellipsoid: Cesium.Ellipsoid, frustrum: boolean
-    ): [Cesium.Entity, Cesium.PointPrimitiveCollection] | null {
-        //If we are building frusrum use pickEllipsoid (doesnt consider terrain), if we are selecting a point from canvas use ray casting.
-        //This is a performace related design choice. Ray casting is an expensive action and updating the frustrum 30 times a second will effect performance.
-        let pointOnSphere = undefined;
-        if(frustrum == true){
-            pointOnSphere = this.camera.pickEllipsoid(pixel, ellipsoid);
-        } else {
-            const cameraRay = this.getRayFromScreen(pixel);
-            pointOnSphere = viewer.scene.globe.pick(cameraRay, viewer.scene);
-        }
-
+        scene: Cesium.Scene, pixel: Cartesian2, ellipsoid: Cesium.Ellipsoid, frustrum: boolean
+    ): Cesium.PointPrimitiveCollection | null {
+        const pointOnSphere = this.camera.pickEllipsoid(pixel, ellipsoid);
+        const alpha = 0.9;
+        const green = 0.5;
         if(pointOnSphere != undefined) {
-            pointOnSphere = pointOnSphere as Cesium.Cartesian3;
-            const ellipsoidGeodesic = new Cesium.EllipsoidGeodesic(Cesium.Cartographic.fromCartesian(this.position, ellipsoid), Cesium.Cartographic.fromCartesian(pointOnSphere, ellipsoid));
-            const line = viewer.entities.add({
-                name: "Cam Line",
-                polyline: {
-                    positions: [Cesium.Cartesian3.fromDegrees(this.long, this.lat, this._elevation), pointOnSphere],
-                    width: 10,
-                    arcType: Cesium.ArcType.NONE,
-                    material: new Cesium.PolylineArrowMaterialProperty(Cesium.Color.GREEN),
-                },
-            });
+            this.camPoly.add(new Cesium.Primitive({
+                geometryInstances : new Cesium.GeometryInstance({
+                    geometry : new Cesium.PolylineGeometry({
+                        positions : [Cesium.Cartesian3.fromDegrees(this.long, this.lat, this._elevation), pointOnSphere],
+                        width : 5.0,
+                        arcType: Cesium.ArcType.NONE,
+                        vertexFormat : Cesium.PolylineMaterialAppearance.VERTEX_FORMAT,
+                    }),
+                }),
+                appearance : new Cesium.PolylineMaterialAppearance({
+                    material : new Cesium.Material({
+                        fabric : {
+                            type : "Color",
+                            uniforms : {
+                                color : new Cesium.Color(
+                                    0, green, 0, alpha
+                                ),
+                            },
+                        },
+                    }),
+                }),
+                asynchronous: false,
+            }));
 
             // Keep this as a point cloud for now, so we can add more points in the future
-            const points = viewer.scene.primitives.add(new Cesium.PointPrimitiveCollection());
+            const points = scene.primitives.add(new Cesium.PointPrimitiveCollection());
             points.add({
                 position: pointOnSphere,
                 color: Cesium.Color.GREEN,
@@ -880,7 +879,8 @@ export class FOV {
 
             //Add lables to points that have been added from the canvas
             if(frustrum == false){
-                const labels = viewer.scene.primitives.add(new Cesium.LabelCollection());
+                const ellipsoidGeodesic = new Cesium.EllipsoidGeodesic(Cesium.Cartographic.fromCartesian(this.position, ellipsoid), Cesium.Cartographic.fromCartesian(pointOnSphere, ellipsoid));
+                const labels = scene.primitives.add(new Cesium.LabelCollection());
                 labels.add({
                     position : pointOnSphere,
                     text : ellipsoidGeodesic.surfaceDistance.toString() + " meters",
@@ -889,7 +889,7 @@ export class FOV {
                     font: "14px monospace",
                 });
             }
-            return [line, points];
+            return points;
         }
         return null;
     }
@@ -942,26 +942,25 @@ export class FOV {
      * A convience function to draw a point at a set distance away from the camera on a
      * ray projected through the camera screen
      *
-     * @param viewer - The cesium viewer
+     * @param scene - The cesium scene
      * @param pixel - The camera pixel to project the ray from
      * @param dist - The distance away from the camera where the point is located
      */
-    public placePointAtDistFromScreen(viewer: Cesium.Viewer, pixel: Cartesian2, dist: number): void {
+    public placePointAtDistFromScreen(scene: Cesium.Scene, pixel: Cartesian2, dist: number): void {
         const point = this.getPointAtDistFromScreen(pixel, dist);
 
-        // Add the polylien
-        viewer.entities.add({
-            name: "Cam Line to ray distance",
-            polyline: {
-                positions: [Cesium.Cartesian3.fromDegrees(this.long, this.lat, this._elevation), point],
-                width: 10,
-                arcType: Cesium.ArcType.NONE,
-                material: new Cesium.PolylineArrowMaterialProperty(Cesium.Color.GREEN),
-            },
+
+        // Add the polyline
+        const lines = scene.primitives.add(new Cesium.PolylineCollection());
+        lines.add({
+            positions: [Cesium.Cartesian3.fromDegrees(this.long, this.lat, this._elevation), point],
+            width: 10,
+            arcType: Cesium.ArcType.NONE,
+            material: new Cesium.PolylineArrowMaterialProperty(Cesium.Color.GREEN),
         });
 
         // Now just draw the point
-        const points = viewer.scene.primitives.add(new Cesium.PointPrimitiveCollection());
+        const points = scene.primitives.add(new Cesium.PointPrimitiveCollection());
         points.add({
             position: point,
             color: Cesium.Color.BLUE,
@@ -973,32 +972,32 @@ export class FOV {
      * Draws a line from the a percent(0.0 - 1.0) on the camera screen to the point that pixel maps to
      * on an ellipsoid
      *
-     * @param viewer - The cesium viewer
+     * @param scene - The cesium scene
      * @param percent - The percent coordinate on the camera screen, bewteen 0.0 and 1.0
      * @param ellipsoid - The ellopsoid the point should map to
      * @param frustum - If the line/point is part of the frustum or not
      * @returns The line and point drawn to the sphere
      */
-    public drawLineFromPercentToScreen(
-        viewer: Cesium.Viewer, percent: Cartesian2, ellipsoid: Cesium.Ellipsoid, frustum = false
-    ): [Cesium.Entity, Cesium.PointPrimitiveCollection] | null {
-        const maxHeight = viewer.canvas.clientHeight;
-        const maxWidth = viewer.canvas.clientWidth;
+    drawLineFromPercentToScreen(
+        scene: Cesium.Scene, percent: Cartesian2, ellipsoid: Cesium.Ellipsoid, frustum = false
+    ): Cesium.PointPrimitiveCollection | null {
+        const maxHeight = scene.canvas.clientHeight;
+        const maxWidth = scene.canvas.clientWidth;
         const pixel = new Cesium.Cartesian2(maxWidth * percent.x, maxHeight * percent.y);
         return this.drawLineFromPixelToScreen(
-            viewer, pixel, ellipsoid, frustum
+            scene, pixel, ellipsoid, frustum
         );
     }
 
     /**
-     * @param viewer - The cesium viewer
+     * @param scene - The cesium scene
      * @param percent - The percent coordinate on the camera screen, bewteen 0.0 and 1.0
      * @param ellipsoid - The ellopsoid the point should map to
      * @returns The point on the sphere the pixel on the screen maps to
      */
-    public getCamPointPercent(viewer: Cesium.Viewer, percent: Cartesian2, ellipsoid: Cesium.Ellipsoid): Cesium.Cartesian3 | undefined{
-        const maxHeight = viewer.canvas.clientHeight;
-        const maxWidth = viewer.canvas.clientWidth;
+    getCamPointPercent(scene: Cesium.Scene, percent: Cartesian2, ellipsoid: Cesium.Ellipsoid): Cesium.Cartesian3 | undefined{
+        const maxHeight = scene.canvas.clientHeight;
+        const maxWidth = scene.canvas.clientWidth;
         const pixel = new Cesium.Cartesian2(maxWidth * percent.x, maxHeight * percent.y);
         return this.camera.pickEllipsoid(pixel, ellipsoid);
     }
