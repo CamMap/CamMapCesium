@@ -544,7 +544,7 @@ export class FOV {
         const POINT_FIVE = 0.5;
 
         if(topLeft != undefined && topRight != undefined && bottomLeft != undefined && bottomRight != undefined){
-            this.camPoly.add(new Cesium.GroundPrimitive({
+            this.camPoly.add(new Cesium.Primitive({
                 geometryInstances: new Cesium.GeometryInstance({
                     geometry: new Cesium.PolygonGeometry({
                         polygonHierarchy: new Cesium.PolygonHierarchy([topLeft, topRight, bottomRight, bottomLeft]),
@@ -561,7 +561,9 @@ export class FOV {
                 }),
                 appearance: new Cesium.PerInstanceColorAppearance({
                     closed: true,
+                    flat: true,
                 }),
+                asynchronous: false,
             }));
         }
     }
