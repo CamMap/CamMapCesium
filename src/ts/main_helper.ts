@@ -1,10 +1,10 @@
 import * as Cesium from "cesium_source/Cesium";
-import { CanvasHandler } from "../canvasHandler";
+import { CanvasHandler } from "./canvasHandler";
 import { Cartesian2 } from "cesium_source/Cesium";
-import { FOV } from "../fov";
-import { GeneralLogger } from "../logger";
-import { Image } from "../image";
-import { Video } from "../video";
+import { FOV } from "./fov";
+import { GeneralLogger } from "./logger";
+import { Image } from "./image";
+import { Video } from "./video";
 
 /* eslint @typescript-eslint/no-magic-numbers: off */
 
@@ -103,6 +103,7 @@ function setCameraView(camera: Cesium.Camera){
         },
     });
 }
+
 
 /**
  * Set up everything and return the viewer and the FOV objects

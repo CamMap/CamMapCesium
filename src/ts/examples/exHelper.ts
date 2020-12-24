@@ -1,3 +1,3 @@
-import { generalBaseSetup } from "./helper";
+import { generalBaseSetup } from "../main_helper";
 
 generalBaseSetup();
