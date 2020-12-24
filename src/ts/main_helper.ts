@@ -153,8 +153,19 @@ export function generalBaseSetup(): [Cesium.Viewer, FOV]{
 
     setCameraView(viewer.camera);
 
-    // TODO Set up reciever for 8081 for now, but need to let user select/input this in future
-    fovCam.setUpVGIPWebSocket("ws://localhost:8081");
-
     return [viewer, fovCam];
+}
+
+/**
+ * A wrapper over `FOV.setUpVGIPWebSocket()`, just so main does not need to change
+ * if the underlying implementation does
+ *
+ * TODO change this to use an interface for recieving VGIP connections
+ * And should return boolean representing success
+ *
+ * @param fov - The FOV camera
+ * @param websocketAddress - The websocket address to connect to
+ */
+export function setUpVGIPWebSocket(fov: FOV, websocketAddress: string): void{
+    fov.setUpVGIPWebSocket(websocketAddress);
 }
