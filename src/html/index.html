@@ -30,17 +30,22 @@
                 <!--Sliders-->
                 <div class="slidecontainer">
                     <p> Camera Distance: <output for="cam_dist" id="cam_dist_result">0</output><br>
-                        <input type="range" min="0" max="300000" value="10000" class="slider" id="cam_dist"></p>
+                        <input type="range" min="0" max="300000" value="10000" class="slider" id="cam_dist">
+                    </p>
                     <p> Horizontal FOV: <output for="fov_hor" id="fov_hor_result">0</output><br>
-                        <input type="range" min="0" max="180" value="0" class="slider" id="fov_hor"></p>
+                        <input type="range" min="0" max="180" value="0" class="slider" id="fov_hor">
+                    </p>
                     <!--<p>Aspect Ratio: <output for="aspect_ratio" id="aspect_ratio_result">0</output><br>
                     <input type="range" min="0.5" max="5.0" value="1.0" step="0.1" class="slider" id="aspect_ratio"></p>-->
                     <p>camera height: <output for="cam_height" id="cam_height_result">0</output><br>
-                        <input type="range" min="0" max="200000" value="0" class="slider" id="cam_height"></p>
+                        <input type="range" min="0" max="200000" value="0" class="slider" id="cam_height">
+                    </p>
                     <p>camera tilt: <output for="cam_tilt" id="cam_tilt_result">0</output><br>
-                        <input type="range" min="-180" max="180" value="0" class="slider" id="cam_tilt"></p>
+                        <input type="range" min="-180" max="180" value="0" class="slider" id="cam_tilt">
+                    </p>
                     <p>camera heading: <output for="cam_heading" id="cam_heading_result">0</output><br>
-                        <input type="range" min="0" max="360" value="0" class="slider" id="cam_heading"></p>
+                        <input type="range" min="0" max="360" value="0" class="slider" id="cam_heading">
+                    </p>
                 </div>
             </div>
         </div>
@@ -50,6 +55,15 @@
                     <p> Round camera(will increase processing requirements)
                         <input type="checkbox" id="shouldUseRoundCamera">
                     </p>
+                </div>
+            </div>
+        </div>
+        <div id="sideBarTerrain" class="sideBarContents sideBarClosed">
+            <div class="sliderbox">
+                <div class="slidecontainer">
+                    <label for="terSer">Terrain Server:</label>
+                    <input type="text" id="terSer" name="terSer"><br><br>
+                    <input type="button" value="Connect">
                 </div>
             </div>
         </div>
