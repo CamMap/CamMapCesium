@@ -104,6 +104,40 @@ function setCameraView(camera: Cesium.Camera){
     });
 }
 
+/**
+ * Sets up the terrain server button in the slidinng menu
+ * allowing for connecting to a terrain server and using it as a layer
+ *
+ * @param scene - The cesium scene onto which to add the terrain layer
+ */
+export function setupTerrainServerConnectButton(scene: Cesium.Scene): void{
+    const terSerButton = document.getElementById("terSerButton");
+    if(terSerButton != null){
+        terSerButton.onclick = () => {
+            const terSerText = document.getElementById("terSer");
+            if(terSerText != null){
+                const serverToConnectTo = (terSerText as HTMLInputElement).value;
+                if(serverToConnectTo != null){
+                    GeneralLogger.info("Attempting to connect to terrain server with address: " + serverToConnectTo);
+                    scene.terrainProvider = new Cesium.CesiumTerrainProvider({
+                        url : serverToConnectTo,
+                    });
+                }
+            } else {
+                GeneralLogger.warn("Could not find terrain server connect button, will be unable to add a terrain server, was this id renamed in the HTML?");
+            }
+        };
+    }
+
+    // Just set the terrain provider to the default flat EllipsoidTerrainProvider on disconnect
+    const terSerButtonDisconnect = document.getElementById("terSerButtonDisconnect");
+    if(terSerButtonDisconnect != null){
+        terSerButtonDisconnect.onclick = () => {
+            scene.terrainProvider = new Cesium.EllipsoidTerrainProvider();
+        };
+    }
+}
+
 
 /**
  * Set up everything and return the viewer and the FOV objects
@@ -136,6 +170,8 @@ export function generalBaseSetup(): [Cesium.Viewer, FOV]{
     // See https://www.cesium.com/docs/tutorials/creating-entities/
     // For creating entities
     //
+
+    setupTerrainServerConnectButton(viewer.scene);
 
     // Create a new fov
     const fovCam = new FOV(
