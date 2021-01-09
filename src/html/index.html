@@ -69,25 +69,28 @@
             </div>
         </div>
     </div>
-    <div class="grid">
-        <!--Cesium Map-->
+    <!--Cesium Map-->
+    <div id="mainContainer">
         <div class="mapbox">
             <div id="cesiumContainer"></div>
         </div>
         <div id="vid">
-            <div class="input-area">
-                <label>Choose an image/video</label>
-                <input type="file" id="uploadFile" name="image" />
-                <input type="file" id="uploadVideo" name="videoUpload" />
-                <span id="image-cord"></span>
-            </div>
-            <div class="previewImage">
-                <img id="target" alt="" />
-                <video id="videoUploaded" muted></video>
-                <canvas id="imageVideoCanvas"></canvas>
+            <div id="invid">
+                <div class="input-area">
+                    <label>Choose an image/video</label>
+                    <input type="file" id="uploadFile" name="image" />
+                    <input type="file" id="uploadVideo" name="videoUpload" />
+                    <span id="image-cord"></span>
+                </div>
+                <div class="previewImage">
+                    <img id="target" alt="" />
+                    <video id="videoUploaded" muted></video>
+                    <canvas id="imageVideoCanvas"></canvas>
+                </div>
             </div>
         </div>
     </div>
+
 </body>
 
 </html>
