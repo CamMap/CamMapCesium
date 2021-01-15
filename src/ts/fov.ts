@@ -33,7 +33,9 @@ export class FOV {
 
     /** Should lines be drawn at the corners of the screen */
     private shouldDrawEdgeLines: boolean;
-    private pointsToEdges: Cesium.PointPrimitiveCollection[];
+    private linesToEdges: Cesium.Entity[];
+    private pointsToEdges: Cesium.PointPrimitiveCollection;
+    private pointsAdded: Cesium.PointPrimitiveCollection;
 
     private curDrawn: Cesium.Primitive | null;
 
@@ -66,6 +68,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
+        this.checkPointsVisible();
     }
 
     /** @returns The position of the camera */
@@ -83,7 +86,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
-
+        this.checkPointsVisible();
         // Call event listeners
         for(const fn of this.distFns){
             fn(this._distance);
@@ -108,6 +111,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
+        this.checkPointsVisible();
 
         // Call event listeners
         for(const fn of this.posFns){
@@ -139,6 +143,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
+        this.checkPointsVisible();
     }
 
     /** @returns The latitude of the camera, in degrees */
@@ -165,6 +170,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
+        this.checkPointsVisible();
     }
 
     /** @returns The latitude of the camera, in degrees */
@@ -191,7 +197,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
-
+        this.checkPointsVisible();
 
         // Call event listeners
         for(const fn of this.headingFns){
@@ -223,6 +229,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
+        this.checkPointsVisible();
 
         // Call event listeners
         for(const fn of this.tiltFns){
@@ -252,6 +259,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
+        this.checkPointsVisible();
 
         // Call event listeners
         for(const fn of this.rollFns){
@@ -277,6 +285,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
+        this.checkPointsVisible();
 
         // Call event listeners
         for(const fn of this.fovFns){
@@ -300,6 +309,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
+        this.checkPointsVisible();
 
         // Call event listeners
         for(const fn of this.aspectRatioFns){
@@ -341,7 +351,11 @@ export class FOV {
         this.camPoly = this.scene.primitives.add(new Cesium.PrimitiveCollection());
         this._distance = far;
 
-        this.pointsToEdges = [];
+        this.linesToEdges = [];
+        this.pointsToEdges = new Cesium.PointPrimitiveCollection();
+        this.pointsAdded = new Cesium.PointPrimitiveCollection();
+        this.scene.primitives.add(this.pointsToEdges);
+        this.scene.primitives.add(this.pointsAdded);
         this.shouldDrawEdgeLines = false;
 
         this.posFns = [];
@@ -476,53 +490,40 @@ export class FOV {
         this.removeLinesToEdges();
 
         // Draw line to Top Right, Top Left
-        let returnLine = this.drawLineFromPercentToScreen(
+        this.drawLineFromPercentToScreen(
             this.scene,
             new Cesium.Cartesian2(0.0, 0.0),
             this.scene.globe.ellipsoid,
             true
         );
-        if(returnLine != null){
-            const p = returnLine;
-            this.pointsToEdges.push(p);
-        }
+
 
         // Draw line to Bottom Right, Top Left
-        returnLine = this.drawLineFromPercentToScreen(
+        this.drawLineFromPercentToScreen(
             this.scene,
             new Cesium.Cartesian2(1.0, 0.0),
             this.scene.globe.ellipsoid,
             true
         );
-        if(returnLine != null){
-            const p = returnLine;
-            this.pointsToEdges.push(p);
-        }
+
 
         // Draw line to Top Right, Bottom Left
-        returnLine = this.drawLineFromPercentToScreen(
+        this.drawLineFromPercentToScreen(
             this.scene,
             new Cesium.Cartesian2(0.0, 1.0),
             this.scene.globe.ellipsoid,
             true
         );
-        if(returnLine != null){
-            const p = returnLine;
-            this.pointsToEdges.push(p);
-        }
+
 
         // Draw line to Bottom Right, Bottom Left
-        returnLine = this.drawLineFromPercentToScreen(
+        this.drawLineFromPercentToScreen(
             this.scene,
             new Cesium.Cartesian2(1.0, 1.0),
             this.scene.globe.ellipsoid,
             true
         );
-        if(returnLine != null){
-            const p = returnLine;
 
-            this.pointsToEdges.push(p);
-        }
         this.drawCamPolygon();
     }
 
@@ -567,9 +568,7 @@ export class FOV {
      */
     private removeLinesToEdges(): void{
         this.camPoly.removeAll();
-        for(const p of this.pointsToEdges){
-            this.scene.primitives.remove(p);
-        }
+        this.pointsToEdges.removeAll();
     }
 
     /**
@@ -839,8 +838,15 @@ export class FOV {
      */
     public drawLineFromPixelToScreen(
         scene: Cesium.Scene, pixel: Cartesian2, ellipsoid: Cesium.Ellipsoid, frustrum: boolean
-    ): Cesium.PointPrimitiveCollection | null {
-        const pointOnSphere = this.camera.pickEllipsoid(pixel, ellipsoid);
+    ): boolean | null {
+        let pointOnSphere = undefined;
+        if(frustrum == true){
+            pointOnSphere = this.camera.pickEllipsoid(pixel, ellipsoid);
+        } else {
+            const cameraRay = this.getRayFromScreen(pixel);
+            pointOnSphere = scene.globe.pick(cameraRay, scene);
+        }
+
         const alpha = 0.9;
         const green = 0.5;
         if(pointOnSphere != undefined) {
@@ -869,13 +875,22 @@ export class FOV {
             }));
 
             // Keep this as a point cloud for now, so we can add more points in the future
-            const points = scene.primitives.add(new Cesium.PointPrimitiveCollection());
-            points.add({
-                position: pointOnSphere,
-                color: Cesium.Color.GREEN,
-                pixelSize: 10,
-                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-            });
+            if(frustrum != false){
+                this.pointsToEdges.add({
+                    position: pointOnSphere,
+                    color: Cesium.Color.GREEN,
+                    pixelSize: 10,
+                    heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                });
+            } else {
+                this.pointsAdded.add({
+                    position: pointOnSphere,
+                    color: Cesium.Color.GREEN,
+                    pixelSize: 10,
+                    heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                });
+            }
+
 
             //Add lables to points that have been added from the canvas
             if(frustrum == false){
@@ -889,7 +904,7 @@ export class FOV {
                     font: "14px monospace",
                 });
             }
-            return points;
+            return true;
         }
         return null;
     }
@@ -980,7 +995,7 @@ export class FOV {
      */
     drawLineFromPercentToScreen(
         scene: Cesium.Scene, percent: Cartesian2, ellipsoid: Cesium.Ellipsoid, frustum = false
-    ): Cesium.PointPrimitiveCollection | null {
+    ): boolean | null {
         const maxHeight = scene.canvas.clientHeight;
         const maxWidth = scene.canvas.clientWidth;
         const pixel = new Cesium.Cartesian2(maxWidth * percent.x, maxHeight * percent.y);
@@ -1010,5 +1025,47 @@ export class FOV {
      */
     public checkIntersection(boundingVolume: Cesium.BoundingRectangle | Cesium.BoundingSphere | Cesium.AxisAlignedBoundingBox | Cesium.OrientedBoundingBox): Cesium.Intersect {
         return this.camera.frustum.computeCullingVolume(this.camera.position, this.cameraDirection, this.cameraUp).computeVisibility(boundingVolume);
+    }
+
+    /**
+     *  Checks if a point is within the FOV object or not
+     *
+     * @param point - Point to check for intersection with the FOV object
+     * @returns The cesium intersect object
+     */
+    private checkPointIntersects(point : Cesium.PointPrimitive) : Cesium.Intersect{
+        const pointPos = point.position;
+        const pointWidth = point.pixelSize;
+        const boundingVolume = new Cesium.BoundingSphere(pointPos, pointWidth);
+        return this.checkIntersection(boundingVolume);
+    }
+
+    /**
+     * Checks if the points added from the canvas are visible to the camera
+     */
+    private checkPointsVisible(){
+        for(let i = 0; i < this.pointsAdded.length; i++){
+            if(this.checkPointIntersects(this.pointsAdded.get(i)) == Cesium.Intersect.INSIDE){
+                //Get the direction vector to the point given the camera current location
+                const dirVectorX = this.pointsAdded.get(i).position.x - this.position.x;
+                const dirVectorY = this.pointsAdded.get(i).position.y - this.position.y;
+                const dirVectorZ = this.pointsAdded.get(i).position.z - this.position.z;
+                const cameraRay = this.projectRayFromCameraPos(dirVectorX, dirVectorY, dirVectorZ);
+                const cameraIntersection = this.scene.globe.pick(cameraRay, this.scene);
+                console.log(cameraIntersection);
+                console.log(this.pointsAdded.get(i).position);
+                if(cameraIntersection != undefined){
+                    const cameraX = cameraIntersection.x;
+                    const cameraY = cameraIntersection.y;
+                    const cameraZ = cameraIntersection.z;
+                    //Allow for a margin of error
+                    if(Math.abs(cameraX - this.pointsAdded.get(i).position.x) < 1 && Math.abs(cameraY - this.pointsAdded.get(i).position.y) < 1 && Math.abs(cameraZ - this.pointsAdded.get(i).position.z) < 1){
+                        this.pointsAdded.get(i).color = Cesium.Color.GREEN;
+                    }
+                }
+            } else {
+                this.pointsAdded.get(i).color = Cesium.Color.RED;
+            }
+        }
     }
 }
