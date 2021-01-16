@@ -1061,6 +1061,8 @@ export class FOV {
                     //Allow for a margin of error
                     if(Math.abs(cameraX - this.pointsAdded.get(i).position.x) < 1 && Math.abs(cameraY - this.pointsAdded.get(i).position.y) < 1 && Math.abs(cameraZ - this.pointsAdded.get(i).position.z) < 1){
                         this.pointsAdded.get(i).color = Cesium.Color.GREEN;
+                    } else {
+                        this.pointsAdded.get(i).color = Cesium.Color.RED;
                     }
                 }
             } else {
