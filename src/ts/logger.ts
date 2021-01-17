@@ -29,6 +29,66 @@ interface Printer{
 }
 
 /**
+ * A printer for the logger to log to the embedded HTML console
+ */
+class HTMLPrinter implements Printer{
+    /**
+     * @param message - The message to print to the HTML
+     */
+    private print(message: string){
+        const para = document.createElement("p");
+        const loggerDiv = document.getElementById("loggercontainer");
+        para.className = "log";
+        para.innerHTML = message;
+        if(loggerDiv != null){
+            loggerDiv.appendChild(para);
+        }
+    }
+
+    /**
+     * @param message - The message to print to the console
+     */
+    public debug(message: string){
+        this.print(message);
+    }
+
+    /**
+     * @param message - The message to print to the console
+     */
+    public info(message: string){
+        this.print(message);
+    }
+
+    /**
+     * @param message - The message to print to the console
+     */
+    public warn(message: string){
+        this.print(message);
+    }
+
+    /**
+     * @param message - The message to print to the console
+     */
+    public error(message: string){
+        this.print(message);
+    }
+
+    /**
+     * @param message - The message to print to the console
+     */
+    public fatal(message: string){
+        this.print(message);
+    }
+
+    /**
+     * @param message - The message to print to the console
+     */
+    public custom(message: string){
+        this.print(message);
+    }
+}
+
+/**
  * A printer for the logger to log to the web console
  */
 class ConsolePrinter implements Printer{
@@ -82,12 +142,12 @@ class ConsolePrinter implements Printer{
 class CustomLogger{
     prefix: string;
     level: LogLevel;
-    printer: Printer;
+    printers: Printer[];
 
-    constructor(opts?: {prefix?: string, level?: LogLevel, printer?: Printer}){
+    constructor(opts?: {prefix?: string, level?: LogLevel, printer?: Printer[]}){
         this.prefix = "";
         this.level = LogLevel.Debug;
-        this.printer = new ConsolePrinter();
+        this.printers = [new ConsolePrinter(), new HTMLPrinter()];
         if(opts != undefined){
             if(opts.prefix != undefined){
                 this.prefix = opts.prefix;
@@ -96,7 +156,7 @@ class CustomLogger{
                 this.level = opts.level;
             }
             if(opts.printer != undefined){
-                this.printer = opts.printer;
+                this.printers = opts.printer;
             }
         }
     }
@@ -119,7 +179,9 @@ class CustomLogger{
      */
     public info(message: string){
         if(LogLevel.Info <= this.level){
-            this.printer.info("[INFO]" + this.prefix + " " + message);
+            for(const printer of this.printers){
+                printer.info("[INFO]" + this.prefix + " " + message);
+            }
         }
     }
 
@@ -130,7 +192,9 @@ class CustomLogger{
      */
     public error(message: string){
         if(LogLevel.Error <= this.level){
-            this.printer.error("[ERROR]" + this.prefix + " " + message);
+            for(const printer of this.printers){
+                printer.error("[ERROR]" + this.prefix + " " + message);
+            }
         }
     }
 
@@ -141,7 +205,9 @@ class CustomLogger{
      */
     public fatal(message: string){
         if(LogLevel.Fatal <= this.level){
-            this.printer.fatal("[FATAL]" + this.prefix + " " + message);
+            for(const printer of this.printers){
+                printer.fatal("[FATAL]" + this.prefix + " " + message);
+            }
         }
     }
 
@@ -152,7 +218,9 @@ class CustomLogger{
      */
     public warn(message: string){
         if(LogLevel.Warning <= this.level){
-            this.printer.warn("[WARNING]" + this.prefix + " " + message);
+            for(const printer of this.printers){
+                printer.warn("[WARNING]" + this.prefix + " " + message);
+            }
         }
     }
 
@@ -163,7 +231,9 @@ class CustomLogger{
      */
     public debug(message: string){
         if(LogLevel.Debug <= this.level){
-            this.printer.debug("[DEBUG]" + this.prefix + " " + message);
+            for(const printer of this.printers){
+                printer.debug("[DEBUG]" + this.prefix + " " + message);
+            }
         }
     }
 
@@ -174,7 +244,9 @@ class CustomLogger{
      * @param message -  The message to log
      */
     public custom(prefix: string, message: string){
-        this.printer.custom(prefix + this.prefix + " " + message);
+        for(const printer of this.printers){
+            printer.custom(prefix + this.prefix + " " + message);
+        }
     }
 }
 

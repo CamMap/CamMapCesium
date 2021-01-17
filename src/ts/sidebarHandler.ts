@@ -9,6 +9,9 @@ const sideBarFOV = document.getElementById("sideBarFovOptions");
 const sideBarTerrainButton = document.getElementById("sideBarTerrainButton");
 const sideBarTerrain = document.getElementById("sideBarTerrain");
 
+const sideBarLoggerButton = document.getElementById("sideBarLoggerButton");
+const sideBarLogger = document.getElementById("sideBarLogger");
+
 const sideBarSlidersContainer = document.getElementById("sideBarSlidersContainer") as HTMLElement;
 
 /**
@@ -59,11 +62,17 @@ if(sideBarTerrain != null && sideBarTerrainButton != null && sideBarSliderButton
     console.log("sideBarTerrain is null");
 }
 
+if(sideBarLogger != null && sideBarLoggerButton != null && sideBarSliderButtons != null){
+    sideBarLoggerButton.onclick = () => onClicksideBarSlidersButton(sideBarSliderButtons, sideBarLogger);
+} else {
+    console.log("sideBarTerrain is null");
+}
+
 /**
  * Set the z-index of all the HTML slider menus to 0
  */
 function CloseAll(){
-    if(sideBarSliders != null && sideBarFOV != null && sideBarTerrain != null){
+    if(sideBarSliders != null && sideBarFOV != null && sideBarTerrain != null && sideBarLogger != null){
         sideBarSliders.classList.remove("sideBarOpen");
         sideBarSliders.classList.add("sideBarClosed");
 
@@ -72,6 +81,9 @@ function CloseAll(){
 
         sideBarTerrain.classList.remove("sideBarOpen");
         sideBarTerrain.classList.add("sideBarClosed");
+
+        sideBarLogger.classList.remove("sideBarOpen");
+        sideBarLogger.classList.add("sideBarClosed");
         // TODO Should use zIndex if the sliding menus are already open
         // Should use zIndex?  It is more clear that a menu switch has occured if one goes
         // In and another comes out, will need more thought on this.
