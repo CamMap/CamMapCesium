@@ -18,9 +18,10 @@ const sideBarSlidersContainer = document.getElementById("sideBarSlidersContainer
  * Handles the clicks on a side bar button
  *
  * @param buttonContainer - The container for the buttons
+ * @param buttonElement - The button of the slected slider been selected
  * @param slider - The actual sliding menu to slide out
  */
-function onClicksideBarSlidersButton(buttonContainer: HTMLElement, slider: HTMLElement): void{
+function onClicksideBarSlidersButton(buttonContainer: HTMLElement, buttonElement: HTMLElement, slider: HTMLElement): void{
     if(slider.classList.contains("sideBarClosed")){
         CloseAll();
         slider.classList.remove("sideBarClosed");
@@ -29,6 +30,8 @@ function onClicksideBarSlidersButton(buttonContainer: HTMLElement, slider: HTMLE
         buttonContainer.classList.add("sideBarOpen");
         sideBarSlidersContainer.classList.remove("sideBarClosed");
         sideBarSlidersContainer.classList.add("sideBarOpen");
+        buttonElement.classList.remove("notSelectedButton");
+        buttonElement.classList.add("selectedButton");
         console.log("Side bar opened");
     } else {
         CloseAll();
@@ -38,6 +41,8 @@ function onClicksideBarSlidersButton(buttonContainer: HTMLElement, slider: HTMLE
         buttonContainer.classList.add("sideBarClosed");
         sideBarSlidersContainer.classList.remove("sideBarOpen");
         sideBarSlidersContainer.classList.add("sideBarClosed");
+        buttonElement.classList.remove("selectedButton");
+        buttonElement.classList.add("notSelectedButton");
         console.log("Side bar closed");
     }
 }
@@ -45,25 +50,25 @@ function onClicksideBarSlidersButton(buttonContainer: HTMLElement, slider: HTMLE
 /* Set up the on click listener */
 
 if(sideBarSliders != null && sideBarSlidersButton != null && sideBarSliderButtons != null){
-    sideBarSlidersButton.onclick = () => onClicksideBarSlidersButton(sideBarSliderButtons, sideBarSliders);
+    sideBarSlidersButton.onclick = () => onClicksideBarSlidersButton(sideBarSliderButtons, sideBarSlidersButton, sideBarSliders);
 } else {
     console.log("sideBarSliders is null");
 }
 
 if(sideBarFOV != null && sideBarFOVButton != null && sideBarSliderButtons != null){
-    sideBarFOVButton.onclick = () => onClicksideBarSlidersButton(sideBarSliderButtons, sideBarFOV);
+    sideBarFOVButton.onclick = () => onClicksideBarSlidersButton(sideBarSliderButtons, sideBarFOVButton, sideBarFOV);
 } else {
     console.log("sideBarFOV is null");
 }
 
 if(sideBarTerrain != null && sideBarTerrainButton != null && sideBarSliderButtons != null){
-    sideBarTerrainButton.onclick = () => onClicksideBarSlidersButton(sideBarSliderButtons, sideBarTerrain);
+    sideBarTerrainButton.onclick = () => onClicksideBarSlidersButton(sideBarSliderButtons, sideBarTerrainButton, sideBarTerrain);
 } else {
     console.log("sideBarTerrain is null");
 }
 
 if(sideBarLogger != null && sideBarLoggerButton != null && sideBarSliderButtons != null){
-    sideBarLoggerButton.onclick = () => onClicksideBarSlidersButton(sideBarSliderButtons, sideBarLogger);
+    sideBarLoggerButton.onclick = () => onClicksideBarSlidersButton(sideBarSliderButtons, sideBarLoggerButton, sideBarLogger);
 } else {
     console.log("sideBarTerrain is null");
 }
@@ -73,6 +78,16 @@ if(sideBarLogger != null && sideBarLoggerButton != null && sideBarSliderButtons 
  */
 function CloseAll(){
     if(sideBarSliders != null && sideBarFOV != null && sideBarTerrain != null && sideBarLogger != null){
+        sideBarSlidersButton?.classList.remove("selectedButton");
+        sideBarFOVButton?.classList.remove("selectedButton");
+        sideBarTerrainButton?.classList.remove("selectedButton");
+        sideBarLoggerButton?.classList.remove("selectedButton");
+
+        sideBarSlidersButton?.classList.add("notSelectedButton");
+        sideBarFOVButton?.classList.add("notSelectedButton");
+        sideBarTerrainButton?.classList.add("notSelectedButton");
+        sideBarLoggerButton?.classList.add("notSelectedButton");
+
         sideBarSliders.classList.remove("sideBarOpen");
         sideBarSliders.classList.add("sideBarClosed");
 
