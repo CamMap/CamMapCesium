@@ -29,7 +29,9 @@ export class FOV {
     public scene: Cesium.Scene;
     private fov: number;
     private camPoly: Cesium.PrimitiveCollection;
+    private terrainScanningGeometryPrimitive: Cesium.PrimitiveCollection;
     private _distance: number;
+    private terrainScanningResolution;
 
     /** Should lines be drawn at the corners of the screen */
     private shouldDrawEdgeLines: boolean;
@@ -51,6 +53,20 @@ export class FOV {
     // So as FOV is not dependent on vgip reciever.
     // There should, do this with the setUpListeners functions
     private vgipReciever: VGIPReciever;
+
+    // Should only the rectangular simlple FOV be shown
+    public shouldDisplayBorderFOV: boolean;
+
+    // Should terrain scanning be used
+    public shouldUseTerrainScanning: boolean;
+
+    // Should an outline be shown for each plane on the terrain scanning camera
+    public shouldDisplayInnerOutline:boolean;
+
+    // If terrain scanning should not be used, should the Earth boundry, i.e a sphere be used for collision detection
+    // Or should the terrain be taken into consideration
+    // If clipping is on, the can be left off as this and clipping are equivilant
+    private shouldUseEarthBoundry: boolean;
 
     /* Getters & Setters */
 
@@ -338,6 +354,9 @@ export class FOV {
     constructor(
         scene: Cesium.Scene, [long, lat, elevation]: [number, number, number], fov: number, aspectRatio: number, theta: number, phi: number, roll: number, near: number, far: number
     ) {
+        const DEFAULT_TERRAIN_RESOLTION = 5;
+        this.terrainScanningResolution = DEFAULT_TERRAIN_RESOLTION;
+
         this._position = Cesium.Cartesian3.fromDegrees(long, lat, elevation);
         this.scene = scene;
         this.long = long;
@@ -349,6 +368,7 @@ export class FOV {
         this.fov = Cesium.Math.toRadians(fov);
         this.curDrawn = null;
         this.camPoly = this.scene.primitives.add(new Cesium.PrimitiveCollection());
+        this.terrainScanningGeometryPrimitive = this.scene.primitives.add(new Cesium.PrimitiveCollection());
         this._distance = far;
 
         this.linesToEdges = [];
@@ -367,6 +387,14 @@ export class FOV {
         this.distFns = [];
 
         this.vgipReciever = new VGIPReciever();
+
+        // Don't do terrain scanning by default, it is a relativly intensive process
+        // And so need a good computer to support it well
+        // Will just show the rectangular camera (by default)
+        this.shouldUseTerrainScanning = false;
+        this.shouldDisplayInnerOutline = false;
+        this.shouldDisplayBorderFOV = true;
+        this.shouldUseEarthBoundry = false;
 
         this.camera = new Cesium.Camera(scene);
         const frustum = new Cesium.PerspectiveFrustum({
@@ -444,32 +472,34 @@ export class FOV {
      * @param scene - The cesium scene in which the object should be drawn
      */
     private draw(scene: Cesium.Scene): void {
-        const rotationMatrix = this.getSurfaceRotationMatrix(
-            this.long, this.lat, this._elevation, this.theta, this.phi, this._roll
-        );
+        if(this.shouldDisplayBorderFOV){
+            const rotationMatrix = this.getSurfaceRotationMatrix(
+                this.long, this.lat, this._elevation, this.theta, this.phi, this._roll
+            );
 
-        const geom: Cesium.Geometry | undefined = Cesium.FrustumGeometry.createGeometry(new Cesium.FrustumGeometry({
-            frustum: this.camera.frustum as Cesium.PerspectiveFrustum,
-            origin: Cesium.Cartesian3.fromDegrees(this.long, this.lat, this._elevation),
-            orientation: Cesium.Quaternion.fromRotationMatrix(rotationMatrix),
-        }));
+            const geom: Cesium.Geometry | undefined = Cesium.FrustumGeometry.createGeometry(new Cesium.FrustumGeometry({
+                frustum: this.camera.frustum as Cesium.PerspectiveFrustum,
+                origin: Cesium.Cartesian3.fromDegrees(this.long, this.lat, this._elevation),
+                orientation: Cesium.Quaternion.fromRotationMatrix(rotationMatrix),
+            }));
 
-        if(geom !== undefined) {
-            const instance = new Cesium.GeometryInstance({
-                geometry: geom,
-            });
+            if(geom !== undefined) {
+                const instance = new Cesium.GeometryInstance({
+                    geometry: geom,
+                });
 
-            const material = Cesium.Material.fromType("Color");
-            const alpha = 0.5;
-            material.uniforms.color = Cesium.Color.ORANGE.withAlpha(alpha);
+                const material = Cesium.Material.fromType("Color");
+                const alpha = 0.5;
+                material.uniforms.color = Cesium.Color.ORANGE.withAlpha(alpha);
 
-            this.curDrawn = scene.primitives.add(new Cesium.Primitive({
-                geometryInstances: instance,
-                appearance: new Cesium.MaterialAppearance({
-                    material: material,
-                }),
-                asynchronous: false,
-            })) as Cesium.Primitive;
+                this.curDrawn = scene.primitives.add(new Cesium.Primitive({
+                    geometryInstances: instance,
+                    appearance: new Cesium.MaterialAppearance({
+                        material: material,
+                    }),
+                    asynchronous: false,
+                })) as Cesium.Primitive;
+            }
         }
     }
 
@@ -523,8 +553,12 @@ export class FOV {
             this.scene.globe.ellipsoid,
             true
         );
-
-        this.drawCamPolygon();
+        //This.drawCamPolygon();
+        if(!this.shouldDisplayBorderFOV){
+            // Only draw this if the rectangle FOV is not being drawn
+            // Could draw both in the future, but currently both are the same color so it doesn't look very good
+            this.mapScanningPointsToTerrain(this.terrainScanningResolution);
+        }
     }
 
     /**
@@ -567,6 +601,7 @@ export class FOV {
      *
      */
     private removeLinesToEdges(): void{
+        this.terrainScanningGeometryPrimitive.removeAll();
         this.camPoly.removeAll();
         this.pointsToEdges.removeAll();
     }
@@ -923,10 +958,13 @@ export class FOV {
     /**
      * Project a ray from the camera to a set distance
      *
-     * @param pixel - the camera pixel to project the ray from
+     * @param pixelPercent - the camera pixel to project the ray from
      * @returns The cesium ray from the point on the pixel on the screen
      */
-    public getRayFromScreen(pixel: Cartesian2): Cesium.Ray {
+    public getRayFromScreen(pixelPercent: Cartesian2): Cesium.Ray {
+        const maxHeight = this.scene.canvas.clientHeight;
+        const maxWidth = this.scene.canvas.clientWidth;
+        const pixel = new Cesium.Cartesian2(maxWidth * pixelPercent.x, maxHeight * pixelPercent.y);
         return this.camera.getPickRay(pixel);
     }
 
@@ -1018,6 +1056,38 @@ export class FOV {
     }
 
     /**
+     * This is the same as `getCamPointPercent` but uses raycasing
+     *
+     * @param percent - The percent coordinate on the camera screen, bewteen 0.0 and 1.0
+     * @param ellipsoid - The ellopsoid the point should map to
+     * @returns The point on the sphere the pixel on the screen maps to
+     */
+    public getCamPointPercentRaycasting(percent: Cartesian2, ellipsoid: Cesium.Ellipsoid): Cesium.Cartesian3 | undefined{
+        //Get the first intersection point of a ray and an ellipsoid.
+        const ray = this.getRayFromScreen(percent);
+        const intersection = Cesium.IntersectionTests.rayEllipsoid(ray, ellipsoid);
+        if(intersection == undefined){
+            return undefined;
+        }
+        const point = Cesium.Ray.getPoint(ray, intersection.start);
+        return point;
+    }
+
+    /**
+     * This is the same as `getCamPointPercent` but uses globe pick
+     *
+     * @param percent - The percent coordinate on the camera screen, bewteen 0.0 and 1.0
+     * @param globe - The globe the point should map to
+     * @returns The point on the sphere the pixel on the screen maps to
+     */
+    public getCamPointPercentGlobePick(percent: Cartesian2, globe: Cesium.Globe): Cesium.Cartesian3 | undefined{
+        //Get the first intersection point of a ray and a globe.
+        const ray = this.getRayFromScreen(percent);
+        const point = globe.pick(ray, this.scene);
+        return point;
+    }
+
+    /**
      * Computes the intersection of the view and a bounding box
      *
      * @param boundingVolume - The bounding volume of the object of which to check the intersection
@@ -1025,6 +1095,151 @@ export class FOV {
      */
     public checkIntersection(boundingVolume: Cesium.BoundingRectangle | Cesium.BoundingSphere | Cesium.AxisAlignedBoundingBox | Cesium.OrientedBoundingBox): Cesium.Intersect {
         return this.camera.frustum.computeCullingVolume(this.camera.position, this.cameraDirection, this.cameraUp).computeVisibility(boundingVolume);
+    }
+
+    private terrainScanningWindowPoints: number[][][] = [];
+    private terrainPoints: Cesium.Cartesian3[][] = [];
+
+    /**
+     * Take the x and y size of the camera window and split it into rectangles
+     * The camera size can be treated as between 0 and 1 in this case.  (Then scale up if nessessary)
+     */
+    private splitViewWindowIntoRects(){
+        const invRes = 1 / this.terrainScanningResolution;
+        for(let y = 0; y <= 1; y += invRes){
+            this.terrainScanningWindowPoints.push([]);
+            for(let x = 0; x <= 1; x += invRes){
+                this.terrainScanningWindowPoints[y].push([x, y]);
+            }
+        }
+    }
+
+    /**
+     * Get the points on the terrain
+     *
+     * @param resolution - How many points there should be on the x and y axis
+     */
+    private getTerrainPoints(resolution: number){
+        const TWO = 2;
+        this.terrainPoints = [];
+        const xDiff = 1 / resolution;
+        for(let i = 0; i <= resolution; i += 1){
+            this.terrainPoints.push([]);
+            const y = xDiff * i;
+            for(let j = 0; j <= resolution; j += 1){
+                // If using terrain, use the globe pick version, if not, use a much cheaper alternative
+                // Which can just use the property of a sphere being a sphere and get the points on its surface
+                let p;
+                if(this.shouldUseTerrainScanning){
+                    p = this.getCamPointPercentGlobePick(new Cartesian2(xDiff * j, y), this.scene.globe);
+                } else if(this.shouldUseEarthBoundry) {
+                    p = this.getCamPointPercent(this.scene, new Cartesian2(xDiff * j, y), this.scene.globe.ellipsoid);
+                } else {
+                    p = undefined;
+                }
+
+                if(p != undefined && Cartesian3.distanceSquared(p, this.camera.position) < this.distance ** TWO){
+                    this.terrainPoints[i].push(p);
+                } else {
+                    this.terrainPoints[i].push(this.getPointAtDistFromScreen(new Cartesian2(xDiff * j, y), this.distance));
+                }
+            }
+        }
+    }
+
+    /**
+     * Use pickEllipsoid to map the points to the terrain
+     *
+     * @param resolution - How many points there should be on the x and y axis
+     */
+    public mapScanningPointsToTerrain(resolution: number) : void{
+        this.getTerrainPoints(resolution);
+        const POINT_FIVE = 0.5;
+
+        const material = Cesium.Material.fromType("Color");
+        const alpha = POINT_FIVE;
+        material.uniforms.color = Cesium.Color.ORANGE.withAlpha(alpha);
+
+        for(let i = 0; i < this.terrainPoints.length - 1; i += 1){
+            for(let j = 0; j < this.terrainPoints.length - 1; j += 1){
+                this.terrainScanningGeometryPrimitive.add(new Cesium.Primitive({
+                    geometryInstances: new Cesium.GeometryInstance({
+                        geometry: new Cesium.PolygonGeometry({
+                            polygonHierarchy: new Cesium.PolygonHierarchy([
+                                this.terrainPoints[i][j],
+                                this.terrainPoints[i + 1][j],
+                                this.terrainPoints[i + 1][j + 1],
+                                this.terrainPoints[i][j + 1],
+                            ]),
+                            perPositionHeight: true,
+                            closeTop:true,
+                        }),
+                        id: "cam scanning primitive",
+                        attributes: {
+                            color: new Cesium.ColorGeometryInstanceAttribute(
+                                1, 0, 1, POINT_FIVE
+                            ),
+                        },
+                    }),
+                    appearance: new Cesium.MaterialAppearance({
+                        material: material,
+                    }),
+                    asynchronous: false,
+                }));
+            }
+        }
+
+        // Now for each edge point, draw a triangle from it to the origin (fill the edges)
+        for(let i = 0; i < this.terrainPoints.length - 1; i += 1){
+            // For y = 0 and y = max, make a triangle
+            this.drawTraingleBetweenPoints(this.terrainPoints[i][0], this.terrainPoints[i + 1][0], this.camera.position);
+            this.drawTraingleBetweenPoints(this.terrainPoints[i][this.terrainPoints.length - 1], this.terrainPoints[i + 1][this.terrainPoints.length - 1], this.camera.position);
+        }
+
+        for(let j = 0; j < this.terrainPoints.length - 1; j += 1){
+            // For x = 0 and x = max, make a triangle
+            this.drawTraingleBetweenPoints(this.terrainPoints[0][j], this.terrainPoints[0][j + 1], this.camera.position);
+            this.drawTraingleBetweenPoints(this.terrainPoints[this.terrainPoints.length - 1][j], this.terrainPoints[this.terrainPoints.length - 1][j + 1], this.camera.position);
+        }
+    }
+
+    /**
+     * Draw a triangle between 3 points
+     *
+     * @param p1 - Point 1
+     * @param p2 - Point 2
+     * @param p3 - Point 3
+     */
+    private drawTraingleBetweenPoints(p1: Cartesian3, p2: Cartesian3, p3: Cartesian3){
+        const POINT_FIVE = 0.5;
+
+        const material = Cesium.Material.fromType("Color");
+        const alpha = POINT_FIVE;
+        material.uniforms.color = Cesium.Color.ORANGE.withAlpha(alpha);
+
+        this.terrainScanningGeometryPrimitive.add(new Cesium.Primitive({
+            geometryInstances: new Cesium.GeometryInstance({
+                geometry: new Cesium.PolygonGeometry({
+                    polygonHierarchy: new Cesium.PolygonHierarchy([
+                        p1,
+                        p2,
+                        p3,
+                    ]),
+                    perPositionHeight: true,
+                    closeTop:true,
+                }),
+                id: "cam scanning primitive triangles",
+                attributes: {
+                    color: new Cesium.ColorGeometryInstanceAttribute(
+                        1, 0, 1, POINT_FIVE
+                    ),
+                },
+            }),
+            appearance: new Cesium.MaterialAppearance({
+                material: material,
+            }),
+            asynchronous: false,
+        }));
     }
 
     /**

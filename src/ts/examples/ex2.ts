@@ -45,7 +45,7 @@ viewer.scene.globe.depthTestAgainstTerrain = true;
 
 // Create a new fov
 const fovCam = new FOV(
-    viewer.scene, [ -107.0, 40.0, 100000.0], 60, 1, 90, -45, 0, 100, 300000
+    viewer.scene, [ -4.548591, 56.219146, 100000.0], 60, 1, 90, 90, 0, 100, 3000
 );
 
 //Create a new imageHandler
