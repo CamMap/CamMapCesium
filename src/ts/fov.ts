@@ -878,7 +878,7 @@ export class FOV {
         if(frustrum == true){
             pointOnSphere = this.camera.pickEllipsoid(pixel, ellipsoid);
         } else {
-            const cameraRay = this.getRayFromScreen(pixel);
+            const cameraRay = this.camera.getPickRay(pixel);
             pointOnSphere = scene.globe.pick(cameraRay, scene);
         }
 
