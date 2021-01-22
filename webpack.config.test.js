@@ -10,13 +10,8 @@ const cesiumWorkers = '../Build/Cesium/Workers';
 
 const CopywebpackPlugin = require('copy-webpack-plugin');
 
-var entry = './src/ts/index.ts'
-var outputPath = path.resolve(__dirname, 'dist');
-
-if (process.env.TESTBUILD) {
-    entry = glob.sync(__dirname + "/test/**/*.test.ts");
-    outputPath = path.resolve(__dirname, 'test-dist');
-  }
+entry = glob.sync(__dirname + "/test/**/*.test.ts");
+outputPath = path.resolve(__dirname, 'test-dist');  
 
 module.exports = {
     entry:entry ,
@@ -30,8 +25,8 @@ module.exports = {
         rules: [{
             test: /\.ts$/,
             use: 'ts-loader',
-            include: path.resolve(__dirname, 'src'),
-            exclude: ["/node_modules/", "/test/"],
+            include: [path.resolve(__dirname, 'src'), path.resolve(__dirname, 'test')],
+            exclude: ["/node_modules/"],
         }, {
             test: /\.css$/,
             use: ['style-loader', 'css-loader']
@@ -81,7 +76,7 @@ module.exports = {
     //     fs: 'empty'
     //  },
     output: {
-        filename: '[name].js', //.[contenthash]
+        filename: '[name].js',
         path: outputPath ,
         //devtoolLineToLine: true,
         devtoolModuleFilenameTemplate: '../[resource-path][loaders]', //[namespace]
@@ -95,6 +90,16 @@ module.exports = {
         runtimeChunk: 'single',
         splitChunks: {
          cacheGroups: {
+        tests:{
+            test: /[\\/]test[\\/]/,
+            name: 'tests',
+            chunks: 'all',
+            },
+        src:{
+            test: /[\\/]src[\\/]/,
+            name: 'src',
+            chunks: 'all',
+            },
            vendor: {
              test: /[\\/]node_modules[\\/]/,
              name: 'vendors',
