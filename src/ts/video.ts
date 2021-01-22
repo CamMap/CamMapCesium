@@ -164,6 +164,8 @@ export class Video {
                     const top = 0;
                     const left = 0;
 
+                    video.videoCanvas.width = video.videoHTML.videoWidth * scale;
+                    video.videoCanvas.height = video.videoHTML.videoHeight * scale;
                     video.videoCanvasContext.drawImage(
                         video.videoHTML, left, top, videoWidth * scale, videoHeight * scale
                     );

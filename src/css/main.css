@@ -132,18 +132,10 @@ img {
    background-color: #282830;
 }
 
-#target{
-    height: 0;
-    margin: 0;
-    padding: 0;
-}
-
-#videoUploaded{
-    height: 0;
-    margin: 0;
-    padding: 0;
-}
-
 .cesium-widget-credits{
     display: none !important;
+}
+
+#imageVideoCanvas{ 
+    width: 80%;
 }

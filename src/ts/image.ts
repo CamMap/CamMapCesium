@@ -115,13 +115,27 @@ export class Image {
  */
 function createImageOnCanvas(){
     const canvas = document.getElementById("imageVideoCanvas");
+
     if(canvas != null){
         const context = (canvas as HTMLCanvasElement).getContext("2d");
         if(context != null){
             const target = document.getElementById("target");
             if(target != null){
+                let imageWidth = target.clientWidth;
+                let imageHeight = target.clientHeight;
+
+                //Get the dimentions of the resized image
+                if(target.clientWidth > canvas.clientWidth){
+                    imageWidth = target.clientWidth * (canvas.clientWidth / target.clientWidth);
+                    imageHeight = target.clientHeight * (canvas.clientWidth / target.clientWidth);
+                }
+
+
+                //Resizr the image in the canvas
+                context.canvas.width = imageWidth;
+                context.canvas.height = imageHeight;
                 context.drawImage(
-                    target as HTMLImageElement, 0, 0, canvas.clientWidth, canvas.clientHeight
+                    target as HTMLImageElement, 0, 0, imageWidth, imageHeight
                 );
                 target.style.display = "none";
             }
