@@ -35,7 +35,7 @@ export class FOV {
 
     /** Should lines be drawn at the corners of the screen */
     private shouldDrawEdgeLines: boolean;
-    private linesToEdges: Cesium.Entity[];
+    private linesToPoints: Cesium.PolylineCollection;
     private pointsToEdges: Cesium.PointPrimitiveCollection;
     private pointsAdded: Cesium.PointPrimitiveCollection;
 
@@ -84,6 +84,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
+        this.redrawLinesToPoints();
         this.checkPointsVisible();
     }
 
@@ -102,6 +103,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
+        this.redrawLinesToPoints();
         this.checkPointsVisible();
         // Call event listeners
         for(const fn of this.distFns){
@@ -127,6 +129,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
+        this.redrawLinesToPoints();
         this.checkPointsVisible();
 
         // Call event listeners
@@ -159,6 +162,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
+        this.redrawLinesToPoints();
         this.checkPointsVisible();
     }
 
@@ -186,6 +190,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
+        this.redrawLinesToPoints();
         this.checkPointsVisible();
     }
 
@@ -213,6 +218,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
+        this.redrawLinesToPoints();
         this.checkPointsVisible();
 
         // Call event listeners
@@ -245,6 +251,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
+        this.redrawLinesToPoints();
         this.checkPointsVisible();
 
         // Call event listeners
@@ -275,6 +282,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
+        this.redrawLinesToPoints();
         this.checkPointsVisible();
 
         // Call event listeners
@@ -301,6 +309,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
+        this.redrawLinesToPoints();
         this.checkPointsVisible();
 
         // Call event listeners
@@ -325,6 +334,7 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
+        this.redrawLinesToPoints();
         this.checkPointsVisible();
 
         // Call event listeners
@@ -371,11 +381,12 @@ export class FOV {
         this.terrainScanningGeometryPrimitive = this.scene.primitives.add(new Cesium.PrimitiveCollection());
         this._distance = far;
 
-        this.linesToEdges = [];
+        this.linesToPoints = new Cesium.PolylineCollection();
         this.pointsToEdges = new Cesium.PointPrimitiveCollection();
         this.pointsAdded = new Cesium.PointPrimitiveCollection();
         this.scene.primitives.add(this.pointsToEdges);
         this.scene.primitives.add(this.pointsAdded);
+        this.scene.primitives.add(this.linesToPoints);
         this.shouldDrawEdgeLines = false;
 
         this.posFns = [];
@@ -562,38 +573,13 @@ export class FOV {
     }
 
     /**
-     * Draw the polygon of what the camera can see on the surface of the Earth
+     *
      */
-    private drawCamPolygon(): void{
-        // Get edge points, then draw polygon
-        const topLeft = this.getCamPointPercent(this.scene, new Cartesian2(0, 0), this.scene.globe.ellipsoid);
-        const topRight = this.getCamPointPercent(this.scene, new Cartesian2(0, 1), this.scene.globe.ellipsoid);
-        const bottomLeft = this.getCamPointPercent(this.scene, new Cartesian2(1, 0), this.scene.globe.ellipsoid);
-        const bottomRight = this.getCamPointPercent(this.scene, new Cartesian2(1, 1), this.scene.globe.ellipsoid);
-        const POINT_FIVE = 0.5;
-
-        if(topLeft != undefined && topRight != undefined && bottomLeft != undefined && bottomRight != undefined){
-            this.camPoly.add(new Cesium.Primitive({
-                geometryInstances: new Cesium.GeometryInstance({
-                    geometry: new Cesium.PolygonGeometry({
-                        polygonHierarchy: new Cesium.PolygonHierarchy([topLeft, topRight, bottomRight, bottomLeft]),
-                        perPositionHeight: false,
-                        closeTop:true,
-                    }),
-                    id: "cam tri 1",
-                    attributes: {
-                        // Blue
-                        color: new Cesium.ColorGeometryInstanceAttribute(
-                            0, 0, 1, POINT_FIVE
-                        ),
-                    },
-                }),
-                appearance: new Cesium.PerInstanceColorAppearance({
-                    closed: true,
-                    flat: true,
-                }),
-                asynchronous: false,
-            }));
+    private redrawLinesToPoints(): void{
+        const numLines = this.linesToPoints.length;
+        for(let i = 0; i < numLines; i++){
+            const pointPos = this.linesToPoints.get(i).positions[1];
+            this.linesToPoints.get(i).positions = [Cesium.Cartesian3.fromDegrees(this.long, this.lat, this._elevation), pointPos];
         }
     }
 
@@ -885,30 +871,6 @@ export class FOV {
         const alpha = 0.9;
         const green = 0.5;
         if(pointOnSphere != undefined) {
-            this.camPoly.add(new Cesium.Primitive({
-                geometryInstances : new Cesium.GeometryInstance({
-                    geometry : new Cesium.PolylineGeometry({
-                        positions : [Cesium.Cartesian3.fromDegrees(this.long, this.lat, this._elevation), pointOnSphere],
-                        width : 5.0,
-                        arcType: Cesium.ArcType.NONE,
-                        vertexFormat : Cesium.PolylineMaterialAppearance.VERTEX_FORMAT,
-                    }),
-                }),
-                appearance : new Cesium.PolylineMaterialAppearance({
-                    material : new Cesium.Material({
-                        fabric : {
-                            type : "Color",
-                            uniforms : {
-                                color : new Cesium.Color(
-                                    0, green, 0, alpha
-                                ),
-                            },
-                        },
-                    }),
-                }),
-                asynchronous: false,
-            }));
-
             // Keep this as a point cloud for now, so we can add more points in the future
             if(frustrum != false){
                 this.pointsToEdges.add({
@@ -917,12 +879,47 @@ export class FOV {
                     pixelSize: 10,
                     heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
                 });
+                this.camPoly.add(new Cesium.Primitive({
+                    geometryInstances : new Cesium.GeometryInstance({
+                        geometry : new Cesium.PolylineGeometry({
+                            positions : [Cesium.Cartesian3.fromDegrees(this.long, this.lat, this._elevation), pointOnSphere],
+                            width : 5.0,
+                            arcType: Cesium.ArcType.NONE,
+                            vertexFormat : Cesium.PolylineMaterialAppearance.VERTEX_FORMAT,
+                        }),
+                    }),
+                    appearance : new Cesium.PolylineMaterialAppearance({
+                        material : new Cesium.Material({
+                            fabric : {
+                                type : "Color",
+                                uniforms : {
+                                    color : new Cesium.Color(
+                                        0, green, 0, alpha
+                                    ),
+                                },
+                            },
+                        }),
+                    }),
+                    asynchronous: false,
+                }));
             } else {
                 this.pointsAdded.add({
                     position: pointOnSphere,
                     color: Cesium.Color.GREEN,
                     pixelSize: 10,
                     heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                });
+                this.linesToPoints.add({
+                    positions: [Cesium.Cartesian3.fromDegrees(this.long, this.lat, this._elevation), pointOnSphere],
+                    width : 5.0,
+                    material : new Cesium.Material({
+                        fabric : {
+                            type : "Color",
+                            uniforms : {
+                                color : Cesium.Color.GREEN,
+                            },
+                        },
+                    }),
                 });
             }
 
@@ -1276,12 +1273,18 @@ export class FOV {
                     //Allow for a margin of error
                     if(Math.abs(cameraX - this.pointsAdded.get(i).position.x) < 1 && Math.abs(cameraY - this.pointsAdded.get(i).position.y) < 1 && Math.abs(cameraZ - this.pointsAdded.get(i).position.z) < 1){
                         this.pointsAdded.get(i).color = Cesium.Color.GREEN;
+                        this.linesToPoints.get(i).material.uniforms.color = Cesium.Color.GREEN;
+                        this.linesToPoints.get(i).show = true;
                     } else {
                         this.pointsAdded.get(i).color = Cesium.Color.RED;
+                        this.linesToPoints.get(i).material.uniforms.color = Cesium.Color.RED;
+                        this.linesToPoints.get(i).show = true;
                     }
                 }
             } else {
                 this.pointsAdded.get(i).color = Cesium.Color.RED;
+
+                this.linesToPoints.get(i).show = false;
             }
         }
     }
