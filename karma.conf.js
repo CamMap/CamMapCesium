@@ -20,17 +20,11 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      {pattern: 'test-dist/index.html', included: false, watched: false, served: true},
       'test-dist/main.js',
       'test-dist/src.js',
       'test-dist/runtime.js',
       'test-dist/vendors.js',
       {pattern: 'test-dist/**', included: false, watched: false, served: true},
-      //{pattern: 'test-dist/Assets/**/*.json', included: false, watched: false, served: true},
-      //{pattern: 'test-dist/Assets/**/*.js', included: false, watched: false, served: true},
-      //{pattern: 'test-dist/Images/**/*.png', included: false, watched: false, served: true},
-      //{pattern: 'test-dist/Widgets/**/*.png', included: false, watched: false, served: true},
-      //{pattern: 'test-dist/Workers/**/*.js', included: false, watched: false, served: true},
     ],
 
     // preprocess matching files before serving them to the browser
