@@ -5,7 +5,7 @@ module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '',
+    basePath: './',
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
@@ -20,10 +20,17 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      {pattern: 'test-dist/index.html', included: false, watched: false, served: true},
       'test-dist/main.js',
       'test-dist/src.js',
       'test-dist/runtime.js',
       'test-dist/vendors.js',
+      {pattern: 'test-dist/**', included: false, watched: false, served: true},
+      //{pattern: 'test-dist/Assets/**/*.json', included: false, watched: false, served: true},
+      //{pattern: 'test-dist/Assets/**/*.js', included: false, watched: false, served: true},
+      //{pattern: 'test-dist/Images/**/*.png', included: false, watched: false, served: true},
+      //{pattern: 'test-dist/Widgets/**/*.png', included: false, watched: false, served: true},
+      //{pattern: 'test-dist/Workers/**/*.js', included: false, watched: false, served: true},
     ],
 
     // preprocess matching files before serving them to the browser
@@ -32,6 +39,9 @@ module.exports = function(config) {
       'test-dist/src.js': ['sourcemap', 'coverage'],
    },
 
+   proxies:{
+    '/context.html/' : '/base/test-dist/',
+   },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
@@ -72,7 +82,7 @@ module.exports = function(config) {
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: true,
+    singleRun: false,
 
     // Concurrency level
     // how many browser should be started simultaneous
