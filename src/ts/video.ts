@@ -172,7 +172,7 @@ export class Video {
                 }
 
                 // Loop round, TODO, make new function for advance frame and use that
-                requestAnimationFrame(() => video.updateCanvas(video));
+                setTimeout(() => video.updateCanvas(video), 1 / video.fps);
             }
         }
     }
