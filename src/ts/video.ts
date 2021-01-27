@@ -32,7 +32,7 @@ export class Video {
 
             const videoHTML = document.getElementById("videoUploaded");
             if(videoHTML == null){
-                VideoLogger.error("Failed to create a video element");
+                VideoLogger.error("Failed to get a video element, is it in the HTML, with ID videoUploaded");
             } else {
                 this.videoHTML = videoHTML as HTMLVideoElement;
                 // This is purposeful, do not display the video, display the canvas instead
