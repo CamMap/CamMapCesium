@@ -58,7 +58,8 @@ module.exports = {
                 { from: path.join(cesiumSource, cesiumWorkers), to: 'Workers' },
                 { from: path.join(cesiumSource, 'Assets'), to: 'Assets' },
                 { from: path.join(cesiumSource, 'Widgets'), to: 'Widgets' },
-                { from: "src/images", to: 'Images' }
+                { from: "src/images", to: 'Images' },
+                { from: "./config.json", to: 'config.json' }
             ],
             options: { concurrency: 50 },
         }),

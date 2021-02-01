@@ -5,8 +5,13 @@
  */
 
 import { generalBaseSetup, setUpVGIPWebSocket } from "./main_helper";
+import { LoadConfigFromOwnServer } from "./configHandler";
 
-const [, fov] = generalBaseSetup();
+
+// Load in config file and pass through the config object to the general setup
+const config = LoadConfigFromOwnServer();
+
+const [, fov] = generalBaseSetup(config);
 
 // If using a websocket, put in the right address in the line below.
 // Note that an address which does not serve any data can be put and nothing will be recieved

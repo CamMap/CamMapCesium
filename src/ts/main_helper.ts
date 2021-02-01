@@ -1,6 +1,7 @@
 import * as Cesium from "cesium_source/Cesium";
 import { CanvasHandler } from "./canvasHandler";
 import { Cartesian2 } from "cesium_source/Cesium";
+import { Config } from "./configHandler";
 import { FOV } from "./fov";
 import { GeneralLogger } from "./logger";
 import { Image } from "./image";
@@ -152,9 +153,10 @@ export function setupTerrainServerConnectButton(scene: Cesium.Scene): void{
 /**
  * Set up everything and return the viewer and the FOV objects
  *
+ * @param config -  the config for the application
  * @returns The viewer and the FOV object which have been created
  */
-export function generalBaseSetup(): [Cesium.Viewer, FOV]{
+export function generalBaseSetup(config?: Config): [Cesium.Viewer, FOV]{
     // The tiles used below are open source at https://github.com/stamen/terrain-classic
     const imageryProvider = new Cesium.UrlTemplateImageryProvider({
         url : "http://tile.stamen.com/terrain/{z}/{x}/{y}.jpg",
@@ -171,6 +173,9 @@ export function generalBaseSetup(): [Cesium.Viewer, FOV]{
         vrButton: false,
         fullscreenButton: false,
         imageryProvider: imageryProvider,
+        terrainProvider: config ? config.defaultTerrainServer ? new Cesium.CesiumTerrainProvider({
+            url : config.defaultTerrainServer,
+        }) : undefined : undefined,
     });
     viewer.scene.globe.depthTestAgainstTerrain = true;
     //
