@@ -19,35 +19,39 @@
 <a href="https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/cs22-main-cesium/-/commits/master"><img alt="coverage report" src="./images/version.svg" /></a>
 </div>
 <br/>
+<div align="center">
 
+### An application to show and interact with the view frustum of geolocated images or videos on a 3D map.
+
+</div>
+
+## About
+CamMap (Name to be decided, this is just what the application is temporarily known as) is an application which allows for the viewing of the view frustum of a video or image with geolocation on a 3D map.  It also maps clicks on the video or image to a real place on the Earth.
 
 ## Screenshot
 <!--<img src= "Screenshot.png">-->
-<img src= "Screenshot4.png">
+<img src= "Screenshot5.png">
 
-## Instructions
+## Technologies
+##### - Typescript 
+##### - Cesium
+##### - Karma (for testing)
+
+(All open source)
+
+## Running Instructions
 To run, make sure you have node(npm) > 6.0.0 (https://nodejs.org/en/), the most recent one will work well, then open a terminal at the directory and run
 ```
 npm install
-```
-That will install all the required packages, it should show what it's doing in the terminal
-```
+
 npm run start
 ```
-This will start a server on localhost:8080, which it should tell you.  Go there in your browser and the Cesium-Typescript app should be running.  At the moment is should zoom/fly to a red sphere, zoom out to see the Earth.  To rotate the view, press middle mouse, there is a help box at the top right with all of what you can do.
-
-This is build in Typescript and Cesium(both open-source).  Typescript is just Javascript with types, which is very helpful for code completion and debugging(it won't even compile if you have used the wrong type).  The best editor to use with Typescript is VSCode, I think, and with it you can hover over varibles to see their types and the options/examples associated with them.
-
-You should only be concerned with the '/src' folder, the rest is just webpack and ts stuff which should work (it was a bit difficult to get ts working with cesium, hence Cesium.d.ts is in the root dir, but hopefully now it all works correctly).  In the src folder, there is html/css/ts, the typescript file 'index.ts' is where cesium loads the map and adds the elements, so it is probably the only one we need to look at, at this stage.
-
-If you make a modification to any files in src while npm run start is running, the project will automatically be rebuilt and the webpage will be reloaded(Hot reloading), so you can see your changes in real time.
-
-It should be reasonably obvious to see where each part is comming from(that is, the map and the circles, line and polygon) in the index.ts file.
-
+That installs all the required packages and starts a server on [localhost:8080](localhost:8080).  Due to using webpack, this also has hot-reloading.
 
 To build the project, run:
 ```
 npm run build
 ```
-but I believe this needs to be served by a server, which can be done relativly easily with python or the npm package 'http-server'.
-We might want to consider express for this, just as a simple solution.
+This produces a build which must be served by a server (which serves index.html).
+
+This is the base application which can recieve geolocation connections and use 3D terrain servers.  For a 3D terrain server, see [Cesium Terrain Server](https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/cesium-terrain-server).  For the 3D tilesets to serve, see [Terrain Tilesets](https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/terrain-tile-sets).  For geolocation streaming data, see [Test Geodata Providers](https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/test-geodata-providers).
