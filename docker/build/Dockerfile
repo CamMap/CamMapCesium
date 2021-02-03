@@ -11,6 +11,6 @@ RUN npm run build
 FROM nginx:stable
 
 COPY --from=build /app/dist/ /var/www
-COPY ./docker/production/nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./docker/build/nginx.conf /etc/nginx/conf.d/default.conf
 
 #CMD ["nginx -g 'daemon off;'"]

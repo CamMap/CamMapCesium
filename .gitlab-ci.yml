@@ -50,8 +50,7 @@ publish:
   before_script:
     - echo $DOCKER_REGISTRY_PASS | docker login --username $DOCKER_REGISTRY_USER --password-stdin
   script:
-    - docker build . --pull -f docker/build/Dockerfile -t "glacs22/main-cesium:$CI_COMMIT_SHORT_SHA"
-    - docker tag "glacs22/main-cesium:$CI_COMMIT_SHORT_SHA" "glacs22/main-cesium:latest"
-    - docker push "glacs22/main-cesium:$CI_COMMIT_SHORT_SHA"
+    - docker build . --pull -f docker/build/Dockerfile -t "glacs22/main-cesium:$CI_COMMIT_SHORT_SHA" -t "glacs22/main-cesium:latest"
+    - docker push "glacs22/main-cesium" --all-tags
   only:
     - master
