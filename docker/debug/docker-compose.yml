@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  cs22-cesium:
+    build:
+      dockerfile: Dockerfile
+    volumes:
+      - ./../../:/app
+    ports:
+      - "8080:8080"
+  terrain-tiles:
+    image: "glacs22/terrain-tiles:latest"
+    ports:
+      - "8082:8000"
