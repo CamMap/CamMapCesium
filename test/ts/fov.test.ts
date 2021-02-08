@@ -36,7 +36,7 @@ describe("Sample test", function() {
         //     Canvas: c,
         // });
         new FOV(
-            viewer.scene, [ -107.0, 40.0, 100000.0], 60, 1, 90, -45, 0, 10000, 300000
+            "Camera 1", viewer.scene, [ -107.0, 40.0, 100000.0], 60, 1, 90, -45, 0, 10000, 300000
         );
     });
 });

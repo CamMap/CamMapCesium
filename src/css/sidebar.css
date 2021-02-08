@@ -4,7 +4,7 @@
     background-color: #373740;
     opacity: 1.0;
     position: relative;
-    left: -320px; /*-70 -340*/
+    left: -520px; /*-70 -340*/
     top: 10px;
     display: inline-block;
     padding: 5px;
@@ -25,7 +25,7 @@
 
 /* Make into a class if implementing several */
 .sideBarContents{
-    width: 250px;
+    width: 450px;
     height: 100vh;
     margin-left: 0px;
     position: absolute;
@@ -42,7 +42,7 @@
 }
 
 .sideBarClosed{
-    right: -310px;
+    right: -510px;
 }
 
 .sideBarOpen{
@@ -92,4 +92,12 @@
 
 #sideBarFovOptions{
     display: inline;
+}
+
+#sideBarSliders{ 
+    overflow-y: scroll;
+}
+
+#sideBarManager{
+    overflow-y: scroll;
 }

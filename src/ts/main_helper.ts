@@ -1,11 +1,16 @@
+/* eslint-disable sort-imports */
+//I cant figure out how this is not in aphabetical order...
 import * as Cesium from "cesium_source/Cesium";
 import { CanvasHandler } from "./canvasHandler";
 import { Cartesian2 } from "cesium_source/Cesium";
 import { Config } from "./configHandler";
 import { FOV } from "./fov";
 import { GeneralLogger } from "./logger";
+import { globalFOV, globalPoints} from "./targetManager";
 import { Image } from "./image";
+import { TLMFovElement} from "./targetManager";
 import { Video } from "./video";
+
 
 /* eslint @typescript-eslint/no-magic-numbers: off */
 
@@ -14,9 +19,9 @@ import { Video } from "./video";
  *
  * @param fov - The FOV object the image should modify, metadata dependent
  */
-function imageSetup(fov: FOV){
+export function imageSetup(fov: FOV) : void{
     //Create a new imageHandler
-    const imageHandler = new Image();
+    const imageHandler = new Image(fov);
     imageHandler.onImageMetadataRead((imageGeoMetadata) => {
         if(imageGeoMetadata.latitude != null){
             fov.latitude = imageGeoMetadata.latitude;
@@ -38,9 +43,11 @@ function imageSetup(fov: FOV){
 
 /**
  * Setup the video logging
+ *
+ * @param fov - FOV object
  */
-function videoSetup(){
-    new Video();
+export function videoSetup(fov : FOV) : void{
+    new Video(fov);
 }
 
 /**
@@ -48,12 +55,12 @@ function videoSetup(){
  *
  * @param fov - The FOV object to draw the dots from (to hit the Earth)
  */
-function canvasSetUp(fov: FOV){
+export function canvasSetUp(fov: FOV) : void{
     // Get the canvas and listen for clicks
-    const canvas = document.getElementById("imageVideoCanvas");
+    const canvas = document.getElementById(fov.identifier + "canvas");
     if(canvas != null && canvas instanceof HTMLCanvasElement){
         const ch = new CanvasHandler(canvas);
-        const span = document.getElementById("image-cord");
+        const span = document.getElementById(fov.identifier + "image-cord");
         ch.onClick(([x, y]) => {
             if(span != null){
                 span.innerText = `X: ${x}, Y: ${y}`;
@@ -69,35 +76,35 @@ function canvasSetUp(fov: FOV){
  *
  * @param fov - The FOV on which to set up the event triggers
  */
-function FOVEventTriggerSetup(fov: FOV){
-    fov.setUpDistanceListener(document.getElementById("cam_dist") as HTMLInputElement);
+export function FOVEventTriggerSetup(fov: FOV) : void{
+    fov.setUpDistanceListener(document.getElementById(fov.identifier + "cam_dist") as HTMLInputElement);
     fov.onDistanceChanged((val) => {
-        (document.getElementById("cam_dist_result") as HTMLOutputElement).value = String(val);
+        (document.getElementById(fov.identifier + "cam_dist_result") as HTMLOutputElement).value = String(val);
     });
 
-    fov.setUpPosListener(document.getElementById("cam_height") as HTMLInputElement);
+    fov.setUpPosListener(document.getElementById(fov.identifier + "cam_height") as HTMLInputElement);
     fov.onPosChanged((val) => {
-        (document.getElementById("cam_height_result") as HTMLOutputElement).value = String(val); console.log("Called");
+        (document.getElementById(fov.identifier + "cam_height_result") as HTMLOutputElement).value = String(val); console.log("Called");
     });
 
-    fov.setUpHeadingListener(document.getElementById("cam_heading") as HTMLInputElement);
+    fov.setUpHeadingListener(document.getElementById(fov.identifier + "cam_heading") as HTMLInputElement);
     fov.onHeadingChanged((val) => {
-        (document.getElementById("cam_heading_result") as HTMLOutputElement).value = String(val);
+        (document.getElementById(fov.identifier + "cam_heading_result") as HTMLOutputElement).value = String(val);
     });
 
-    fov.setUpTiltListener(document.getElementById("cam_tilt") as HTMLInputElement);
+    fov.setUpTiltListener(document.getElementById(fov.identifier + "cam_tilt") as HTMLInputElement);
     fov.onTiltChanged((val) => {
-        (document.getElementById("cam_tilt_result") as HTMLOutputElement).value = String(val);
+        (document.getElementById(fov.identifier + "cam_tilt_result") as HTMLOutputElement).value = String(val);
     });
 
-    fov.setUpFOVListener(document.getElementById("fov_hor") as HTMLInputElement);
+    fov.setUpFOVListener(document.getElementById(fov.identifier + "fov_hor") as HTMLInputElement);
     fov.onFOVChanged((val) => {
-        (document.getElementById("fov_hor_result") as HTMLOutputElement).value = String(val);
+        (document.getElementById(fov.identifier + "fov_hor_result") as HTMLOutputElement).value = String(val);
     });
 
-    fov.setUpFOVListener(document.getElementById("fov_hor") as HTMLInputElement);
+    fov.setUpFOVListener(document.getElementById(fov.identifier + "fov_hor") as HTMLInputElement);
     fov.onFOVChanged((val) => {
-        (document.getElementById("fov_hor_result") as HTMLOutputElement).value = String(val);
+        (document.getElementById(fov.identifier + "fov_hor_result") as HTMLOutputElement).value = String(val);
     });
 }
 
@@ -156,7 +163,7 @@ export function setupTerrainServerConnectButton(scene: Cesium.Scene): void{
  * @param config -  the config for the application
  * @returns The viewer and the FOV object which have been created
  */
-export function generalBaseSetup(config?: Config): [Cesium.Viewer, FOV]{
+export function generalBaseSetup(config?: Config): Cesium.Viewer{
     // The tiles used below are open source at https://github.com/stamen/terrain-classic
     const imageryProvider = new Cesium.UrlTemplateImageryProvider({
         url : "http://tile.stamen.com/terrain/{z}/{x}/{y}.jpg",
@@ -178,30 +185,21 @@ export function generalBaseSetup(config?: Config): [Cesium.Viewer, FOV]{
         }) : undefined : undefined,
     });
     viewer.scene.globe.depthTestAgainstTerrain = true;
+
+    const fov = new FOV(
+        "Camera 1", viewer.scene, [ -4.946793, 56.615756, 10.0], 60, 1, 90, 90, 0, 100, 3000
+    );
+    viewer.scene.primitives.add(globalPoints);
+    globalFOV.push(fov);
+    new TLMFovElement(fov, null);
     //
     // See https://www.cesium.com/docs/tutorials/creating-entities/
     // For creating entities
     //
-
     setupTerrainServerConnectButton(viewer.scene);
-
-    // Create a new fov
-    const fovCam = new FOV(
-        viewer.scene, [ -4.946793, 56.615756, 10.0], 60, 1, 90, 90, 0, 100, 3000
-    );
-
-    imageSetup(fovCam);
-    videoSetup();
-    canvasSetUp(fovCam);
-
-    FOVEventTriggerSetup(fovCam);
-
-    fovCam.drawDebugCamera(viewer.scene);
-    fovCam.setShouldDrawEdgeLines(true);
-
     setCameraView(viewer.camera);
 
-    return [viewer, fovCam];
+    return viewer;
 }
 
 /**

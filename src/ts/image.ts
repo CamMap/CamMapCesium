@@ -1,3 +1,4 @@
+import { FOV } from "./fov";
 import {ImageLogger} from "./logger";
 import exifr from "exifr";
 
@@ -12,13 +13,15 @@ export interface LoadedGeoMetadata{
  */
 export class Image {
     private metadataFuns: { (data: LoadedGeoMetadata): void; }[];
+    private fovObject: FOV;
 
     /**
      * Constructs an image object
      */
-    constructor(){
+    constructor(fov : FOV){
+        this.fovObject = fov;
         this.metadataFuns = [];
-        const uploadFile = document.getElementById("uploadFile");
+        const uploadFile = document.getElementById(fov.identifier + "_uploadFile");
         if(uploadFile != null) {
             uploadFile.onchange = (e) => this.onUploadImage(e);
         } else {
@@ -59,7 +62,7 @@ export class Image {
      * @param imageFile - The image file to read/upload
      */
     showUploadedImage(imageFile: File): void {
-        const imageElement = document.getElementById("target");
+        const imageElement = document.getElementById(this.fovObject.identifier + "target");
         if(imageElement != null) {
             const fileReader = new FileReader();
 
@@ -79,7 +82,13 @@ export class Image {
     public onImageUploaded(fileReader: ProgressEvent<FileReader>, imageFile: File, imageElement: HTMLImageElement) : boolean{
         // Display the loaded image
         if(fileReader.target) {
-            imageElement.onload = createImageOnCanvas;
+            //Is there a better way of doing this?
+            imageElement.onload = function(fovObject){
+                return function(){
+                    createImageOnCanvas(fovObject);
+                };
+            }(this.fovObject);
+
             if(fileReader.target.result != null){
                 // The user selected an image file
                 imageElement.src = fileReader.target.result as string;
@@ -112,14 +121,16 @@ export class Image {
 
 /**
  * Draw the image in the image element on the Canvas
+ *
+ * @param fov -
  */
-function createImageOnCanvas(){
-    const canvas = document.getElementById("imageVideoCanvas");
+function createImageOnCanvas(fov : FOV){
+    const canvas = document.getElementById(fov.identifier + "canvas");
 
     if(canvas != null){
         const context = (canvas as HTMLCanvasElement).getContext("2d");
         if(context != null){
-            const target = document.getElementById("target");
+            const target = document.getElementById(fov.identifier + "target");
             if(target != null){
                 let imageWidth = target.clientWidth;
                 let imageHeight = target.clientHeight;

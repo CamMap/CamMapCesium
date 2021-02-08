@@ -12,6 +12,13 @@ const sideBarTerrain = document.getElementById("sideBarTerrain");
 const sideBarLoggerButton = document.getElementById("sideBarLoggerButton");
 const sideBarLogger = document.getElementById("sideBarLogger");
 
+const sideBarManagerButton = document.getElementById("sideBarManagerButton");
+const sideBarManager = document.getElementById("sideBarManager");
+
+const sideBarAddButton = document.getElementById("sideBarAddButton");
+const sideBarAdd = document.getElementById("sideBarAdd");
+
+
 const sideBarSlidersContainer = document.getElementById("sideBarSlidersContainer") as HTMLElement;
 
 /**
@@ -70,6 +77,18 @@ if(sideBarTerrain != null && sideBarTerrainButton != null && sideBarSliderButton
 if(sideBarLogger != null && sideBarLoggerButton != null && sideBarSliderButtons != null){
     sideBarLoggerButton.onclick = () => onClicksideBarSlidersButton(sideBarSliderButtons, sideBarLoggerButton, sideBarLogger);
 } else {
+    console.log("sideBarLogger is null");
+}
+
+if(sideBarManager != null && sideBarManagerButton != null && sideBarSliderButtons != null){
+    sideBarManagerButton.onclick = () => onClicksideBarSlidersButton(sideBarSliderButtons, sideBarManagerButton, sideBarManager);
+} else {
+    console.log("sideBarManager is null");
+}
+
+if(sideBarAdd != null && sideBarAddButton != null && sideBarSliderButtons != null){
+    sideBarAddButton.onclick = () => onClicksideBarSlidersButton(sideBarSliderButtons, sideBarAddButton, sideBarAdd);
+} else {
     console.log("sideBarTerrain is null");
 }
 
@@ -77,16 +96,20 @@ if(sideBarLogger != null && sideBarLoggerButton != null && sideBarSliderButtons 
  * Set the z-index of all the HTML slider menus to 0
  */
 function CloseAll(){
-    if(sideBarSliders != null && sideBarFOV != null && sideBarTerrain != null && sideBarLogger != null){
+    if(sideBarSliders != null && sideBarFOV != null && sideBarTerrain != null && sideBarLogger != null && sideBarManager != null && sideBarAdd != null){
         sideBarSlidersButton?.classList.remove("selectedButton");
         sideBarFOVButton?.classList.remove("selectedButton");
         sideBarTerrainButton?.classList.remove("selectedButton");
         sideBarLoggerButton?.classList.remove("selectedButton");
+        sideBarManagerButton?.classList.remove("selectedButton");
+        sideBarAddButton?.classList.remove("selectedButton");
 
         sideBarSlidersButton?.classList.add("notSelectedButton");
         sideBarFOVButton?.classList.add("notSelectedButton");
         sideBarTerrainButton?.classList.add("notSelectedButton");
         sideBarLoggerButton?.classList.add("notSelectedButton");
+        sideBarManagerButton?.classList.add("notSelectedButton");
+        sideBarAddButton?.classList.add("notSelectedButton");
 
         sideBarSliders.classList.remove("sideBarOpen");
         sideBarSliders.classList.add("sideBarClosed");
@@ -99,6 +122,12 @@ function CloseAll(){
 
         sideBarLogger.classList.remove("sideBarOpen");
         sideBarLogger.classList.add("sideBarClosed");
+
+        sideBarManager.classList.remove("sideBarOpen");
+        sideBarManager.classList.add("sideBarClosed");
+
+        sideBarAdd.classList.remove("sideBarOpen");
+        sideBarAdd.classList.add("sideBarClosed");
         // TODO Should use zIndex if the sliding menus are already open
         // Should use zIndex?  It is more clear that a menu switch has occured if one goes
         // In and another comes out, will need more thought on this.

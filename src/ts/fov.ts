@@ -7,9 +7,10 @@
 import * as Cesium from "cesium_source/Cesium";
 import { Cartesian2, Cartesian3, HeadingPitchRoll, Matrix3, PerspectiveFrustum } from "cesium_source/Cesium";
 import { FOVLogger } from "./logger";
+import { TLMPointElement } from "./targetManager";
 import { VGIPReciever } from "./vgipReciever";
 import { VideoGeoData } from "./vgip";
-
+import { globalPoints } from "./targetManager";
 
 /**
  * A wrapper around cesium camera.
@@ -26,6 +27,7 @@ export class FOV {
     private phi: number;
     private _roll: number;
     //Public viewer: Cesium.Viewer;
+    private id: string;
     public scene: Cesium.Scene;
     private fov: number;
     private camPoly: Cesium.PrimitiveCollection;
@@ -37,7 +39,7 @@ export class FOV {
     private shouldDrawEdgeLines: boolean;
     private linesToPoints: Cesium.PolylineCollection;
     private pointsToEdges: Cesium.PointPrimitiveCollection;
-    private pointsAdded: Cesium.PointPrimitiveCollection;
+    private numOfPoints: number;
 
     private curDrawn: Cesium.Primitive | null;
 
@@ -131,7 +133,6 @@ export class FOV {
         this.redrawLinesToEdges();
         this.redrawLinesToPoints();
         this.checkPointsVisible();
-
         // Call event listeners
         for(const fn of this.posFns){
             fn(this.elevation);
@@ -220,7 +221,6 @@ export class FOV {
         this.redrawLinesToEdges();
         this.redrawLinesToPoints();
         this.checkPointsVisible();
-
         // Call event listeners
         for(const fn of this.headingFns){
             fn(this.heading);
@@ -253,7 +253,6 @@ export class FOV {
         this.redrawLinesToEdges();
         this.redrawLinesToPoints();
         this.checkPointsVisible();
-
         // Call event listeners
         for(const fn of this.tiltFns){
             fn(this.tilt);
@@ -311,7 +310,6 @@ export class FOV {
         this.redrawLinesToEdges();
         this.redrawLinesToPoints();
         this.checkPointsVisible();
-
         // Call event listeners
         for(const fn of this.fovFns){
             fn(this.fovDeg);
@@ -336,7 +334,6 @@ export class FOV {
         this.redrawLinesToEdges();
         this.redrawLinesToPoints();
         this.checkPointsVisible();
-
         // Call event listeners
         for(const fn of this.aspectRatioFns){
             fn(this.aspectRatio);
@@ -348,9 +345,15 @@ export class FOV {
         return (this.camera.frustum as PerspectiveFrustum).aspectRatio;
     }
 
+    /** @returns The tilt of the camera, in radians */
+    public get identifier(): string{
+        return this.id;
+    }
+
     /**
      * Constructs an FOV object, call draw() to draw it in a scene
      *
+     * @param id - unique identifier for the FOV object
      * @param scene - The cesium scene to be used (should this be scene)
      * @param lat_long_elevation -  The laditude, longtitude and elevation of the camera position
      * @param fov - The FOV of the camera
@@ -362,11 +365,11 @@ export class FOV {
      * @param far - The far plane distance of the camera
      */
     constructor(
-        scene: Cesium.Scene, [long, lat, elevation]: [number, number, number], fov: number, aspectRatio: number, theta: number, phi: number, roll: number, near: number, far: number
+        id: string, scene: Cesium.Scene, [long, lat, elevation]: [number, number, number], fov: number, aspectRatio: number, theta: number, phi: number, roll: number, near: number, far: number
     ) {
         const DEFAULT_TERRAIN_RESOLTION = 5;
         this.terrainScanningResolution = DEFAULT_TERRAIN_RESOLTION;
-
+        this.id = id;
         this._position = Cesium.Cartesian3.fromDegrees(long, lat, elevation);
         this.scene = scene;
         this.long = long;
@@ -383,10 +386,9 @@ export class FOV {
 
         this.linesToPoints = new Cesium.PolylineCollection();
         this.pointsToEdges = new Cesium.PointPrimitiveCollection();
-        this.pointsAdded = new Cesium.PointPrimitiveCollection();
-        this.scene.primitives.add(this.pointsToEdges);
-        this.scene.primitives.add(this.pointsAdded);
-        this.scene.primitives.add(this.linesToPoints);
+        this.numOfPoints = 0;
+        this.pointsToEdges = this.scene.primitives.add(new Cesium.PointPrimitiveCollection());
+        this.linesToPoints = this.scene.primitives.add(new Cesium.PolylineCollection());
         this.shouldDrawEdgeLines = false;
 
         this.posFns = [];
@@ -595,8 +597,11 @@ export class FOV {
     /**
      * Destroys the view object so it is no longer present in the scene
      */
-    private destroy(): void {
-        if(this.curDrawn !== null) this.curDrawn.destroy();
+    public destroy(): void {
+        if(this.camPoly !== null) this.scene.primitives.remove(this.camPoly);
+        if(this.curDrawn !== null) this.scene.primitives.remove(this.curDrawn);
+        if(this.pointsToEdges !== null) this.scene.primitives.remove(this.pointsToEdges);
+        if(this.linesToPoints !== null) this.scene.primitives.remove(this.linesToPoints);
     }
 
     /**
@@ -903,38 +908,16 @@ export class FOV {
                     asynchronous: false,
                 }));
             } else {
-                this.pointsAdded.add({
+                this.numOfPoints += 1;
+                const point = globalPoints.add({
+                    id: this.id + "Point" + this.numOfPoints.toString(),
                     position: pointOnSphere,
                     color: Cesium.Color.GREEN,
                     pixelSize: 10,
                     heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
                 });
-                this.linesToPoints.add({
-                    positions: [Cesium.Cartesian3.fromDegrees(this.long, this.lat, this._elevation), pointOnSphere],
-                    width : 5.0,
-                    material : new Cesium.Material({
-                        fabric : {
-                            type : "Color",
-                            uniforms : {
-                                color : Cesium.Color.GREEN,
-                            },
-                        },
-                    }),
-                });
-            }
-
-
-            //Add lables to points that have been added from the canvas
-            if(frustrum == false){
-                const ellipsoidGeodesic = new Cesium.EllipsoidGeodesic(Cesium.Cartographic.fromCartesian(this.position, ellipsoid), Cesium.Cartographic.fromCartesian(pointOnSphere, ellipsoid));
-                const labels = scene.primitives.add(new Cesium.LabelCollection());
-                labels.add({
-                    position : pointOnSphere,
-                    text : ellipsoidGeodesic.surfaceDistance.toString() + " meters",
-                    show: true,
-                    showBackground: true,
-                    font: "14px monospace",
-                });
+                this.addLineToPoint(point);
+                new TLMPointElement(point);
             }
             return true;
         }
@@ -1256,36 +1239,91 @@ export class FOV {
      * Checks if the points added from the canvas are visible to the camera
      */
     private checkPointsVisible(){
-        for(let i = 0; i < this.pointsAdded.length; i++){
-            if(this.checkPointIntersects(this.pointsAdded.get(i)) == Cesium.Intersect.INSIDE){
+        for(let i = 0; i < globalPoints.length; i++){
+            if(this.checkPointIntersects(globalPoints.get(i)) == Cesium.Intersect.INSIDE){
                 //Get the direction vector to the point given the camera current location
-                const dirVectorX = this.pointsAdded.get(i).position.x - this.position.x;
-                const dirVectorY = this.pointsAdded.get(i).position.y - this.position.y;
-                const dirVectorZ = this.pointsAdded.get(i).position.z - this.position.z;
+                const dirVectorX = globalPoints.get(i).position.x - this.position.x;
+                const dirVectorY = globalPoints.get(i).position.y - this.position.y;
+                const dirVectorZ = globalPoints.get(i).position.z - this.position.z;
                 const cameraRay = this.projectRayFromCameraPos(dirVectorX, dirVectorY, dirVectorZ);
                 const cameraIntersection = this.scene.globe.pick(cameraRay, this.scene);
-                console.log(cameraIntersection);
-                console.log(this.pointsAdded.get(i).position);
                 if(cameraIntersection != undefined){
                     const cameraX = cameraIntersection.x;
                     const cameraY = cameraIntersection.y;
                     const cameraZ = cameraIntersection.z;
                     //Allow for a margin of error
-                    if(Math.abs(cameraX - this.pointsAdded.get(i).position.x) < 1 && Math.abs(cameraY - this.pointsAdded.get(i).position.y) < 1 && Math.abs(cameraZ - this.pointsAdded.get(i).position.z) < 1){
-                        this.pointsAdded.get(i).color = Cesium.Color.GREEN;
-                        this.linesToPoints.get(i).material.uniforms.color = Cesium.Color.GREEN;
-                        this.linesToPoints.get(i).show = true;
+                    if(Math.abs(cameraX - globalPoints.get(i).position.x) < 1 && Math.abs(cameraY - globalPoints.get(i).position.y) < 1 && Math.abs(cameraZ - globalPoints.get(i).position.z) < 1){
+                        const lineToPoint = this.getLineById(globalPoints.get(i).id);
+                        if(lineToPoint){
+                            lineToPoint.material.uniforms.color = Cesium.Color.GREEN;
+                        } else {
+                            this.addLineToPoint(globalPoints.get(i));
+                        }
                     } else {
-                        this.pointsAdded.get(i).color = Cesium.Color.RED;
-                        this.linesToPoints.get(i).material.uniforms.color = Cesium.Color.RED;
-                        this.linesToPoints.get(i).show = true;
+                        const lineToPoint = this.getLineById(globalPoints.get(i).id);
+                        if(lineToPoint){
+                            lineToPoint.material.uniforms.color = Cesium.Color.RED;
+                        } else {
+                            const line = this.addLineToPoint(globalPoints.get(i));
+                            line.material.uniforms.color = Cesium.Color.RED;
+                        }
                     }
                 }
             } else {
-                this.pointsAdded.get(i).color = Cesium.Color.RED;
-
-                this.linesToPoints.get(i).show = false;
+                this.removeLineById(globalPoints.get(i).id);
             }
         }
+    }
+
+    /**
+     * Adds a line associated with a point primitive, line will have the same id as the point
+     *
+     * @param point - the point to added the line to
+     * @returns the line added
+     */
+    private addLineToPoint(point : Cesium.PointPrimitive) : Cesium.Polyline{
+        return this.linesToPoints.add({
+            id: point.id,
+            positions: [Cesium.Cartesian3.fromDegrees(this.long, this.lat, this._elevation), point.position],
+            width : 5.0,
+            material : new Cesium.Material({
+                fabric : {
+                    type : "Color",
+                    uniforms : {
+                        color : Cesium.Color.GREEN,
+                    },
+                },
+            }),
+        });
+    }
+
+    /**
+     * Removes a line given the id
+     *
+     * @param lineid - the id of the line to remove
+     */
+    public removeLineById(lineid : string) : void{
+        const len = this.linesToPoints.length;
+        for(let i = 0; i < len; i++){
+            if(this.linesToPoints.get(i).id == lineid){
+                this.linesToPoints.remove(this.linesToPoints.get(i));
+            }
+        }
+    }
+
+    /**
+     * Returns a line given its id
+     *
+     * @param lineid - the id of the line to get
+     * @returns the polyline found or null
+     */
+    private getLineById(lineid : string) : Cesium.Polyline | null{
+        const len = this.linesToPoints.length;
+        for(let i = 0; i < len; i++){
+            if(this.linesToPoints.get(i).id == lineid){
+                return this.linesToPoints.get(i);
+            }
+        }
+        return null;
     }
 }

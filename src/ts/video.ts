@@ -1,3 +1,4 @@
+import {FOV} from "./fov";
 import {VideoLogger} from "./logger";
 
 /**
@@ -12,13 +13,13 @@ export class Video {
     private canvasScaleVideo: number;
     private videoCanvasContext: CanvasRenderingContext2D | undefined;
 
-    constructor(){
+    constructor(fov : FOV){
         this.playing = true;
         // TODO - make use of FPS and an advance frame function
         this.fps = 30;
         this.canPlayVideo = false;
         this.canvasScaleVideo = 1;
-        const canvas = document.getElementById("imageVideoCanvas");
+        const canvas = document.getElementById(fov.identifier + "canvas");
 
         if(canvas != null){
             this.videoCanvas = canvas as HTMLCanvasElement;
@@ -30,7 +31,7 @@ export class Video {
 
             this.canPlayVideo = true;
 
-            const videoHTML = document.getElementById("videoUploaded");
+            const videoHTML = document.getElementById(fov.identifier + "videoUploaded");
             if(videoHTML == null){
                 VideoLogger.error("Failed to get a video element, is it in the HTML, with ID videoUploaded");
             } else {
@@ -41,7 +42,7 @@ export class Video {
                 this.videoHTML.loop = false;
                 this.videoHTML.oncanplay = () => this.playVideo(this);
 
-                const uploadVideoElement = document.getElementById("uploadVideo");
+                const uploadVideoElement = document.getElementById(fov.identifier + "_uploadVideo");
                 if(uploadVideoElement != null){
                     uploadVideoElement.onchange = () => this.onVideoSelected(uploadVideoElement as HTMLInputElement, this);
                 } else {

@@ -22,7 +22,7 @@ html, body {
     padding: 1em;
 }
 
-.slidersbox {
+.sliderbox {
     grid-column: 2;
     grid-row: 1;
 }
@@ -109,7 +109,6 @@ img {
     border-left-width: 5px;
     border-left-style: solid;
     width: 100%;
-    height: 100%;
 }
 
 #videoUploaded{
@@ -128,7 +127,6 @@ img {
 
 .previewImage{
    width: 100%;
-   height: 100%;
    background-color: #282830;
 }
 
@@ -136,6 +134,16 @@ img {
     display: none !important;
 }
 
-#imageVideoCanvas{ 
-    width: 80%;
+.imageVideoCanvas{ 
+    width: 100%;
+}
+
+.targetElement{ 
+    background-color: #282830;
+}
+
+.canvasContainer{ 
+    width: 33%;
+    display: -webkit-inline-box;
+
 }

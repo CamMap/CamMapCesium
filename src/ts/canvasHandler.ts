@@ -15,7 +15,6 @@ export class CanvasHandler{
     constructor(canvasElement: HTMLCanvasElement){
         this.canvasElement = canvasElement;
         this.clickFuns = [];
-
         this.setUpRegisterClicks();
     }
 
