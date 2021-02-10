@@ -1,72 +1,14 @@
 html, body {
-    width: 100%;
-    height: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden;
     display: block;
 }
 
-/* -- GRID LAYOUT -- */
-.grid {
-    display:grid;
-    grid-template-columns: 3fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    grid-gap:1em;
-    grid-auto-rows: minmax(100px,auto);
-    padding: 0.5em;
-}
-
-.grid > div {
-    background:#eee;
-    padding: 1em;
-}
-
-.sliderbox {
-    grid-column: 2;
-    grid-row: 1;
-}
-
-img {
-    grid-column: 2;
-    grid-row: 2;
-    padding: 1em;
-}
-
-
 .mapbox {
-    /*position: absolute;*/
-    /*display: inline;*/
     float: left;
     width: 50%;
     height: 100vh;
-    /*grid-column: 1;
-    grid-row: 1/3;*/
-}
-
-/* -- SLIDERS -- */
-.slidecontainer {
-    width: 100%; 
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-#loggercontainer { 
-    width: 100%; 
-    height: 40vh;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    background-color: #282830;
-    overflow-y: scroll;
-}
-  
-.slider {
-    width: 100%; 
-    height: 25px; 
-    -webkit-transition: .2s;
-    transition: opacity .2s;
+    overflow: hidden;
 }
 
 #mainContainer{
@@ -78,7 +20,6 @@ img {
 
 /* -- MAP -- */
 #cesiumContainer {
-    position: relative;
     width: 100%;
     height: 100vh;
     margin: 0;
@@ -89,26 +30,15 @@ img {
 
 /* -- IMAGE/VIDEO -- */
 #vid{
-    position: relative;
-    width: 50%;
+    width:50%;
     height: 100vh;
     margin: 0;
     padding: 0;
     background-color: #33333d;
-    font-family: 'Roboto Slab', serif;
+    font-family: Helvetica, 'Roboto Slab', serif;
     float: left;
     color: #d7d7d9;
-    /*overflow: hidden;
-    float: right;
-    justify-content: center;*/
-}
-
-#invid{
-    padding: 20px;
-    border-left-color: #282830;
-    border-left-width: 5px;
-    border-left-style: solid;
-    width: 100%;
+    overflow-y: auto;
 }
 
 #videoUploaded{
@@ -119,23 +49,16 @@ img {
     overflow: hidden;
 }
 
-.input-area{
-    flex: 20%;
-    flex-direction: column;
-    display: flex;
-    }
-
-.previewImage{
-   width: 100%;
-   background-color: #282830;
+#previewImage{
+    height: auto;
+    background-color: transparent;
+    border-radius: 5px;
+    padding: 20px;
+    margin-right: 60px;
 }
 
 .cesium-widget-credits{
     display: none !important;
-}
-
-.imageVideoCanvas{ 
-    width: 100%;
 }
 
 .targetElement{ 
@@ -143,7 +66,35 @@ img {
 }
 
 .canvasContainer{ 
-    width: 33%;
-    display: -webkit-inline-box;
+    width: 100%;
+    height: auto;
+    max-width: inherit;
+    border: 2px solid #d7d7d9;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
 
+.canvasImages{ 
+    padding: 10px;
+    background-color: #282830;
+    border-radius: 5px;
+    margin-top: 10px;
+    display:flex;
+    justify-content: center;
+}
+
+.imageVideoCanvas{ 
+    height: auto;
+    width: 100%;
+    max-width: 25vw;
+    border: 2px solid #d7d7d9;
+    cursor: pointer;
+}
+
+.canvasLabels {
+    display:flex;
+    flex-direction: column;
+    padding: 10px;
+    background-color: #282830;
+    border-radius: 5px;
 }

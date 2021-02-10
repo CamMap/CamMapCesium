@@ -3,11 +3,8 @@ const sideBarSliderButtons = document.getElementById("sideBarSlidersButtonContai
 const sideBarSlidersButton = document.getElementById("sideBarSlidersButton");
 const sideBarSliders = document.getElementById("sideBarSliders");
 
-const sideBarFOVButton = document.getElementById("sideBarFovOptionsButton");
-const sideBarFOV = document.getElementById("sideBarFovOptions");
-
-const sideBarTerrainButton = document.getElementById("sideBarTerrainButton");
-const sideBarTerrain = document.getElementById("sideBarTerrain");
+const sideBarSettingsButton = document.getElementById("sideBarSettingsButton");
+const sideBarSettings = document.getElementById("sideBarSettings");
 
 const sideBarLoggerButton = document.getElementById("sideBarLoggerButton");
 const sideBarLogger = document.getElementById("sideBarLogger");
@@ -33,8 +30,8 @@ function onClicksideBarSlidersButton(buttonContainer: HTMLElement, buttonElement
         CloseAll();
         slider.classList.remove("sideBarClosed");
         slider.classList.add("sideBarOpen");
-        buttonContainer.classList.remove("sideBarClosed");
-        buttonContainer.classList.add("sideBarOpen");
+        buttonContainer.classList.remove("buttonsClosed");
+        buttonContainer.classList.add("buttonsOpen");
         sideBarSlidersContainer.classList.remove("sideBarClosed");
         sideBarSlidersContainer.classList.add("sideBarOpen");
         buttonElement.classList.remove("notSelectedButton");
@@ -44,8 +41,8 @@ function onClicksideBarSlidersButton(buttonContainer: HTMLElement, buttonElement
         CloseAll();
         slider.classList.remove("sideBarOpen");
         slider.classList.add("sideBarClosed");
-        buttonContainer.classList.remove("sideBarOpen");
-        buttonContainer.classList.add("sideBarClosed");
+        buttonContainer.classList.remove("buttonsOpen");
+        buttonContainer.classList.add("buttonsClosed");
         sideBarSlidersContainer.classList.remove("sideBarOpen");
         sideBarSlidersContainer.classList.add("sideBarClosed");
         buttonElement.classList.remove("selectedButton");
@@ -62,16 +59,10 @@ if(sideBarSliders != null && sideBarSlidersButton != null && sideBarSliderButton
     console.log("sideBarSliders is null");
 }
 
-if(sideBarFOV != null && sideBarFOVButton != null && sideBarSliderButtons != null){
-    sideBarFOVButton.onclick = () => onClicksideBarSlidersButton(sideBarSliderButtons, sideBarFOVButton, sideBarFOV);
+if(sideBarSettings != null && sideBarSettingsButton != null && sideBarSliderButtons != null){
+    sideBarSettingsButton.onclick = () => onClicksideBarSlidersButton(sideBarSliderButtons, sideBarSettingsButton, sideBarSettings);
 } else {
-    console.log("sideBarFOV is null");
-}
-
-if(sideBarTerrain != null && sideBarTerrainButton != null && sideBarSliderButtons != null){
-    sideBarTerrainButton.onclick = () => onClicksideBarSlidersButton(sideBarSliderButtons, sideBarTerrainButton, sideBarTerrain);
-} else {
-    console.log("sideBarTerrain is null");
+    console.log("sideBarSettings is null");
 }
 
 if(sideBarLogger != null && sideBarLoggerButton != null && sideBarSliderButtons != null){
@@ -96,17 +87,15 @@ if(sideBarAdd != null && sideBarAddButton != null && sideBarSliderButtons != nul
  * Set the z-index of all the HTML slider menus to 0
  */
 function CloseAll(){
-    if(sideBarSliders != null && sideBarFOV != null && sideBarTerrain != null && sideBarLogger != null && sideBarManager != null && sideBarAdd != null){
+    if(sideBarSliders != null && sideBarSettings != null && sideBarLogger != null && sideBarManager != null && sideBarAdd != null){
         sideBarSlidersButton?.classList.remove("selectedButton");
-        sideBarFOVButton?.classList.remove("selectedButton");
-        sideBarTerrainButton?.classList.remove("selectedButton");
+        sideBarSettingsButton?.classList.remove("selectedButton");
         sideBarLoggerButton?.classList.remove("selectedButton");
         sideBarManagerButton?.classList.remove("selectedButton");
         sideBarAddButton?.classList.remove("selectedButton");
 
         sideBarSlidersButton?.classList.add("notSelectedButton");
-        sideBarFOVButton?.classList.add("notSelectedButton");
-        sideBarTerrainButton?.classList.add("notSelectedButton");
+        sideBarSettingsButton?.classList.remove("notSelectedButton");
         sideBarLoggerButton?.classList.add("notSelectedButton");
         sideBarManagerButton?.classList.add("notSelectedButton");
         sideBarAddButton?.classList.add("notSelectedButton");
@@ -114,11 +103,8 @@ function CloseAll(){
         sideBarSliders.classList.remove("sideBarOpen");
         sideBarSliders.classList.add("sideBarClosed");
 
-        sideBarFOV.classList.remove("sideBarOpen");
-        sideBarFOV.classList.add("sideBarClosed");
-
-        sideBarTerrain.classList.remove("sideBarOpen");
-        sideBarTerrain.classList.add("sideBarClosed");
+        sideBarSettings.classList.remove("sideBarOpen");
+        sideBarSettings.classList.add("sideBarClosed");
 
         sideBarLogger.classList.remove("sideBarOpen");
         sideBarLogger.classList.add("sideBarClosed");

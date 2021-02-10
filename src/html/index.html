@@ -16,53 +16,56 @@
         <div id="sideBarSlidersButton" class="slidingMenuButton">
             <img src="Images/slider1.svg" alt="">
         </div>
-        <div id="sideBarFovOptionsButton" class="slidingMenuButton">
-            <img src="Images/fovSettings1.svg" alt="">
-        </div>
-        <div id="sideBarTerrainButton" class="slidingMenuButton">
-            <img src="Images/terrain2.svg" alt="">
-        </div>
-        <div id="sideBarTerrainButton" class="slidingMenuButton">
+        <div id="sideBarSettingsButton" class="slidingMenuButton">
             <img src="Images/settings1.svg" alt="">
         </div>
         <div id="sideBarLoggerButton" class="slidingMenuButton">
             <img src="Images/log.svg" alt="">
         </div>
         <div id="sideBarManagerButton" class="slidingMenuButton">
-            <img src="Images/log.svg" alt="">
+            <img src="Images/manager.svg" alt="">
         </div>
         <div id="sideBarAddButton" class="slidingMenuButton">
-            <img src="Images/log.svg" alt="">
+            <img src="Images/add.svg" alt="">
         </div>
     </div>
+
     <div id="sideBarSlidersContainer" class="sideBarClosed">
         <div id="sideBarSliders" class="sideBarContents sideBarClosed">
+            <div class="slidecontainer">
+                <h1>Camera Sliders</h1>
+            </div>
             <div id="sliderbox" class="sliderbox">
             </div>
         </div>
-        <div id="sideBarFovOptions" class="sideBarContents sideBarClosed">
+        <div id="sideBarSettings" class="sideBarContents sideBarClosed">
             <div class="sliderbox">
                 <div class="slidecontainer">
+                    <h1>Settings</h1>
+                </div>
+                <!--FoV-->
+                <div class="slidecontainer">
+                    <h3>Field of View Options</h3>
                     <p> Round camera(will increase processing requirements)
                         <input type="checkbox" id="shouldUseRoundCamera">
                     </p>
                 </div>
-            </div>
-        </div>
-        <div id="sideBarTerrain" class="sideBarContents sideBarClosed">
-            <div class="sliderbox">
+                <!--Terrain Server-->
                 <div class="slidecontainer">
+                    <h3>Terrain Server Options</h3>
                     <label for="terSer">Terrain Server:</label>
                     <input type="text" id="terSer" name="terSer"><br><br>
                     <input type="button" value="Connect" id="terSerButton">
+                    <input type="button" value="Disconnect" id="terSerButtonDisconnect">
                 </div>
-                <input type="button" value="Disconnect" id="terSerButtonDisconnect">
             </div>
         </div>
         <div id="sideBarLogger" class="sideBarContents sideBarClosed">
             <div class="sliderbox">
                 <div class="slidecontainer">
-                    <h1>HTML logger</h1>
+                    <h1>HTML Logger</h1>
+                </div>
+                <div class="slidecontainer">
                     <div id="loggercontainer">
                     </div>
                 </div>
@@ -71,7 +74,10 @@
         <div id="sideBarManager" class="sideBarContents sideBarClosed">
             <div class="sliderbox">
                 <div class="slidecontainer">
-                    <h1>Target List manager</h1>
+                    <h1>Target List Manager</h1>
+                </div>
+                <div class="slidecontainer">
+
                     <div id="ManagerContainer">
                     </div>
                 </div>
@@ -81,33 +87,59 @@
             <div class="sliderbox">
                 <div class="slidecontainer">
                     <h1>Add Objects</h1>
+                </div>
+                <div class="slidecontainer">
                     <div id="FOVFormContainer">
                         <h3>FOV object</h3>
-                        <label for="fov_id">Camera Id: </label>
-                        <input type="text" id="fov_id" name="fov_id"><br>
-                        <label for="fov_lat">latitude: </label>
-                        <input type="number" id="fov_lat" name="fov_lat"><br>
-                        <label for="fov_long">longitude: </label>
-                        <input type="number" id="fov_long" name="fov_long"><br>
-                        <label for="fov_elev">Elevation: </label>
-                        <input type="number" id="fov_elev" name="fov_elev"><br>
-                        <label for="fov_fovDeg">Field of view: </label>
-                        <input type="number" id="fov_fovDeg" name="fov_fovDeg"><br>
-                        <label for="fov_ratio">Aspect Ratio: </label>
-                        <input type="number" id="fov_ratio" name="fov_ratio"><br>
-                        <label for="fov_head">Heading: </label>
-                        <input type="number" id="fov_head" name="fov_head"><br>
-                        <label for="fov_tilt">Tilt: </label>
-                        <input type="number" id="fov_tilt" name="fov_tilt"><br>
-                        <label for="fov_roll">Roll: </label>
-                        <input type="number" id="fov_roll" name="fov_roll"><br>
-                        <label for="fov_near">Minimum view distance: </label>
-                        <input type="number" id="fov_near" name="fov_near"><br>
-                        <label for="fov_far">Maximum view distance: </label>
-                        <input type="number" id="fov_far" name="fov_far"><br>
-                        <label for="geoData">GeoData server: </label>
-                        <input type="text" id="geoData" name="geoData"><br>
-                        <input type="submit" value="Submit" id="submitFov">
+                        <div class="objectOption">
+                            <label for="fov_id">Camera Id: </label>
+                            <input type="text" id="fov_id" name="fov_id">
+                        </div><br>
+                        <div class="objectOption">
+                            <label for="fov_lat">Latitude: </label>
+                            <input type="number" id="fov_lat" name="fov_lat">
+                        </div><br>
+                        <div class="objectOption">
+                            <label for="fov_long">Longitude: </label>
+                            <input type="number" id="fov_long" name="fov_long">
+                        </div><br>
+                        <div class="objectOption">
+                            <label for="fov_elev">Elevation: </label>
+                            <input type="number" id="fov_elev" name="fov_elev">
+                        </div><br>
+                        <div class="objectOption">
+                            <label for="fov_fovDeg">Field of view: </label>
+                            <input type="number" id="fov_fovDeg" name="fov_fovDeg">
+                        </div><br>
+                        <div class="objectOption">
+                            <label for="fov_ratio">Aspect Ratio: </label>
+                            <input type="number" id="fov_ratio" name="fov_ratio">
+                        </div><br>
+                        <div class="objectOption">
+                            <label for="fov_head">Heading: </label>
+                            <input type="number" id="fov_head" name="fov_head">
+                        </div><br>
+                        <div class="objectOption">
+                            <label for="fov_tilt">Tilt: </label>
+                            <input type="number" id="fov_tilt" name="fov_tilt">
+                        </div><br>
+                        <div class="objectOption">
+                            <label for="fov_roll">Roll: </label>
+                            <input type="number" id="fov_roll" name="fov_roll">
+                        </div><br>
+                        <div class="objectOption">
+                            <label for="fov_near">Minimum View Distance: </label>
+                            <input type="number" id="fov_near" name="fov_near">
+                        </div><br>
+                        <div class="objectOption">
+                            <label for="fov_far">Maximum View Distance: </label>
+                            <input type="number" id="fov_far" name="fov_far">
+                        </div><br>
+                        <div class="objectOption">
+                            <label for="geoData">GeoData Server: </label>
+                            <input type="text" id="geoData" name="geoData">
+                        </div><br>
+                        <input type="submit" value="Add" id="submitFov">
                     </div>
                     <div id="PointFormContainer">
                     </div>
@@ -122,12 +154,8 @@
             <div id="cesiumContainer"></div>
         </div>
         <div id="vid">
-            <div id="invid">
-            </div>
-            <div id="previewImage">
-            </div>
+            <div id="previewImage"></div>
         </div>
-    </div>
     </div>
 </body>
 

@@ -1,10 +1,11 @@
+/* Sidebar Buttons */
 .slidingMenuButton{
     width: 50px;
     height: 50px;
     background-color: #373740;
     opacity: 1.0;
     position: relative;
-    left: -520px; /*-70 -340*/
+    left: -525px; /*-70 -340*/
     top: 10px;
     display: inline-block;
     padding: 5px;
@@ -21,32 +22,6 @@
     height: 100%;
     margin: auto auto;
     padding: 0;
-}
-
-/* Make into a class if implementing several */
-.sideBarContents{
-    width: 450px;
-    height: 100vh;
-    margin-left: 0px;
-    position: absolute;
-    padding: 20px;
-    background-color: #373740; 
-    transition-duration: 0.5s;
-    display: inline-block;
-    color: #d7d7d9;
-    font-family: 'Roboto Slab', serif;
-    border-left-color: #1ba773ff;
-    border-left-width: 3px;
-    border-left-style: solid;
-    border-right: none;
-}
-
-.sideBarClosed{
-    right: -510px;
-}
-
-.sideBarOpen{
-    right: 0px;
 }
 
 .selectedButton{
@@ -76,13 +51,6 @@
     right: -10px;
 }
 
-#sideBarSlidersContainer{
-    position: fixed;
-    transition-duration: 0.5s;
-    width: 300px;
-    z-index: 2;
-}
-
 #sideBarSlidersButtonContainer{
     position: fixed;
     transition-duration: 0.5s;
@@ -90,14 +58,180 @@
     width: 50px;
 }
 
+
+/* Sidebar General */
+.sideBarContents{
+    width: 450px;
+    margin-left: 0px;
+    position: absolute;
+    padding: 10px 20px 10px 10px;
+    background-color: #373740; 
+    transition-duration: 0.5s;
+    display: inline-block;
+    color: #d7d7d9;
+    font-family: Helvetica, 'Roboto Slab', serif;
+    border-left-color: #1ba773ff;
+    border-left-width: 3px;
+    border-left-style: solid;
+    border-right: none;
+    overflow-y: auto;
+}
+
+.sideBarClosed, .buttonsClosed{
+    right: -510px;
+}
+
+.buttonsOpen {
+    right:0px;
+}
+
+.sideBarOpen{
+    right: 0px;
+    bottom: 0px;
+    top: 0px;
+}
+
+#sideBarSlidersContainer{
+    position: fixed;
+    transition-duration: 0.5s;
+    width: 485px;
+    height: 100%;
+    z-index: 2;
+}
+
+#sideBarSlidersContainer input {
+    background-color: #33333d;
+    border-radius: 5px;
+    color: #d7d7d9;
+}
+
+#sideBarSlidersContainer h3 {
+    text-align: center;
+    font-weight: bold;
+}
+
 #sideBarFovOptions{
     display: inline;
 }
 
-#sideBarSliders{ 
-    overflow-y: scroll;
+
+/* -- SLIDERS -- */
+.slidecontainer {
+    width: 100%; 
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 5px;
+    background-color: #33333d;
+    padding: 5px;
+    font-family: Helvetica;
+    border-radius: 5px;
 }
 
-#sideBarManager{
-    overflow-y: scroll;
+.slidecontainer > h1 {
+    text-align: center;
+}
+  
+.slider {
+    width: 98%; 
+    height: 25px; 
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+
+/* Target List Manager */
+#ManagerContainer .targetElement {
+    padding: 5px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+.removePoint {
+    color: red;
+    cursor: pointer;
+    font-weight: 700;
+    text-align: center;
+}
+
+.removePoint:hover{
+    background-color: #4a4a52;
+}
+
+
+/* Logger */
+#loggercontainer { 
+    width: 95%; 
+    height: 85vh;
+    display: block;
+    margin: auto;
+    background-color: #282830;
+    overflow-y: auto;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+#log-info {
+    color:aqua;
+}
+
+#log-error {
+    color:orange;
+}
+
+#log-fatal {
+    color:red;
+}
+
+#log-warning {
+    color:yellow;
+}
+
+#log-debug {
+    color:lawngreen;
+}
+
+#log-general {
+    color:white;
+}
+
+#log-video {
+    color:cornflowerblue;
+}
+
+#log-image {
+    color:mediumpurple;
+}
+
+#log-fov {
+    color:goldenrod;
+}
+
+#log-vgip {
+    color:tomato;
+}
+
+/* Add Object */
+
+.objectOption {
+    display: flex;
+    flex-direction: row;
+}
+
+.objectOption > label {
+    text-align: right;
+    width:10vw;
+    margin-right: 5px;
+}
+
+#submitFov {
+    padding: 5px 20px 5px 20px;
+    margin-left: 50%;
+    font-weight: 700;
+    font-size: 1em;
+}
+
+#submitFov:hover {
+    background-color: #4a4a52;
+    cursor: pointer;
 }

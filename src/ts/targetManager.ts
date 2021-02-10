@@ -62,7 +62,7 @@ export class TLMFovElement{
         fovElement.appendChild(generateHTMLElement("p", {id: "Heading", innerHTML:  "Heading: " + this.fovObject.heading.toString()}, fovId));
         fovElement.appendChild(generateHTMLElement("p", {id: "FovDeg", innerHTML: "Fov degrees: " + this.fovObject.aspectRatio.toString()}, fovId));
         fovElement.appendChild(generateHTMLElement("p", {id: "Location", innerHTML: "Location: " + this.fovObject.latitude + " " + this.fovObject.longitude}, fovId));
-        const removeElement = fovElement.appendChild(generateHTMLElement("p", {id: "remove", innerHTML: "Remove Object"}, fovId));
+        const removeElement = fovElement.appendChild(generateHTMLElement("p", {id: "remove", class: "removePoint", innerHTML: "Remove Object"}, fovId));
         parentElement.appendChild(fovElement);
         return [fovElement, removeElement];
     }
@@ -113,13 +113,22 @@ export class TLMFovElement{
             GeneralLogger.error("Couldn't get the div to contain the FOV canvas");
         }
         const canvasContainer = generateHTMLElement("div", {class: "canvasContainer"});
-        canvasContainer.appendChild(generateHTMLElement("span", {id: "image-coord"}, fovId));
-        canvasContainer.appendChild(generateHTMLElement("label", {innerHTML: "Choose an image/video"}, fovId));
-        canvasContainer.appendChild(generateHTMLElement("input", {type: "file", id: "_uploadFile", name: "image"}, fovId));
-        canvasContainer.appendChild(generateHTMLElement("input", {type: "file", id: "_uploadVideo", name: "videoUploaded"}, fovId));
-        canvasContainer.appendChild(generateHTMLElement("img", {id: "target" }, fovId));
-        canvasContainer.appendChild(generateHTMLElement("video", {id: "videoUploaded" }, fovId));
-        canvasContainer.appendChild(generateHTMLElement("canvas", {id:"canvas", class: "imageVideoCanvas"}, fovId));
+        const canvasLabels = generateHTMLElement("div", {class: "canvasLabels"});
+
+        canvasLabels.appendChild(generateHTMLElement("h2", {innerHTML: fovId}, fovId));
+        canvasLabels.appendChild(generateHTMLElement("span", {id: "image-coord"}, fovId));
+        canvasLabels.appendChild(generateHTMLElement("label", {innerHTML: "Choose an image/video"}, fovId));
+        canvasLabels.appendChild(generateHTMLElement("input", {type: "file", id: "_uploadFile", name: "image"}, fovId));
+        canvasLabels.appendChild(generateHTMLElement("input", {type: "file", id: "_uploadVideo", name: "videoUploaded"}, fovId));
+        canvasContainer.appendChild(canvasLabels);
+
+        const canvasImages = generateHTMLElement("div", {class: "canvasImages"});
+
+        canvasImages.appendChild(generateHTMLElement("img", {id: "target" }, fovId));
+        canvasImages.appendChild(generateHTMLElement("video", {id: "videoUploaded" }, fovId));
+        canvasImages.appendChild(generateHTMLElement("canvas", {id:"canvas", class: "imageVideoCanvas"}, fovId));
+        canvasContainer.appendChild(canvasImages);
+
         parentElement.appendChild(canvasContainer);
         return canvasContainer;
     }
@@ -217,7 +226,7 @@ export class TLMPointElement{
         pointDiv.appendChild(generateHTMLElement("h3", {innerHTML: "Point"}));
         pointDiv.appendChild(generateHTMLElement("p", {id:"point", innerHTML: "Point location: " + Cesium.Math.toDegrees(pointPosRad.latitude) + " " + Cesium.Math.toDegrees(pointPosRad.longitude)}, pointId));
         pointDiv.appendChild(generateHTMLElement("p", {id:"vis", innerHTML:"Visibile: True"}, pointId));
-        const removeElement = pointDiv.appendChild(generateHTMLElement("p", {id:"Remove", innerHTML:"Remove Point"}, pointId));
+        const removeElement = pointDiv.appendChild(generateHTMLElement("p", {id:"Remove", class: "removePoint", innerHTML:"Remove Point"}, pointId));
         return [pointDiv, removeElement];
     }
 
