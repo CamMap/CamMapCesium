@@ -1,3 +1,7 @@
+:root {
+    --ces-sidebar-width: 300px;
+}
+
 /* Sidebar Buttons */
 .slidingMenuButton{
     width: 50px;
@@ -5,7 +9,7 @@
     background-color: #373740;
     opacity: 1.0;
     position: relative;
-    left: -525px; /*-70 -340*/
+    left: calc( 0px - (var(--ces-sidebar-width) + 75px));/*calc( 0 - var(--ces-sidebar-width) - 75px);*/ /*-70 -340*/
     top: 10px;
     display: inline-block;
     padding: 5px;
@@ -61,7 +65,7 @@
 
 /* Sidebar General */
 .sideBarContents{
-    width: 450px;
+    width: var(--ces-sidebar-width);
     margin-left: 0px;
     position: absolute;
     padding: 10px 20px 10px 10px;
@@ -78,7 +82,7 @@
 }
 
 .sideBarClosed, .buttonsClosed{
-    right: -510px;
+    right:  calc(0px - (var(--ces-sidebar-width) + 60px)); /*calc( 0px - calc(var(--ces-sidebar-width) + 60px));*/ /* -510px;*/
 }
 
 .buttonsOpen {
@@ -94,7 +98,7 @@
 #sideBarSlidersContainer{
     position: fixed;
     transition-duration: 0.5s;
-    width: 485px;
+    width: calc(var(--ces-sidebar-width) + 35px);
     height: 100%;
     z-index: 2;
 }
