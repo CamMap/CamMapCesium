@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "npx webpack serve --mode development --config webpack.config.js --host 0.0.0.0",
+    "full": "docker-compose -f docker/debug/docker-compose.yml up -d && npm run start",
+    "fullstop": "docker-compose -f docker/debug/docker-compose.yml down",
     "build": "npx webpack --config webpack.config.js",
     "docs": "npx typedoc --out docs src",
     "lint": "npx eslint ./src/ts --ext .ts",
