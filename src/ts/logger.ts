@@ -49,35 +49,35 @@ class HTMLPrinter implements Printer{
      * @param message - The message to print to the console
      */
     public debug(message: string){
-        this.print(message);
+        this.print("<span id='log-debug'>[DEBUG]</span>" + message);
     }
 
     /**
      * @param message - The message to print to the console
      */
     public info(message: string){
-        this.print(message);
+        this.print("<span id='log-info'>[INFO]</span>" + message);
     }
 
     /**
      * @param message - The message to print to the console
      */
     public warn(message: string){
-        this.print(message);
+        this.print("<span id='log-warning'>[WARNING]</span>" + message);
     }
 
     /**
      * @param message - The message to print to the console
      */
     public error(message: string){
-        this.print(message);
+        this.print("<span id='log-error'>[ERROR]</span>" + message);
     }
 
     /**
      * @param message - The message to print to the console
      */
     public fatal(message: string){
-        this.print(message);
+        this.print("<span id='log-fatal'>[FATAL]</span>" + message);
     }
 
     /**
@@ -180,7 +180,7 @@ class CustomLogger{
     public info(message: string){
         if(LogLevel.Info <= this.level){
             for(const printer of this.printers){
-                printer.info("<span id='log-info'>[INFO]</span>" + this.prefix + " " + message);
+                printer.info(this.prefix + " " + message);
             }
         }
     }
@@ -193,7 +193,7 @@ class CustomLogger{
     public error(message: string){
         if(LogLevel.Error <= this.level){
             for(const printer of this.printers){
-                printer.error("<span id='log-error'>[ERROR]</span>" + this.prefix + " " + message);
+                printer.error(this.prefix + " " + message);
             }
         }
     }
@@ -206,7 +206,7 @@ class CustomLogger{
     public fatal(message: string){
         if(LogLevel.Fatal <= this.level){
             for(const printer of this.printers){
-                printer.fatal("<span id='log-fatal'>[FATAL]</span>" + this.prefix + " " + message);
+                printer.fatal(this.prefix + " " + message);
             }
         }
     }
@@ -219,7 +219,7 @@ class CustomLogger{
     public warn(message: string){
         if(LogLevel.Warning <= this.level){
             for(const printer of this.printers){
-                printer.warn("<span id='log-warning'>[WARNING]</span>" + this.prefix + " " + message);
+                printer.warn(this.prefix + " " + message);
             }
         }
     }
@@ -232,7 +232,7 @@ class CustomLogger{
     public debug(message: string){
         if(LogLevel.Debug <= this.level){
             for(const printer of this.printers){
-                printer.debug("<span id='log-debug'>[DEBUG]</span>" + this.prefix + " " + message);
+                printer.debug(this.prefix + " " + message);
             }
         }
     }
@@ -251,16 +251,16 @@ class CustomLogger{
 }
 
 /// A general logger for general things
-export const GeneralLogger = new CustomLogger({prefix: "<span id='log-general'>[General]</span>"});
+export const GeneralLogger = new CustomLogger({prefix: "[General]"});
 
 /// Logger for video related things
-export const VideoLogger = new CustomLogger({prefix: "<span id='log-video'>[Video]</span>"});
+export const VideoLogger = new CustomLogger({prefix: "[Video]"});
 
 /// Logger for image related things
-export const ImageLogger = new CustomLogger({prefix: "<span id='log-image'>[Image]</span>"});
+export const ImageLogger = new CustomLogger({prefix: "[Image]"});
 
 /// Logger for FOV related things
-export const FOVLogger = new CustomLogger({prefix: "<span id='log-fov'>[FOV]</span>"});
+export const FOVLogger = new CustomLogger({prefix: "[FOV]"});
 
 /// Logger for VGIP related things
-export const VGIPLogger = new CustomLogger({prefix: "<span id='log-vgip'>[VGIP]</span>"});
+export const VGIPLogger = new CustomLogger({prefix: "[VGIP]"});
