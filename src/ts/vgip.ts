@@ -184,8 +184,6 @@ export class VGIP{
             } else {
                 VGIPLogger.warn("Malformed input for " + XMLtag.tagName + ", could not find 'value' attribute");
             }
-        } else {
-            VGIPLogger.error("The XML tag to get the value of is null, unable to get value");
         }
         return null;
     }
