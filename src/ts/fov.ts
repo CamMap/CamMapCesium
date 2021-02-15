@@ -5,7 +5,7 @@
  */
 
 import * as Cesium from "cesium_source/Cesium";
-import { Cartesian2, Cartesian3, HeadingPitchRoll, Matrix3, PerspectiveFrustum } from "cesium_source/Cesium";
+import { Cartesian2, Cartesian3, HeadingPitchRoll, Matrix3, Matrix4, PerspectiveFrustum } from "cesium_source/Cesium";
 import { FOVLogger } from "./logger";
 import { TLMPointElement } from "./targetManager";
 import { VGIPReciever } from "./vgipReciever";
@@ -106,11 +106,12 @@ export class FOV {
         this.draw(this.scene);
         this.redrawLinesToEdges();
         this.redrawLinesToPoints();
-        this.checkPointsVisible();
+
         // Call event listeners
         for(const fn of this.distFns){
             fn(this._distance);
         }
+        this.checkPointsVisible();
     }
 
     /**
@@ -132,11 +133,12 @@ export class FOV {
         this.draw(this.scene);
         this.redrawLinesToEdges();
         this.redrawLinesToPoints();
-        this.checkPointsVisible();
+
         // Call event listeners
         for(const fn of this.posFns){
             fn(this.elevation);
         }
+        this.checkPointsVisible();
     }
 
     /** @returns The elevation of the camera, in meters */
@@ -220,11 +222,12 @@ export class FOV {
         this.draw(this.scene);
         this.redrawLinesToEdges();
         this.redrawLinesToPoints();
-        this.checkPointsVisible();
+
         // Call event listeners
         for(const fn of this.headingFns){
             fn(this.heading);
         }
+        this.checkPointsVisible();
     }
 
     /** @returns The heading of the camera, in radians */
@@ -252,11 +255,12 @@ export class FOV {
         this.draw(this.scene);
         this.redrawLinesToEdges();
         this.redrawLinesToPoints();
-        this.checkPointsVisible();
+
         // Call event listeners
         for(const fn of this.tiltFns){
             fn(this.tilt);
         }
+        this.checkPointsVisible();
     }
 
     /** @returns The tilt of the camera, in radians */
@@ -282,12 +286,13 @@ export class FOV {
         this.draw(this.scene);
         this.redrawLinesToEdges();
         this.redrawLinesToPoints();
-        this.checkPointsVisible();
+
 
         // Call event listeners
         for(const fn of this.rollFns){
             fn(this._roll);
         }
+        this.checkPointsVisible();
     }
 
     /**
@@ -602,6 +607,30 @@ export class FOV {
         if(this.curDrawn !== null) this.scene.primitives.remove(this.curDrawn);
         if(this.pointsToEdges !== null) this.scene.primitives.remove(this.pointsToEdges);
         if(this.linesToPoints !== null) this.scene.primitives.remove(this.linesToPoints);
+    }
+
+    /**
+     * Get a point on the map, to a point on the screen using the camera projection matrix
+     *
+     * @param point - The point on the Globe
+     * @returns The point on the screen between 0.0 and 1.0
+     */
+    public projectPointFromMapOntoScreen(point: Cartesian3): Cartesian2{
+        const p: Cartesian3 = new Cartesian3(0, 0, 0);
+        Cartesian3.subtract(point, this.camera.position, p);
+
+        Matrix4.multiplyByPoint(this.camera.viewMatrix, point, p);
+        Matrix4.multiplyByPoint(this.camera.frustum.projectionMatrix, p, p);
+
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        const pointOnScreen = new Cartesian2((p.x / p.z + 1.0) / 2.0, (p.y / p.z + 1.0) / 2.0);
+
+        const PRECISION = 2;
+        pointOnScreen.x = parseFloat(pointOnScreen.x.toPrecision(PRECISION));
+        pointOnScreen.y = parseFloat(pointOnScreen.y.toPrecision(PRECISION));
+
+        FOVLogger.info("Point on map projected back to " + pointOnScreen);
+        return pointOnScreen;
     }
 
     /**
@@ -1253,13 +1282,18 @@ export class FOV {
                     const cameraZ = cameraIntersection.z;
                     //Allow for a margin of error
                     if(Math.abs(cameraX - globalPoints.get(i).position.x) < 1 && Math.abs(cameraY - globalPoints.get(i).position.y) < 1 && Math.abs(cameraZ - globalPoints.get(i).position.z) < 1){
+                        // The point is visible
                         const lineToPoint = this.getLineById(globalPoints.get(i).id);
                         if(lineToPoint){
                             lineToPoint.material.uniforms.color = Cesium.Color.GREEN;
                         } else {
                             this.addLineToPoint(globalPoints.get(i));
                         }
+
+                        // Draw the point on the canvas image corresponding to the FOV
+                        this.drawPointOnCanvas(globalPoints.get(i));
                     } else {
+                        // The point is not visible
                         const lineToPoint = this.getLineById(globalPoints.get(i).id);
                         if(lineToPoint){
                             lineToPoint.material.uniforms.color = Cesium.Color.RED;
@@ -1271,6 +1305,37 @@ export class FOV {
                 }
             } else {
                 this.removeLineById(globalPoints.get(i).id);
+            }
+        }
+    }
+
+    /**
+     * Draws a single point on the canvas.
+     * If the point is not visible in the FOV, the point will not be displayed.
+     *
+     * @param point - The point to draw on the canvas
+     */
+    private drawPointOnCanvas(point: Cesium.PointPrimitive){
+        const p = this.projectPointFromMapOntoScreen(point.position);
+
+        // Draw a circle on the screen with lowered opacity
+        const c = document.getElementById(this.id + "canvas");
+        if(c instanceof HTMLCanvasElement){
+            const ctx = c.getContext("2d");
+            if(ctx instanceof CanvasRenderingContext2D){
+                ctx.beginPath();
+                const distToPoint = Cesium.Cartesian3.distance(this.position, point.position);
+                let RADIUS = 10;
+                const scaleFactor = 1.5;
+                RADIUS *= 1 - distToPoint / (this._distance * scaleFactor);
+                const START_ANGLE = 0;
+                // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+                const END_ANGLE = 2 * Math.PI;
+                ctx.arc(
+                    p.y * c.width, p.x * c.height, RADIUS, START_ANGLE, END_ANGLE
+                );
+                ctx.fillStyle = "rgba(255, 30, 30, 0.5)";
+                ctx.fill();
             }
         }
     }

@@ -39,6 +39,30 @@ export function imageSetup(fov: FOV) : void{
             GeneralLogger.warn("No bearing/heading metadata parsed in the image");
         }
     });
+
+    fov.onDistanceChanged(() => {
+        imageHandler.redrawImage();
+    });
+
+    fov.onPosChanged(() => {
+        imageHandler.redrawImage();
+    });
+
+    fov.onHeadingChanged(() => {
+        imageHandler.redrawImage();
+    });
+
+    fov.onTiltChanged(() => {
+        imageHandler.redrawImage();
+    });
+
+    fov.onFOVChanged(() => {
+        imageHandler.redrawImage();
+    });
+
+    fov.onFOVChanged(() => {
+        imageHandler.redrawImage();
+    });
 }
 
 /**
@@ -67,6 +91,11 @@ export function canvasSetUp(fov: FOV) : void{
             }
             const precentPoints = new Cartesian2(Number(y / canvas.clientHeight), Number(x / canvas.clientWidth));
             fov.drawLineFromPercentToScreen(fov.scene, precentPoints, fov.scene.globe.ellipsoid);
+
+            //Const p = fov.getCamPointPercent(fov.scene, precentPoints, fov.scene.globe.ellipsoid);
+            //If(p != null){
+            //   Fov.getPointFromMapOnScreen(p);
+            //}
         });
     }
 }

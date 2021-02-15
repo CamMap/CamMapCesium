@@ -14,6 +14,10 @@ export interface LoadedGeoMetadata{
 export class Image {
     private metadataFuns: { (data: LoadedGeoMetadata): void; }[];
     private fovObject: FOV;
+    private image: HTMLImageElement | null;
+    private canvasContext: CanvasRenderingContext2D | null;
+    private imgWidth: number;
+    private imgHeight: number;
 
     /**
      * Constructs an image object
@@ -21,6 +25,10 @@ export class Image {
     constructor(fov : FOV){
         this.fovObject = fov;
         this.metadataFuns = [];
+        this.image = null;
+        this.canvasContext = null;
+        this.imgWidth = 0;
+        this.imgHeight = 0;
         const uploadFile = document.getElementById(fov.identifier + "_uploadFile");
         if(uploadFile != null) {
             uploadFile.onchange = (e) => this.onUploadImage(e);
@@ -73,6 +81,19 @@ export class Image {
         }
     }
 
+
+    /**
+     * Redraws the image on the canvas, writing over anything that was
+     * there previously
+     */
+    public redrawImage(): void{
+        if(this.image != null && this.canvasContext != null){
+            this.canvasContext.drawImage(
+                this.image, 0, 0, this.imgWidth, this.imgHeight
+            );
+        }
+    }
+
     /**
      * @param fileReader - The file reader for the image
      * @param imageFile - The file to load the image from, this must be an image that the webbrowser can load e.g .png, .jpeg, .tiff...
@@ -83,11 +104,19 @@ export class Image {
         // Display the loaded image
         if(fileReader.target) {
             //Is there a better way of doing this?
-            imageElement.onload = function(fovObject){
+            imageElement.onload = function(fovObject, image){
                 return function(){
-                    createImageOnCanvas(fovObject);
+                    const [imgElement, canvasContext, imgWidth, imgHeight] = createImageOnCanvas(fovObject);
+                    if(imgElement != null){
+                        image.image = imgElement;
+                    }
+                    if(canvasContext != null){
+                        image.canvasContext = canvasContext;
+                    }
+                    image.imgWidth = imgWidth;
+                    image.imgHeight = imgHeight;
                 };
-            }(this.fovObject);
+            }(this.fovObject, this);
 
             if(fileReader.target.result != null){
                 // The user selected an image file
@@ -123,8 +152,9 @@ export class Image {
  * Draw the image in the image element on the Canvas
  *
  * @param fov -
+ * @returns The html image which was flashed to the canvas
  */
-function createImageOnCanvas(fov : FOV){
+function createImageOnCanvas(fov : FOV): [HTMLImageElement | null, CanvasRenderingContext2D | null, number, number]{
     const canvas = document.getElementById(fov.identifier + "canvas");
 
     if(canvas != null){
@@ -149,9 +179,11 @@ function createImageOnCanvas(fov : FOV){
                     target as HTMLImageElement, 0, 0, imageWidth, imageHeight
                 );
                 target.style.display = "none";
+                return [target as HTMLImageElement, context, imageWidth, imageHeight];
             }
         }
     } else {
         ImageLogger.error("Unable to find canvas element.  This is an error, to fix it, try restarting the application.  If that does not work, submit a bug report.");
     }
+    return [null, null, 0, 0];
 }
