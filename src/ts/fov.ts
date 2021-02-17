@@ -40,7 +40,7 @@ export class FOV {
     private linesToPoints: Cesium.PolylineCollection;
     private pointsToEdges: Cesium.PointPrimitiveCollection;
     private numOfPoints: number;
-
+    private camLabel: Cesium.LabelCollection;
     private curDrawn: Cesium.Primitive | null;
 
     private posFns: { (val: number): void; }[];
@@ -70,6 +70,7 @@ export class FOV {
     // If clipping is on, the can be left off as this and clipping are equivilant
     private shouldUseEarthBoundry: boolean;
 
+    private selected: boolean;
     /* Getters & Setters */
 
     /**
@@ -85,6 +86,7 @@ export class FOV {
 
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
+        this.updateLabelPos();
         this.redrawLinesToEdges();
         this.redrawLinesToPoints();
         this.checkPointsVisible();
@@ -131,6 +133,7 @@ export class FOV {
 
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
+        this.updateLabelPos();
         this.redrawLinesToEdges();
         this.redrawLinesToPoints();
 
@@ -164,6 +167,7 @@ export class FOV {
 
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
+        this.updateLabelPos();
         this.redrawLinesToEdges();
         this.redrawLinesToPoints();
         this.checkPointsVisible();
@@ -192,6 +196,7 @@ export class FOV {
 
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
+        this.updateLabelPos();
         this.redrawLinesToEdges();
         this.redrawLinesToPoints();
         this.checkPointsVisible();
@@ -355,6 +360,27 @@ export class FOV {
         return this.id;
     }
 
+    /** @returns The label to show the camera is selected */
+    public get label(): Cesium.LabelCollection{
+        return this.camLabel;
+    }
+
+    /**
+     *  Sets if the FOV is selected
+     *
+     *  @param bol - If the FOV is selected
+     */
+    public set select(bol : boolean){
+        this.selected = bol;
+        this.scene.primitives.remove(this.curDrawn);
+        this.draw(this.scene);
+    }
+
+    /** @returns if the FOV object is selectd in the TLM */
+    public get select(): boolean{
+        return this.selected;
+    }
+
     /**
      * Constructs an FOV object, call draw() to draw it in a scene
      *
@@ -389,9 +415,8 @@ export class FOV {
         this.terrainScanningGeometryPrimitive = this.scene.primitives.add(new Cesium.PrimitiveCollection());
         this._distance = far;
 
-        this.linesToPoints = new Cesium.PolylineCollection();
-        this.pointsToEdges = new Cesium.PointPrimitiveCollection();
         this.numOfPoints = 0;
+        this.camLabel = this.scene.primitives.add(new Cesium.LabelCollection());
         this.pointsToEdges = this.scene.primitives.add(new Cesium.PointPrimitiveCollection());
         this.linesToPoints = this.scene.primitives.add(new Cesium.PolylineCollection());
         this.shouldDrawEdgeLines = false;
@@ -413,6 +438,8 @@ export class FOV {
         this.shouldDisplayInnerOutline = false;
         this.shouldDisplayBorderFOV = true;
         this.shouldUseEarthBoundry = false;
+
+        this.selected = false;
 
         this.camera = new Cesium.Camera(scene);
         const frustum = new Cesium.PerspectiveFrustum({
@@ -446,6 +473,18 @@ export class FOV {
                 pitch : this.phi,
                 roll : this._roll + Cesium.Math.PI_OVER_TWO,
             },
+        });
+
+        const alpha = 0.5;
+        this.camLabel.add({
+            show : false,
+            position : this.position,
+            text : "!",
+            font : "20px sans-serif",
+            fillColor : Cesium.Color.WHITE,
+            outlineColor : Cesium.Color.BLACK,
+            showBackground : true,
+            backgroundColor : Cesium.Color.BLACK.withAlpha(alpha),
         });
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
@@ -501,15 +540,18 @@ export class FOV {
                 orientation: Cesium.Quaternion.fromRotationMatrix(rotationMatrix),
             }));
 
-            if(geom !== undefined) {
+            if(geom !== undefined){
                 const instance = new Cesium.GeometryInstance({
                     geometry: geom,
                 });
 
                 const material = Cesium.Material.fromType("Color");
                 const alpha = 0.5;
-                material.uniforms.color = Cesium.Color.ORANGE.withAlpha(alpha);
-
+                if(this.selected){
+                    material.uniforms.color = Cesium.Color.RED.withAlpha(alpha);
+                } else {
+                    material.uniforms.color = Cesium.Color.ORANGE.withAlpha(alpha);
+                }
                 this.curDrawn = scene.primitives.add(new Cesium.Primitive({
                     geometryInstances: instance,
                     appearance: new Cesium.MaterialAppearance({
@@ -519,6 +561,13 @@ export class FOV {
                 })) as Cesium.Primitive;
             }
         }
+    }
+
+    /**
+     *
+     */
+    private updateLabelPos(){
+        this.camLabel.get(0).position = this.position;
     }
 
     /**

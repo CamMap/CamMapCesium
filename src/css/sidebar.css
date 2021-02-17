@@ -239,3 +239,21 @@
     background-color: #4a4a52;
     cursor: pointer;
 }
+
+#selectedPoint { 
+    color: orange;
+}
+
+.selectedDiv{ 
+    border-color: #1ba773ff;
+    border-width: 3px;
+    border-style: solid;
+}
+
+.selectElement { 
+    cursor: pointer;
+}
+
+#selectedFOV { 
+    color: red;
+}

@@ -6,7 +6,7 @@ import { Cartesian2 } from "cesium_source/Cesium";
 import { Config } from "./configHandler";
 import { FOV } from "./fov";
 import { GeneralLogger } from "./logger";
-import { globalFOV, globalPoints} from "./targetManager";
+import { globalPoints} from "./targetManager";
 import { Image } from "./image";
 import { TLMFovElement} from "./targetManager";
 import { Video } from "./video";
@@ -219,7 +219,7 @@ export function generalBaseSetup(config?: Config): Cesium.Viewer{
         "Camera 1", viewer.scene, [ -4.946793, 56.615756, 10.0], 60, 1, 90, 90, 0, 100, 3000
     );
     viewer.scene.primitives.add(globalPoints);
-    globalFOV.push(fov);
+
     new TLMFovElement(fov, null);
     //
     // See https://www.cesium.com/docs/tutorials/creating-entities/
