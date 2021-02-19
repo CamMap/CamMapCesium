@@ -244,3 +244,25 @@ export function generalBaseSetup(config?: Config): Cesium.Viewer{
 export function setUpVGIPWebSocket(fov: FOV, websocketAddress: string): void{
     fov.setUpVGIPWebSocket(websocketAddress);
 }
+
+//TODO: needs to changed so all point ids generated from global counter
+let numFormPoints = 0;
+
+/**
+ * Adds a new point to the map from given coordinates
+ *
+ * @param lat - latitude of the point
+ * @param long - longitude of the point
+ * @returns Cesium point generated
+ */
+export function addPoint(lat: number, long: number) : Cesium.PointPrimitive {
+    numFormPoints += 1;
+    const point = globalPoints.add({
+        id: "form" + "Point" + numFormPoints.toString(),
+        position: Cesium.Cartesian3.fromDegrees(lat, long),
+        color: Cesium.Color.GREEN,
+        pixelSize: 10,
+        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+    });
+    return point;
+}

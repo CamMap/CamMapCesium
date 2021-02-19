@@ -228,7 +228,7 @@
     margin-right: 5px;
 }
 
-#submitFov {
+#submitFov, #submitPoint {
     padding: 5px 20px 5px 20px;
     margin-left: 50%;
     font-weight: 700;
