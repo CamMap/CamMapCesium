@@ -1,7 +1,9 @@
-import { TLMFovElement, TLMPointElement, globalFOV } from "./targetManager";
+import { TLMFovElement, TLMPointElement } from "./targetManager";
 import { FOV } from "./fov";
-import {GeneralLogger} from "./logger";
+import { GeneralLogger } from "./logger";
 import { addPoint } from "./main_helper";
+import { globalFOV } from "./globalObjects";
+
 const DEFAULT_VAL = 0;
 
 /**

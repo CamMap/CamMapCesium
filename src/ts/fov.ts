@@ -5,12 +5,11 @@
  */
 
 import * as Cesium from "cesium_source/Cesium";
-import { Cartesian2, Cartesian3, HeadingPitchRoll, Matrix3, Matrix4, PerspectiveFrustum } from "cesium_source/Cesium";
+import { Cartesian2, Cartesian3, HeadingPitchRoll, Matrix3, Matrix4, PerspectiveFrustum, PointPrimitive } from "cesium_source/Cesium";
 import { FOVLogger } from "./logger";
-import { TLMPointElement } from "./targetManager";
 import { VGIPReciever } from "./vgipReciever";
 import { VideoGeoData } from "./vgip";
-import { globalPoints } from "./targetManager";
+import { globalPoints } from "./globalObjects";
 
 /**
  * A wrapper around cesium camera.
@@ -943,7 +942,7 @@ export class FOV {
      */
     public drawLineFromPixelToScreen(
         scene: Cesium.Scene, pixel: Cartesian2, ellipsoid: Cesium.Ellipsoid, frustrum: boolean
-    ): boolean | null {
+    ): PointPrimitive | null {
         let pointOnSphere = undefined;
         if(frustrum == true){
             pointOnSphere = this.camera.pickEllipsoid(pixel, ellipsoid);
@@ -996,9 +995,8 @@ export class FOV {
                     heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
                 });
                 this.addLineToPoint(point);
-                new TLMPointElement(point);
+                return point;
             }
-            return true;
         }
         return null;
     }
@@ -1092,7 +1090,7 @@ export class FOV {
      */
     drawLineFromPercentToScreen(
         scene: Cesium.Scene, percent: Cartesian2, ellipsoid: Cesium.Ellipsoid, frustum = false
-    ): boolean | null {
+    ): PointPrimitive | null {
         const maxHeight = scene.canvas.clientHeight;
         const maxWidth = scene.canvas.clientWidth;
         const pixel = new Cesium.Cartesian2(maxWidth * percent.x, maxHeight * percent.y);

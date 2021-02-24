@@ -6,9 +6,9 @@ import { Cartesian2 } from "cesium_source/Cesium";
 import { Config } from "./configHandler";
 import { FOV } from "./fov";
 import { GeneralLogger } from "./logger";
-import { globalPoints} from "./targetManager";
+import { globalPoints} from "./globalObjects";
 import { Image } from "./image";
-import { TLMFovElement} from "./targetManager";
+import { TLMFovElement, TLMPointElement} from "./targetManager";
 import { Video } from "./video";
 
 
@@ -90,7 +90,11 @@ export function canvasSetUp(fov: FOV) : void{
                 span.innerText = `X: ${x}, Y: ${y}`;
             }
             const precentPoints = new Cartesian2(Number(y / canvas.clientHeight), Number(x / canvas.clientWidth));
-            fov.drawLineFromPercentToScreen(fov.scene, precentPoints, fov.scene.globe.ellipsoid);
+            const point = fov.drawLineFromPercentToScreen(fov.scene, precentPoints, fov.scene.globe.ellipsoid);
+            if(point != null){
+                new TLMPointElement(point);
+            }
+
 
             //Const p = fov.getCamPointPercent(fov.scene, precentPoints, fov.scene.globe.ellipsoid);
             //If(p != null){

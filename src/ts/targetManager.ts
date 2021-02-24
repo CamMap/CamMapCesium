@@ -1,5 +1,6 @@
 import * as Cesium from "cesium_source/Cesium";
 import * as Setup from "./main_helper";
+import { globalFOV, globalPoints } from "./globalObjects";
 import { DictionaryLike } from "Cesium";
 import { FOV } from "./fov";
 import { GeneralLogger } from "./logger";
@@ -333,6 +334,3 @@ function generateHTMLElement(el : string, attrs : DictionaryLike, parentId? : st
     }
     return newElement;
 }
-
-export const globalPoints = new Cesium.PointPrimitiveCollection();
-export const globalFOV = [] as FOV[];
