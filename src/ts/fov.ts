@@ -644,7 +644,7 @@ export class FOV {
     /**
      * Calculate the rotation matrix to align the object to the surface of a sphere
      *
-     * @param long - The longditude of the position on the sphere
+     * @param long - The longitude of the position on the sphere
      * @param lat - The latitude of the position on the sphere
      * @param elevation - The elevation of the position on the sphere
      * @param theta - the bearing of the camera
@@ -674,10 +674,10 @@ export class FOV {
 
     /**
      * Get the plane tangent to the sphere, where the x axis is tangent to
-     * the latitude axis, the y axis is tangent to the longditude and
+     * the latitude axis, the y axis is tangent to the longitude and
      * the z axis is pointing directly up towards space.
      *
-     * @param long - The longditude of the position on the sphere
+     * @param long - The longitude of the position on the sphere
      * @param lat - The latitude of the position on the sphere
      * @param elevation - The elevation of the position on the sphere
      * @returns The new [x axis, y axis, z axis] normalized vectors
