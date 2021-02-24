@@ -1,5 +1,5 @@
 import * as Cesium from "cesium_source/Cesium";
-import * as Setup from "./main_helper";
+import { FOVCanvasSetUp, FOVEventTriggerSetup, FOVImageSetup, FOVVGIPWebSocketSetUp, FOVVideoSetup } from "./fov_setup";
 import { globalFOV, globalPoints } from "./globalObjects";
 import { DictionaryLike } from "Cesium";
 import { FOV } from "./fov";
@@ -24,19 +24,20 @@ export class TLMFovElement{
         const [tlmContainer, removeElement, selectElement] = this.setupTLMHTML(this.fovObject.identifier);
         const sliderContainer = this.setupSliderHTML(this.fovObject.identifier);
         const canvasContainer = this.setupCanvasHTML(this.fovObject.identifier);
-        this.FOVEventTriggerSetup(this.fovObject);
+
         this.containerElements.push(tlmContainer);
         this.containerElements.push(sliderContainer);
         this.containerElements.push(tlmContainer);
         this.containerElements.push(canvasContainer);
         globalFOV.push(fovObject);
-        Setup.FOVEventTriggerSetup(fovObject);
-        Setup.imageSetup(fovObject);
-        Setup.videoSetup(fovObject);
-        Setup.canvasSetUp(fovObject);
+
+        FOVEventTriggerSetup(this.fovObject);
+        FOVImageSetup(fovObject);
+        FOVVideoSetup(fovObject);
+        FOVCanvasSetUp(fovObject);
 
         if(geoDataServer){
-            Setup.setUpVGIPWebSocket(fovObject, geoDataServer);
+            FOVVGIPWebSocketSetUp(fovObject, geoDataServer);
         } else {
             GeneralLogger.info("No GeoData server provided, camera will be static");
         }
@@ -184,29 +185,6 @@ export class TLMFovElement{
         slider.appendChild(generateHTMLElement("br", {}));
         slider.appendChild(generateHTMLElement("input", {id: id, class: "slider", min: min, max: max, type: "range", value: value}, this.fovObject.identifier));
         return slider;
-    }
-
-    /**
-     * Sets up the sliders for a given fov object
-     *
-     * @param fov -The fov object
-     */
-    private FOVEventTriggerSetup(fov: FOV) : void{
-        fov.onPosChanged((val) => {
-            (document.getElementById(fov.identifier + "Height") as HTMLElement).innerHTML = "Height: " + String(val);
-        });
-
-        fov.onTiltChanged((val) => {
-            (document.getElementById(fov.identifier + "Tilt") as HTMLElement).innerHTML = "Tilt: " + String(val);
-        });
-
-        fov.onHeadingChanged((val) => {
-            (document.getElementById(fov.identifier + "Heading") as HTMLElement).innerHTML = "Heading: " + String(val);
-        });
-
-        fov.onFOVChanged((val) => {
-            (document.getElementById(fov.identifier + "FovDeg") as HTMLElement).innerHTML = "FovDeg: " + String(val);
-        });
     }
 
     /**

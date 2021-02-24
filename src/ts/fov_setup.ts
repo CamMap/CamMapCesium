@@ -1,0 +1,162 @@
+/**
+ * Functions to set up all the FOV-HTML connections
+ *
+ * @packageDocumentation
+ */
+
+import { CanvasHandler } from "./canvasHandler";
+import { Cartesian2 } from "cesium_source/Cesium";
+import { FOV } from "./fov";
+import { GeneralLogger } from "./logger";
+import { Image } from "./image";
+import { Video } from "./video";
+
+/**
+ * Sets up the sliders for a given fov object
+ *
+ * @param fov -The fov object
+ */
+export function FOVEventTriggerSetup(fov: FOV) : void{
+    fov.onPosChanged((val) => {
+        (document.getElementById(fov.identifier + "Height") as HTMLElement).innerHTML = "Height: " + String(val);
+    });
+
+    fov.onTiltChanged((val) => {
+        (document.getElementById(fov.identifier + "Tilt") as HTMLElement).innerHTML = "Tilt: " + String(val);
+    });
+
+    fov.onHeadingChanged((val) => {
+        (document.getElementById(fov.identifier + "Heading") as HTMLElement).innerHTML = "Heading: " + String(val);
+    });
+
+    fov.onFOVChanged((val) => {
+        (document.getElementById(fov.identifier + "FovDeg") as HTMLElement).innerHTML = "FovDeg: " + String(val);
+    });
+
+    // Setup HTML interaction
+
+    fov.setUpDistanceListener(document.getElementById(fov.identifier + "cam_dist") as HTMLInputElement);
+    fov.onDistanceChanged((val) => {
+        (document.getElementById(fov.identifier + "cam_dist_result") as HTMLOutputElement).value = String(val);
+    });
+
+    fov.setUpPosListener(document.getElementById(fov.identifier + "cam_height") as HTMLInputElement);
+    fov.onPosChanged((val) => {
+        (document.getElementById(fov.identifier + "cam_height_result") as HTMLOutputElement).value = String(val); console.log("Called");
+    });
+
+    fov.setUpHeadingListener(document.getElementById(fov.identifier + "cam_heading") as HTMLInputElement);
+    fov.onHeadingChanged((val) => {
+        (document.getElementById(fov.identifier + "cam_heading_result") as HTMLOutputElement).value = String(val);
+    });
+
+    fov.setUpTiltListener(document.getElementById(fov.identifier + "cam_tilt") as HTMLInputElement);
+    fov.onTiltChanged((val) => {
+        (document.getElementById(fov.identifier + "cam_tilt_result") as HTMLOutputElement).value = String(val);
+    });
+
+    fov.setUpFOVListener(document.getElementById(fov.identifier + "fov_hor") as HTMLInputElement);
+    fov.onFOVChanged((val) => {
+        (document.getElementById(fov.identifier + "fov_hor_result") as HTMLOutputElement).value = String(val);
+    });
+
+    fov.setUpFOVListener(document.getElementById(fov.identifier + "fov_hor") as HTMLInputElement);
+    fov.onFOVChanged((val) => {
+        (document.getElementById(fov.identifier + "fov_hor_result") as HTMLOutputElement).value = String(val);
+    });
+}
+
+/**
+ * Set up the image in an example
+ *
+ * @param fov - The FOV object the image should modify, metadata dependent
+ */
+export function FOVImageSetup(fov: FOV) : void{
+    //Create a new imageHandler
+    const imageHandler = new Image(fov);
+    imageHandler.onImageMetadataRead((imageGeoMetadata) => {
+        if(imageGeoMetadata.latitude != null){
+            fov.latitude = imageGeoMetadata.latitude;
+        } else {
+            GeneralLogger.warn("No latitude metadata parsed in the image");
+        }
+        if(imageGeoMetadata.longtitude != null){
+            fov.longitude = imageGeoMetadata.longtitude;
+        } else {
+            GeneralLogger.warn("No longtitude metadata parsed in the image");
+        }
+        if(imageGeoMetadata.bearing != null){
+            fov.heading = imageGeoMetadata.bearing;
+        } else {
+            GeneralLogger.warn("No bearing/heading metadata parsed in the image");
+        }
+    });
+
+    fov.onDistanceChanged(() => {
+        imageHandler.redrawImage();
+    });
+
+    fov.onPosChanged(() => {
+        imageHandler.redrawImage();
+    });
+
+    fov.onHeadingChanged(() => {
+        imageHandler.redrawImage();
+    });
+
+    fov.onTiltChanged(() => {
+        imageHandler.redrawImage();
+    });
+
+    fov.onFOVChanged(() => {
+        imageHandler.redrawImage();
+    });
+
+    fov.onFOVChanged(() => {
+        imageHandler.redrawImage();
+    });
+}
+
+/**
+ * Setup the video logging
+ *
+ * @param fov - FOV object
+ */
+export function FOVVideoSetup(fov : FOV) : void{
+    new Video(fov);
+}
+
+/**
+ * Set up the canvas
+ *
+ * @param fov - The FOV object to draw the dots from (to hit the Earth)
+ */
+export function FOVCanvasSetUp(fov: FOV) : void{
+    // Get the canvas and listen for clicks
+    const canvas = document.getElementById(fov.identifier + "canvas");
+    if(canvas != null && canvas instanceof HTMLCanvasElement){
+        const ch = new CanvasHandler(canvas);
+        const span = document.getElementById(fov.identifier + "image-cord");
+        ch.onClick(([x, y]) => {
+            if(span != null){
+                span.innerText = `X: ${x}, Y: ${y}`;
+            }
+            const precentPoints = new Cartesian2(Number(y / canvas.clientHeight), Number(x / canvas.clientWidth));
+            fov.drawLineFromPercentToScreen(fov.scene, precentPoints, fov.scene.globe.ellipsoid);
+        });
+    }
+}
+
+/**
+ * A wrapper over `FOV.setUpVGIPWebSocket()`, just so main does not need to change
+ * if the underlying implementation does
+ *
+ * TODO change this to use an interface for recieving VGIP connections
+ * And should return boolean representing success
+ *
+ * @param fov - The FOV camera
+ * @param websocketAddress - The websocket address to connect to
+ */
+export function FOVVGIPWebSocketSetUp(fov: FOV, websocketAddress: string): void{
+    fov.setUpVGIPWebSocket(websocketAddress);
+}

@@ -235,19 +235,6 @@ export function generalBaseSetup(config?: Config): Cesium.Viewer{
     return viewer;
 }
 
-/**
- * A wrapper over `FOV.setUpVGIPWebSocket()`, just so main does not need to change
- * if the underlying implementation does
- *
- * TODO change this to use an interface for recieving VGIP connections
- * And should return boolean representing success
- *
- * @param fov - The FOV camera
- * @param websocketAddress - The websocket address to connect to
- */
-export function setUpVGIPWebSocket(fov: FOV, websocketAddress: string): void{
-    fov.setUpVGIPWebSocket(websocketAddress);
-}
 
 //TODO: needs to changed so all point ids generated from global counter
 let numFormPoints = 0;
