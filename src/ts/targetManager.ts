@@ -57,24 +57,20 @@ export class TLMFovElement{
             //No way to reference point in primitive collection with the point primitive
             for(let i = 0; i < len; ++i) {
                 const fov = globalFOV[i];
-                const selectLabel = fov.label;
                 if(fov.identifier == fovObject.identifier){
-                    if(!selectLabel.get(0).show){
+                    if(!fov.select){
                         selectElement.innerHTML = "Selected";
                         selectElement.id = "selectedFOV";
                         tlmContainer.classList.add("selectedDiv");
                         fov.select = true;
-                        selectLabel.get(0).show = true;
                     } else {
                         selectElement.innerHTML = "Select";
                         tlmContainer.classList.remove("selectedDiv");
                         selectElement.removeAttribute("id");
-                        selectLabel.get(0).show = false;
                         fov.select = false;
                     }
                 } else {
                     fov.select = false;
-                    selectLabel.get(0).show = false;
                 }
             }
         };
