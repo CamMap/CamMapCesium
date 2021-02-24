@@ -46,14 +46,13 @@ export class TLMFovElement{
         selectElement.onclick = () => {
             const len = globalFOV.length;
             const prevSelectedFOV = document.getElementById("selectedFOV");
-            GeneralLogger.debug("element Clicked");
+            GeneralLogger.debug("Selected TLM object");
             //If point already selected remove id and change inner HTML
             if(prevSelectedFOV){
                 prevSelectedFOV.removeAttribute("id");
                 prevSelectedFOV.parentElement?.classList.remove("selectedDiv");
                 prevSelectedFOV.innerHTML = "Select";
             }
-            GeneralLogger.debug(globalFOV.toString());
             //No way to reference point in primitive collection with the point primitive
             for(let i = 0; i < len; ++i) {
                 const fov = globalFOV[i];
@@ -85,7 +84,7 @@ export class TLMFovElement{
     private setupTLMHTML(fovId : string) : [HTMLElement, HTMLElement, HTMLElement]{
         const parentElement = document.getElementById("ManagerContainer") as HTMLDivElement;
         if(parentElement == null){
-            GeneralLogger.error("Couldn't get the div to contain the TLM FOV objects");
+            GeneralLogger.error("Could not get the div to hold the TLM FOV objects");
         }
         const fovElement = generateHTMLElement("div", {id: "", class: "targetElement"}, fovId);
         fovElement.appendChild(generateHTMLElement("h3", {id: "label", innerHTML: "FOV object: " + fovId}, fovId));
@@ -110,7 +109,7 @@ export class TLMFovElement{
     private setupSliderHTML(fovId : string): HTMLElement{
         const parentElement = document.getElementById("sliderbox") as HTMLDivElement;
         if(parentElement == null){
-            GeneralLogger.error("Couldn't get the div to contain the FOV sliders");
+            GeneralLogger.error("Could not get the div to hold the FOV sliders");
         }
         const sliderContainer = generateHTMLElement("div", {class: "slidecontainer"});
         sliderContainer.appendChild(generateHTMLElement("h3", {innerHTML: fovId}));
@@ -143,7 +142,7 @@ export class TLMFovElement{
     private setupCanvasHTML(fovId : string) : HTMLElement{
         const parentElement = document.getElementById("previewImage") as HTMLDivElement;
         if(parentElement == null){
-            GeneralLogger.error("Couldn't get the div to contain the FOV canvas");
+            GeneralLogger.error("Could not get the div to hold the FOV canvas");
         }
         const canvasContainer = generateHTMLElement("div", {class: "canvasContainer"});
         const canvasLabels = generateHTMLElement("div", {class: "canvasLabels"});
