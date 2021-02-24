@@ -547,8 +547,9 @@ export class FOV {
 
                 const material = Cesium.Material.fromType("Color");
                 const alpha = 0.5;
+                const selectedAlpha = 0.3;
                 if(this.selected){
-                    material.uniforms.color = Cesium.Color.RED.withAlpha(alpha);
+                    material.uniforms.color = Cesium.Color.GREEN.withAlpha(selectedAlpha);
                 } else {
                     material.uniforms.color = Cesium.Color.ORANGE.withAlpha(alpha);
                 }
