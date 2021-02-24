@@ -95,7 +95,7 @@ function CloseAll(){
         sideBarAddButton?.classList.remove("selectedButton");
 
         sideBarSlidersButton?.classList.add("notSelectedButton");
-        sideBarSettingsButton?.classList.remove("notSelectedButton");
+        sideBarSettingsButton?.classList.add("notSelectedButton");
         sideBarLoggerButton?.classList.add("notSelectedButton");
         sideBarManagerButton?.classList.add("notSelectedButton");
         sideBarAddButton?.classList.add("notSelectedButton");
