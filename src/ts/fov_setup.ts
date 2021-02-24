@@ -9,7 +9,9 @@ import { Cartesian2 } from "cesium_source/Cesium";
 import { FOV } from "./fov";
 import { GeneralLogger } from "./logger";
 import { Image } from "./image";
+import { VGIPReciever } from "./vgipReciever";
 import { Video } from "./video";
+import { VideoGeoData } from "./vgip";
 
 /**
  * Sets up the sliders for a given fov object
@@ -158,5 +160,35 @@ export function FOVCanvasSetUp(fov: FOV) : void{
  * @param websocketAddress - The websocket address to connect to
  */
 export function FOVVGIPWebSocketSetUp(fov: FOV, websocketAddress: string): void{
-    fov.setUpVGIPWebSocket(websocketAddress);
+    /**
+     * Set up a websocket to recieve geolocation data and dynamically modify the camera based on it
+     *
+     * @param address - The URL of the websocket which serves the geodata
+     */
+
+    const vgipReciever = new VGIPReciever();
+    vgipReciever.addWebSocketWithAddress(websocketAddress);
+    vgipReciever.onRecieveData((geoData: VideoGeoData) => {
+        // Modify the lat, long, heading ... depending on what was recieved
+
+        if(geoData.latitude != null && geoData.latitude != undefined){
+            fov.latitude = geoData.latitude;
+        }
+
+        if(geoData.longitude != null && geoData.longitude != undefined){
+            fov.longitude = geoData.longitude;
+        }
+
+        if(geoData.bearing != null && geoData.bearing != undefined){
+            fov.heading = geoData.bearing;
+        }
+
+        if(geoData.tilt != null && geoData.tilt != undefined){
+            fov.tilt = geoData.tilt;
+        }
+
+        if(geoData.heading != null && geoData.heading != undefined){
+            fov.roll = geoData.heading;
+        }
+    });
 }

@@ -7,8 +7,6 @@
 import * as Cesium from "cesium_source/Cesium";
 import { Cartesian2, Cartesian3, HeadingPitchRoll, Matrix3, Matrix4, PerspectiveFrustum, PointPrimitive } from "cesium_source/Cesium";
 import { FOVLogger } from "./logger";
-import { VGIPReciever } from "./vgipReciever";
-import { VideoGeoData } from "./vgip";
 import { globalPoints } from "./globalObjects";
 
 /**
@@ -49,11 +47,6 @@ export class FOV {
     private fovFns: { (val: number): void; }[];
     private aspectRatioFns: { (val: number): void; }[];
     private distFns: { (val: number): void; }[];
-
-    // TODO, shuold there be a seperate wrapper class for something like this?
-    // So as FOV is not dependent on vgip reciever.
-    // There should, do this with the setUpListeners functions
-    private vgipReciever: VGIPReciever;
 
     // Should only the rectangular simlple FOV be shown
     public shouldDisplayBorderFOV: boolean;
@@ -428,8 +421,6 @@ export class FOV {
         this.aspectRatioFns = [];
         this.distFns = [];
 
-        this.vgipReciever = new VGIPReciever();
-
         // Don't do terrain scanning by default, it is a relativly intensive process
         // And so need a good computer to support it well
         // Will just show the rectangular camera (by default)
@@ -488,38 +479,6 @@ export class FOV {
         this.scene.primitives.remove(this.curDrawn);
         this.draw(this.scene);
         this.redrawLinesToEdges();
-    }
-
-    /**
-     * Set up a websocket to recieve geolocation data and dynamically modify the camera based on it
-     *
-     * @param address - The URL of the websocket which serves the geodata
-     */
-    public setUpVGIPWebSocket(address: string): void{
-        this.vgipReciever.addWebSocketWithAddress(address);
-        this.vgipReciever.onRecieveData((geoData: VideoGeoData) => {
-            // Modify the lat, long, heading ... depending on what was recieved
-
-            if(geoData.latitude != null && geoData.latitude != undefined){
-                this.latitude = geoData.latitude;
-            }
-
-            if(geoData.longitude != null && geoData.longitude != undefined){
-                this.longitude = geoData.longitude;
-            }
-
-            if(geoData.bearing != null && geoData.bearing != undefined){
-                this.heading = geoData.bearing;
-            }
-
-            if(geoData.tilt != null && geoData.tilt != undefined){
-                this.tilt = geoData.tilt;
-            }
-
-            if(geoData.heading != null && geoData.heading != undefined){
-                this.roll = geoData.heading;
-            }
-        });
     }
 
     /**
