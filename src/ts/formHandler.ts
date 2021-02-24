@@ -40,7 +40,7 @@ class fovForm implements Form{
         const geoServer = (document.getElementById("geoData") as HTMLInputElement).value;
         if(id != null){
             const fov = new FOV(
-                id, scene, [lat, long, elev], fovDeg, aspectRatio, heading, tilt, roll, near, far,
+                id, scene, [long, lat, elev], fovDeg, aspectRatio, heading, tilt, roll, near, far,
             );
             new TLMFovElement(fov, geoServer);
         } else {
