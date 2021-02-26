@@ -250,7 +250,7 @@ export function addPoint(lat: number, long: number) : Cesium.PointPrimitive {
     numFormPoints += 1;
     const point = globalPoints.add({
         id: "form" + "Point" + numFormPoints.toString(),
-        position: Cesium.Cartesian3.fromDegrees(lat, long),
+        position: Cesium.Cartesian3.fromDegrees(long, lat),
         color: Cesium.Color.GREEN,
         pixelSize: 10,
         heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
