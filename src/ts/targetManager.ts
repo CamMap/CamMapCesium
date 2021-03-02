@@ -1,9 +1,9 @@
 import * as Cesium from "cesium_source/Cesium";
 import { FOVCanvasSetUp, FOVEventTriggerSetup, FOVImageSetup, FOVVGIPWebSocketSetUp, FOVVideoSetup } from "./fov_setup";
+import { FOVLogger, GeneralLogger } from "./logger";
 import { globalFOV, globalPoints } from "./globalObjects";
 import { DictionaryLike } from "Cesium";
 import { FOV } from "./fov";
-import { GeneralLogger } from "./logger";
 
 /**
  * Generates the HTML for a FOV object
@@ -43,6 +43,7 @@ export class TLMFovElement{
         }
         removeElement.onclick = () => {
             this.destroy(this.containerElements);
+            FOVLogger.info("FOV Object Removed");
         };
 
         selectElement.onclick = () => {
@@ -218,6 +219,7 @@ export class TLMPointElement{
         this.pointContainer = container;
         removeElement.onclick = () => {
             this.destroy(this.pointContainer);
+            FOVLogger.info("FOV Point Removed");
         };
         selectElement.onclick = () => {
             const len = globalPoints.length;

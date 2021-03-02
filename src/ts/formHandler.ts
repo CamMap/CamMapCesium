@@ -1,6 +1,6 @@
+import { FOVLogger, GeneralLogger } from "./logger";
 import { TLMFovElement, TLMPointElement } from "./targetManager";
 import { FOV } from "./fov";
-import { GeneralLogger } from "./logger";
 import { addPoint } from "./main_helper";
 import { globalFOV } from "./globalObjects";
 
@@ -43,6 +43,7 @@ class fovForm implements Form{
                 id, scene, [long, lat, elev], fovDeg, aspectRatio, heading, tilt, roll, near, far,
             );
             new TLMFovElement(fov, geoServer);
+            FOVLogger.info("New FOV Object Created");
         } else {
             GeneralLogger.error("Could not generate FOV objects, please try again.");
         }

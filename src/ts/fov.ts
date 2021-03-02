@@ -954,6 +954,7 @@ export class FOV {
                     heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
                 });
                 this.addLineToPoint(point);
+                FOVLogger.info("New FOV Point Generated");
                 return point;
             }
         }
