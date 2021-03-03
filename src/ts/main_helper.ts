@@ -143,11 +143,16 @@ export function FOVEventTriggerSetup(fov: FOV) : void{
 
 /**
  * @param camera - The camera to set the view
+ * @param lat - camera latitude
+ * @param lng - camera longtitude
+ * @param elevation - camera elevation
  */
-function setCameraView(camera: Cesium.Camera){
+function setCameraView(
+    camera: Cesium.Camera, lat: number, lng: number, elevation: number
+){
     // Set the camera to look at the view cone
     camera.setView({
-        destination: Cesium.Cartesian3.fromDegrees(-4.946793, 56.615756, 10000.0),
+        destination: Cesium.Cartesian3.fromDegrees(lng, lat, elevation),
         orientation: {
             heading: Cesium.Math.toRadians(0.0),
             pitch: Cesium.Math.toRadians(-90.0),
@@ -191,12 +196,11 @@ export function setupTerrainServerConnectButton(scene: Cesium.Scene): void{
 
 
 /**
- * Set up everything and return the viewer and the FOV objects
+ * Set up base and return the viewer and the FOV objects
  *
- * @param config -  the config for the application
  * @returns The viewer and the FOV object which have been created
  */
-export function generalBaseSetup(config?: Config): Cesium.Viewer{
+export function generalBaseSetup(): Cesium.Viewer{
     // The tiles used below are open source at https://github.com/stamen/terrain-classic
     const imageryProvider = new Cesium.UrlTemplateImageryProvider({
         url : "http://tile.stamen.com/terrain/{z}/{x}/{y}.jpg",
@@ -213,26 +217,45 @@ export function generalBaseSetup(config?: Config): Cesium.Viewer{
         vrButton: false,
         fullscreenButton: false,
         imageryProvider: imageryProvider,
-        terrainProvider: config ? config.defaultTerrainServer ? new Cesium.CesiumTerrainProvider({
-            url : config.defaultTerrainServer,
-        }) : undefined : undefined,
     });
     viewer.scene.globe.depthTestAgainstTerrain = true;
 
-    const fov = new FOV(
-        "Camera 1", viewer.scene, [ -4.946793, 56.615756, 10.0], 60, 1, 90, 90, 0, 100, 3000
-    );
     viewer.scene.primitives.add(globalPoints);
 
-    new TLMFovElement(fov, null);
     //
     // See https://www.cesium.com/docs/tutorials/creating-entities/
     // For creating entities
     //
     setupTerrainServerConnectButton(viewer.scene);
-    setCameraView(viewer.camera);
 
     return viewer;
+}
+
+/**
+ * Applies the config to the viewer
+ *
+ * @param viewer -  viewer
+ * @param config -  the config for the application
+ */
+export function applyConfig(viewer:Cesium.Viewer, config?: Config): void{
+    if(config?.defaultTerrainServer) {
+        viewer.terrainProvider = new Cesium.CesiumTerrainProvider({
+            url : config.defaultTerrainServer,
+        });
+    }
+    if(config?.cameras) {
+        config.cameras.forEach(camera => {
+            const fov = new FOV(
+                camera.name, viewer.scene, [ camera.lng, camera.lat, camera.elevation], camera.fov, camera.aspectRatio, camera.theta, camera.phi, camera.roll, camera.near, camera.far
+            );
+            new TLMFovElement(fov, camera.vgip);
+        });
+    }
+    if(config?.position) {
+        setCameraView(
+            viewer.camera, config.position.lat, config.position.lng, config.position.elevation
+        );
+    }
 }
 
 

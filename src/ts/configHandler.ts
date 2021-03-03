@@ -1,60 +1,114 @@
 import { GeneralLogger } from "./logger";
-
-const DEFAULT_CONFIG_LOCATION = "./config.json";
+import { applyConfig} from "./main_helper";
 
 /**
  * Interface for a number of configuration options for the application
  */
 export interface Config{
     defaultTerrainServer: string | undefined
+    cameras: Array<ConfigCamera>
+    position: ConfigCameraPosition
+}
+
+interface ConfigCameraPosition {
+    lat: number
+    lng: number
+    elevation: number
+}
+
+interface ConfigCamera{
+    name: string
+    lat: number
+    lng: number
+    elevation: number
+    fov: number
+    aspectRatio: number
+    theta: number
+    phi: number
+    roll: number
+    near: number
+    far: number
+    vgip: string
 }
 
 /**
- * Load in the config file from the server
- *
- * @returns the config object containing the user config
+ * Handles configs and related stuff
  */
-export function LoadConfigFromOwnServer(): Config{
-    const fileRead = loadFile(DEFAULT_CONFIG_LOCATION);
-    if(fileRead != null){
-        const loadedJSON = JSON.parse(fileRead) as Config;
-        return loadedJSON;
-    } else {
-        return {} as Config;
+export class ConfigHandler{
+    viewer: Cesium.Viewer;
+    constructor(viewer : Cesium.Viewer){
+        this.viewer = viewer;
+        this.loadConfigFromCurrentUrl();
     }
-}
-
-/**
- * Load in the config file from the client computer,
- * i.e a file which they select and run a callback
- *
- * @param filePath - The location of the file, usually supplied from a input tag from HTML
- * @param callback - The callback to be called upon loading the file
- */
-export function LoadConfigFromClient(filePath: Blob, callback: ((this: FileReader, ev: ProgressEvent<FileReader>) => void) | null): void{
-    const reader = new FileReader();
-    reader.readAsText(filePath, "utf8");
-    reader.onload = callback;
-    reader.onerror = () => {
-        GeneralLogger.info("Error reading client file");
-    };
-}
 
 
-/**
- * @param filePath -  The path to the file on the server side
- * @returns the loaded file as a string or null if the file could not be loaded
- */
-function loadFile(filePath: string): string | null {
-    let result = null;
-    const xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("GET", filePath, false);
-    xmlhttp.send();
-    const OK = 200;
-    if(xmlhttp.status == OK) {
-        result = xmlhttp.responseText;
-    } else {
-        GeneralLogger.info("Failed to load file");
+    /**
+     * Loads in config from url param ?config=xxx
+     * parses it from base64 and sends further to be applied
+     */
+    loadConfigFromCurrentUrl(): void{
+        this.setupLoadConfigButton();
+
+        const ibconfig = new URLSearchParams(window.location.search).get("config");
+        if(ibconfig == null) {
+            GeneralLogger.warn("No config provided, skipping");
+            return;
+        }
+        try {
+            this.createAndAplyConfig(atob(ibconfig));
+        } catch {
+            GeneralLogger.warn("Failed to parse provided config, ignoring");
+        }
     }
-    return result;
+
+
+    /**
+     * Apply the config object to associated viewer
+     *
+     * @param rawConfig - a json string to be converted to Config and applied
+     */
+    createAndAplyConfig(rawConfig: string): void {
+        const config = JSON.parse(rawConfig);
+        applyConfig(this.viewer, config);
+    }
+
+    /**
+     * Load in the config file from the client computer,
+     * i.e a file which they select and run a callback
+     *
+     * @param filePath - The location of the file, usually supplied from a input tag from HTML
+     */
+    loadConfigFromClient(filePath: File | null): void{
+        if(filePath != null) {
+            const reader = new FileReader();
+            reader.readAsText(filePath, "utf8");
+            reader.onload = (event) => {
+                this.createAndAplyConfig(event.target?.result as string);
+            };
+            reader.onerror = (e) => {
+                GeneralLogger.error("Error loading config: " + e);
+            };
+        }
+    }
+
+
+    /**
+     * Load in the config file from the client computer,
+     * i.e a file which they select and run a callback
+     */
+    setupLoadConfigButton(): void {
+        const confFileButton = document.getElementById("confFile") as HTMLInputElement;
+        if(confFileButton != null) {
+            confFileButton.addEventListener("change", () => {
+                if(confFileButton.files) {
+                    if(confFileButton.files.length > 1) {
+                        alert("Only 1 file can be selected");
+                        GeneralLogger.error("Did not laod config files, only 1 can be leceted at a time");
+                    } else if(confFileButton.files.length == 1) {
+                        this.loadConfigFromClient(confFileButton.files.item(0));
+                    }
+                }
+            });
+        }
+    }
 }
