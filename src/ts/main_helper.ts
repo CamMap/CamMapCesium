@@ -246,7 +246,7 @@ export function applyConfig(viewer:Cesium.Viewer, config?: Config): void{
     if(config?.cameras) {
         config.cameras.forEach(camera => {
             const fov = new FOV(
-                camera.name, viewer.scene, [ camera.lng, camera.lat, camera.elevation], camera.fov, camera.aspectRatio, camera.theta, camera.phi, camera.roll, camera.near, camera.far
+                viewer.scene, [ camera.lng, camera.lat, camera.elevation], camera.fov, camera.aspectRatio, camera.theta, camera.phi, camera.roll, camera.near, camera.far, camera.name,
             );
             new TLMFovElement(fov, camera.vgip);
         });

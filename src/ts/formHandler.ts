@@ -26,7 +26,7 @@ class fovForm implements Form{
      * @param scene - the scene used to display the FOV object
      */
     public onSubmit(scene : Cesium.Scene){
-        const id = handleIdInput("fov_id");
+        const name = handleNameInput("fov_name");
         const lat = handleNumberInput("fov_lat");
         const long = handleNumberInput("fov_long");
         const elev = handleNumberInput("fov_elev");
@@ -38,15 +38,12 @@ class fovForm implements Form{
         const near = handleNumberInput("fov_near");
         const far = handleNumberInput("fov_far");
         const geoServer = (document.getElementById("geoData") as HTMLInputElement).value;
-        if(id != null){
-            const fov = new FOV(
-                id, scene, [long, lat, elev], fovDeg, aspectRatio, heading, tilt, roll, near, far,
-            );
-            new TLMFovElement(fov, geoServer);
-            FOVLogger.info("New FOV Object Created");
-        } else {
-            GeneralLogger.error("Could not generate FOV objects, please try again.");
-        }
+
+        const fov = new FOV(
+            scene, [long, lat, elev], fovDeg, aspectRatio, heading, tilt, roll, near, far, name
+        );
+        new TLMFovElement(fov, geoServer);
+        FOVLogger.info("New FOV Object Created");
     }
 }
 
@@ -116,20 +113,20 @@ function handleNumberInput(elementId : string) : number{
  * @param elementId - the id of the HTML input element
  * @returns the value of the input element
  */
-function handleIdInput(elementId : string) : string | null{
+function handleNameInput(elementId : string) : string | undefined{
     const currentFovObjects = globalFOV;
     const inputElement = document.getElementById(elementId) as HTMLInputElement;
     if(inputElement != null){
         for(const fov of currentFovObjects){
             if(inputElement.value == fov.identifier){
                 //Should probably display this in the HTML form
-                GeneralLogger.error("That FOV id is already in use! Please select a different one.");
-                return null;
+                GeneralLogger.error("That FOV name is already in use! Please select a different one.");
+                return undefined;
             }
         }
         return inputElement.value;
     } else {
         GeneralLogger.warn("Could not find HTML input element. Reload the webpage and if this problem continues, submit a bug report.");
-        return null;
+        return undefined;
     }
 }

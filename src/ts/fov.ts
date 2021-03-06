@@ -9,6 +9,13 @@ import { Cartesian2, Cartesian3, HeadingPitchRoll, Matrix3, Matrix4, Perspective
 import { FOVLogger } from "./logger";
 import { globalPoints } from "./globalObjects";
 
+/// Global FOV counter, this is used for the FOV ID when a new one is created
+/// Should only be needed by the FOV class, incrimented in the constructor
+let fovCounter = 0;
+
+/// The value the counter will wrap at, anything below 1_000_000 should be sufficient
+const FOV_COUNTER_WRAP = 1000;
+
 /**
  * A wrapper around cesium camera.
  */
@@ -47,6 +54,8 @@ export class FOV {
     private fovFns: { (val: number): void; }[];
     private aspectRatioFns: { (val: number): void; }[];
     private distFns: { (val: number): void; }[];
+
+    private _name: string | undefined;
 
     // Should only the rectangular simlple FOV be shown
     public shouldDisplayBorderFOV: boolean;
@@ -374,9 +383,18 @@ export class FOV {
     }
 
     /**
+     * Get the name of the FOV, it may not have been assigned one,
+     * if you want the ID instead, use `identifier`
+     *
+     * @returns The name, may be undefined if the FOV was never given a name
+     */
+    public get name(): string | undefined{
+        return this._name;
+    }
+
+    /**
      * Constructs an FOV object, call draw() to draw it in a scene
      *
-     * @param id - unique identifier for the FOV object
      * @param scene - The cesium scene to be used (should this be scene)
      * @param lat_long_elevation -  The laditude, longtitude and elevation of the camera position
      * @param fov - The FOV of the camera
@@ -388,11 +406,13 @@ export class FOV {
      * @param far - The far plane distance of the camera
      */
     constructor(
-        id: string, scene: Cesium.Scene, [long, lat, elevation]: [number, number, number], fov: number, aspectRatio: number, theta: number, phi: number, roll: number, near: number, far: number
+        scene: Cesium.Scene, [long, lat, elevation]: [number, number, number], fov: number, aspectRatio: number, theta: number, phi: number, roll: number, near: number, far: number, name?: string
     ) {
         const DEFAULT_TERRAIN_RESOLTION = 5;
         this.terrainScanningResolution = DEFAULT_TERRAIN_RESOLTION;
-        this.id = id;
+        this.id = String(fovCounter);
+        fovCounter = (fovCounter + 1) % FOV_COUNTER_WRAP;
+
         this._position = Cesium.Cartesian3.fromDegrees(long, lat, elevation);
         this.scene = scene;
         this.long = long;
@@ -406,6 +426,7 @@ export class FOV {
         this.camPoly = this.scene.primitives.add(new Cesium.PrimitiveCollection());
         this.terrainScanningGeometryPrimitive = this.scene.primitives.add(new Cesium.PrimitiveCollection());
         this._distance = far;
+        this._name = name;
 
         this.numOfPoints = 0;
         this.camLabel = this.scene.primitives.add(new Cesium.LabelCollection());
