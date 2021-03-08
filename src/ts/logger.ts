@@ -17,7 +17,7 @@ enum LogLevel{
 }
 
 let messageCount = 0;
-const MAX_MESSAGES = 200;
+const LOG_WRAP = 200;
 
 /**
  * Type for the logging printers, i.e where to print to
@@ -42,9 +42,9 @@ class HTMLPrinter implements Printer{
         const para = document.createElement("p");
         const loggerDiv = document.getElementById("loggercontainer");
         para.className = "log";
-        messageCount += 1;
-        if(messageCount > MAX_MESSAGES){
-            const toRemove = document.getElementById("log" + (messageCount - MAX_MESSAGES));
+        messageCount = (messageCount + 1) % LOG_WRAP;
+        if(document.getElementById("log" + messageCount) != null){
+            const toRemove = document.getElementById("log" + messageCount);
             toRemove?.remove();
         }
         para.id = "log" + messageCount;
