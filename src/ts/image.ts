@@ -160,10 +160,10 @@ function createImageOnCanvas(fov : FOV): [HTMLImageElement | null, CanvasRenderi
     if(canvas != null){
         const context = (canvas as HTMLCanvasElement).getContext("2d");
         if(context != null){
-            const target = document.getElementById(fov.identifier + "target");
+            const target = document.getElementById(fov.identifier + "target") as HTMLImageElement;
             if(target != null){
-                let imageWidth = target.clientWidth;
-                let imageHeight = target.clientHeight;
+                let imageWidth = target.naturalWidth;
+                let imageHeight = target.naturalHeight;
 
                 //Get the dimentions of the resized image
                 if(target.clientWidth > canvas.clientWidth){
