@@ -4,6 +4,7 @@ import { FOVLogger, GeneralLogger } from "./logger";
 import { globalFOV, globalPoints } from "./globalObjects";
 import { DictionaryLike } from "Cesium";
 import { FOV } from "./fov";
+import { onClickTabButton } from "./tabHandler";
 
 /**
  * Generates the HTML for a FOV object
@@ -24,11 +25,12 @@ export class TLMFovElement{
         const [tlmContainer, removeElement, selectElement] = this.setupTLMHTML(this.fovObject.identifier);
         const sliderContainer = this.setupSliderHTML(this.fovObject.identifier);
         const canvasContainer = this.setupCanvasHTML(this.fovObject.identifier);
-
+        const tabContainer = this.setupTabHTML(this.fovObject.identifier);
         this.containerElements.push(tlmContainer);
         this.containerElements.push(sliderContainer);
         this.containerElements.push(tlmContainer);
         this.containerElements.push(canvasContainer);
+        this.containerElements.push(tabContainer);
         globalFOV.push(fovObject);
 
         FOVEventTriggerSetup(this.fovObject);
@@ -75,6 +77,10 @@ export class TLMFovElement{
                     fov.select = false;
                 }
             }
+        };
+
+        tabContainer.onclick = () => {
+            onClickTabButton(tabContainer, canvasContainer);
         };
     }
 
@@ -147,10 +153,10 @@ export class TLMFovElement{
         if(parentElement == null){
             GeneralLogger.error("Could not get the div to hold the FOV canvas");
         }
-        const canvasContainer = generateHTMLElement("div", {class: "canvasContainer"});
+        const canvasContainer = generateHTMLElement("div", {class: "canvasContainer tabClosed"});
         const canvasLabels = generateHTMLElement("div", {class: "canvasLabels"});
 
-        canvasLabels.appendChild(generateHTMLElement("h2", {innerHTML: fovId}, fovId));
+        canvasLabels.appendChild(generateHTMLElement("h2", {innerHTML: this.fovObject.name}, fovId));
         canvasLabels.appendChild(generateHTMLElement("span", {id: "image-coord"}, fovId));
         canvasLabels.appendChild(generateHTMLElement("label", {innerHTML: "Choose an image/video"}, fovId));
         canvasLabels.appendChild(generateHTMLElement("input", {type: "file", id: "_uploadFile", name: "image"}, fovId));
@@ -166,6 +172,23 @@ export class TLMFovElement{
 
         parentElement.appendChild(canvasContainer);
         return canvasContainer;
+    }
+
+    /**
+     * Generates the tab HTML for a FOV object
+     *
+     * @param fovId - The id of the FOV object
+     * @returns the Container elemenet
+     */
+    private setupTabHTML(fovId : string) : HTMLElement{
+        const parentElement = document.getElementById("tabContainer") as HTMLDivElement;
+        if(parentElement == null){
+            GeneralLogger.error("Could not get the div to hold the FOV tab");
+        }
+        const tabDiv = generateHTMLElement("div", {class: "tabDiv notSelectedTabButton"});
+        tabDiv.appendChild(generateHTMLElement("h2", {id:"Tab", class: "tabSVG", innerHTML: this.fovObject.name}, fovId));
+        parentElement.appendChild(tabDiv);
+        return tabDiv;
     }
 
     /**
