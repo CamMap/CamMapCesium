@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  cs22-cesium:
+    image: "glacs22/main-cesium:latest"
+    ports:
+      - "8080:80"
+  terrain-tiles:
+    image: "glacs22/terrain-tiles:latest"
+    ports:
+      - "8082:8000"

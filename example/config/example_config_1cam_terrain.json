@@ -1,0 +1,23 @@
+{
+    "defaultTerrainServer": "http://localhost:8082/tilesets/test_full_OS",
+    "cameras": [
+        {
+            "name": "default",
+            "lng": -4.946793,
+            "lat": 56.615756,
+            "elevation": 10.0,
+            "fov": 60,
+            "aspectRatio": 1,
+            "theta": 90,
+            "phi": 90,
+            "roll": 0,
+            "near": 100,
+            "far": 3000
+        }
+    ],
+    "position": {
+        "lng": -4.946793,
+        "lat": 56.615756,
+        "elevation": 10000.0
+    }
+}

@@ -1,0 +1,6 @@
+version: "3.9"
+services:
+  cs22-cesium:
+    image: "glacs22/main-cesium:latest"
+    ports:
+      - "8080:80"
