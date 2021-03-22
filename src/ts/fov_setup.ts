@@ -10,6 +10,7 @@ import { Cartesian2 } from "cesium_source/Cesium";
 import { FOV } from "./fov";
 import { GeneralLogger } from "./logger";
 import { Image } from "./image";
+import { TLMPointElement } from "./targetManager";
 import { VGIPReciever } from "./vgipReciever";
 import { Video } from "./video";
 import { VideoGeoData } from "./vgip";
@@ -140,7 +141,10 @@ export function FOVCanvasSetUp(fov: FOV) : void{
                 span.innerText = `X: ${x}, Y: ${y}`;
             }
             const precentPoints = new Cartesian2(Number(y / canvas.clientHeight), Number(x / canvas.clientWidth));
-            fov.drawLineFromPercentToScreen(fov.scene, precentPoints, fov.scene.globe.ellipsoid);
+            const newPoint = fov.drawLineFromPercentToScreen(fov.scene, precentPoints, fov.scene.globe.ellipsoid);
+            if(newPoint){
+                new TLMPointElement(newPoint);
+            }
         });
     }
 }
