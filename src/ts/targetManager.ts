@@ -1,4 +1,5 @@
 import * as Cesium from "cesium_source/Cesium";
+import * as constants from "./consts";
 import { FOVCanvasSetUp, FOVEventTriggerSetup, FOVImageSetup, FOVVGIPWebSocketSetUp, FOVVideoSetup } from "./fov_setup";
 import { FOVLogger, GeneralLogger } from "./logger";
 import { globalFOV, globalPoints } from "./globalObjects";
@@ -123,19 +124,19 @@ export class TLMFovElement{
         const sliderContainer = generateHTMLElement("div", {class: "slidecontainer"});
         sliderContainer.appendChild(generateHTMLElement("h3", {innerHTML: fovId}));
         sliderContainer.appendChild(this.generateSliderHTML(
-            "cam_dist", "0", "10000", "1000", "Camera Distance:"
+            constants.FOV_IDENTIFIER_CAM_DISTANCE, "0", "10000", "1000", "Camera Distance:"
         ));
         sliderContainer.appendChild(this.generateSliderHTML(
-            "fov_hor", "0", "180", "0", "Horizontal FOV:"
+            constants.FOV_IDENTIFIER_CAM_HOR, "0", "180", "0", "Horizontal FOV:"
         ));
         sliderContainer.appendChild(this.generateSliderHTML(
-            "cam_height", "0", "2000", "0", "Camera Height:"
+            constants.FOV_IDENTIFIER_CAM_HEIGHT, "0", "2000", "0", "Camera Height:"
         ));
         sliderContainer.appendChild(this.generateSliderHTML(
-            "cam_tilt", "-180", "180", "0", "Camera Tilt:"
+            constants.FOV_IDENTIFIER_CAM_TILT, "-180", "180", "0", "Camera Tilt:"
         ));
         sliderContainer.appendChild(this.generateSliderHTML(
-            "cam_heading", "0", "360", "0", "Camera Heading:"
+            constants.FOV_IDENTIFIER_CAM_HEADING, "0", "360", "0", "Camera Heading:"
         ));
         parentElement.appendChild(sliderContainer);
         return sliderContainer;
@@ -157,17 +158,17 @@ export class TLMFovElement{
         const canvasLabels = generateHTMLElement("div", {class: "canvasLabels"});
 
         canvasLabels.appendChild(generateHTMLElement("h2", {innerHTML: this.fovObject.name}, fovId));
-        canvasLabels.appendChild(generateHTMLElement("span", {id: "image-coord"}, fovId));
+        canvasLabels.appendChild(generateHTMLElement("span", {id: constants.FOV_IDENTIFIER_CANVAS_COORD}, fovId));
         canvasLabels.appendChild(generateHTMLElement("label", {innerHTML: "Choose an image/video"}, fovId));
-        canvasLabels.appendChild(generateHTMLElement("input", {type: "file", id: "_uploadFile", name: "image"}, fovId));
-        canvasLabels.appendChild(generateHTMLElement("input", {type: "file", id: "_uploadVideo", name: "videoUploaded"}, fovId));
+        canvasLabels.appendChild(generateHTMLElement("input", {type: "file", id: constants.FOV_IDENTIFIER_UPLOAD_FILE_SUFFIX, name: "image"}, fovId));
+        canvasLabels.appendChild(generateHTMLElement("input", {type: "file", id: constants.FOV_IDENTIFIER_UPLOAD_VIDEO_SUFFIX, name: "videoUploaded"}, fovId));
         canvasContainer.appendChild(canvasLabels);
 
         const canvasImages = generateHTMLElement("div", {class: "canvasImages"});
 
-        canvasImages.appendChild(generateHTMLElement("img", {id: "target" }, fovId));
+        canvasImages.appendChild(generateHTMLElement("img", {id: constants.FOV_IDENTIFIER_TARGET }, fovId));
         canvasImages.appendChild(generateHTMLElement("video", {id: "videoUploaded" }, fovId));
-        canvasImages.appendChild(generateHTMLElement("canvas", {id:"canvas", class: "imageVideoCanvas"}, fovId));
+        canvasImages.appendChild(generateHTMLElement("canvas", {id:constants.FOV_IDENTIFIER_CANVAS, class: "imageVideoCanvas"}, fovId));
         canvasContainer.appendChild(canvasImages);
 
         parentElement.appendChild(canvasContainer);
@@ -205,7 +206,7 @@ export class TLMFovElement{
         id : string, min : string, max : string, value : string, innerHTML : string
     ) : HTMLElement{
         const slider = generateHTMLElement("p", {innerHTML: innerHTML});
-        slider.appendChild(generateHTMLElement("output", {id: id + "_result", innerHTML: "0"}, this.fovObject.identifier));
+        slider.appendChild(generateHTMLElement("output", {id: id + constants.FOV_IDENTIFIER_CAM_RESULT_SUFFIX, innerHTML: "0"}, this.fovObject.identifier));
         slider.appendChild(generateHTMLElement("br", {}));
         slider.appendChild(generateHTMLElement("input", {id: id, class: "slider", min: min, max: max, type: "range", value: value}, this.fovObject.identifier));
         return slider;

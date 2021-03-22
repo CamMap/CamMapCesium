@@ -1,3 +1,5 @@
+import * as constants from "./consts";
+
 const sideBarSliderButtons = document.getElementById("sideBarSlidersButtonContainer");
 
 const sideBarSlidersButton = document.getElementById("sideBarSlidersButton");
@@ -26,27 +28,27 @@ const sideBarSlidersContainer = document.getElementById("sideBarSlidersContainer
  * @param slider - The actual sliding menu to slide out
  */
 function onClicksideBarSlidersButton(buttonContainer: HTMLElement, buttonElement: HTMLElement, slider: HTMLElement): void{
-    if(slider.classList.contains("sideBarClosed")){
+    if(slider.classList.contains(constants.SIDEBAR_CLOSED)){
         CloseAll();
-        slider.classList.remove("sideBarClosed");
-        slider.classList.add("sideBarOpen");
-        buttonContainer.classList.remove("buttonsClosed");
-        buttonContainer.classList.add("buttonsOpen");
-        sideBarSlidersContainer.classList.remove("sideBarClosed");
-        sideBarSlidersContainer.classList.add("sideBarOpen");
-        buttonElement.classList.remove("notSelectedButton");
-        buttonElement.classList.add("selectedButton");
+        slider.classList.remove(constants.SIDEBAR_CLOSED);
+        slider.classList.add(constants.SIDEBAR_OPEN);
+        buttonContainer.classList.remove(constants.SIDEBAR_BUTTONS_CLOSED);
+        buttonContainer.classList.add(constants.SIDEBAR_BUTTONS_OPEN);
+        sideBarSlidersContainer.classList.remove(constants.SIDEBAR_CLOSED);
+        sideBarSlidersContainer.classList.add(constants.SIDEBAR_OPEN);
+        buttonElement.classList.remove(constants.SIDEBAR_NOT_SELECTED_BUTTON);
+        buttonElement.classList.add(constants.SIDEBAR_SELECTED_BUTTON);
         console.log("Side bar opened");
     } else {
         CloseAll();
-        slider.classList.remove("sideBarOpen");
-        slider.classList.add("sideBarClosed");
-        buttonContainer.classList.remove("buttonsOpen");
-        buttonContainer.classList.add("buttonsClosed");
-        sideBarSlidersContainer.classList.remove("sideBarOpen");
-        sideBarSlidersContainer.classList.add("sideBarClosed");
-        buttonElement.classList.remove("selectedButton");
-        buttonElement.classList.add("notSelectedButton");
+        slider.classList.remove(constants.SIDEBAR_OPEN);
+        slider.classList.add(constants.SIDEBAR_CLOSED);
+        buttonContainer.classList.remove(constants.SIDEBAR_BUTTONS_OPEN);
+        buttonContainer.classList.add(constants.SIDEBAR_BUTTONS_CLOSED);
+        sideBarSlidersContainer.classList.remove(constants.SIDEBAR_OPEN);
+        sideBarSlidersContainer.classList.add(constants.SIDEBAR_CLOSED);
+        buttonElement.classList.remove(constants.SIDEBAR_SELECTED_BUTTON);
+        buttonElement.classList.add(constants.SIDEBAR_NOT_SELECTED_BUTTON);
         console.log("Side bar closed");
     }
 }
@@ -88,32 +90,32 @@ if(sideBarAdd != null && sideBarAddButton != null && sideBarSliderButtons != nul
  */
 function CloseAll(){
     if(sideBarSliders != null && sideBarSettings != null && sideBarLogger != null && sideBarManager != null && sideBarAdd != null){
-        sideBarSlidersButton?.classList.remove("selectedButton");
-        sideBarSettingsButton?.classList.remove("selectedButton");
-        sideBarLoggerButton?.classList.remove("selectedButton");
-        sideBarManagerButton?.classList.remove("selectedButton");
-        sideBarAddButton?.classList.remove("selectedButton");
+        sideBarSlidersButton?.classList.remove(constants.SIDEBAR_SELECTED_BUTTON);
+        sideBarSettingsButton?.classList.remove(constants.SIDEBAR_SELECTED_BUTTON);
+        sideBarLoggerButton?.classList.remove(constants.SIDEBAR_SELECTED_BUTTON);
+        sideBarManagerButton?.classList.remove(constants.SIDEBAR_SELECTED_BUTTON);
+        sideBarAddButton?.classList.remove(constants.SIDEBAR_SELECTED_BUTTON);
 
-        sideBarSlidersButton?.classList.add("notSelectedButton");
-        sideBarSettingsButton?.classList.add("notSelectedButton");
-        sideBarLoggerButton?.classList.add("notSelectedButton");
-        sideBarManagerButton?.classList.add("notSelectedButton");
-        sideBarAddButton?.classList.add("notSelectedButton");
+        sideBarSlidersButton?.classList.add(constants.SIDEBAR_NOT_SELECTED_BUTTON);
+        sideBarSettingsButton?.classList.add(constants.SIDEBAR_NOT_SELECTED_BUTTON);
+        sideBarLoggerButton?.classList.add(constants.SIDEBAR_NOT_SELECTED_BUTTON);
+        sideBarManagerButton?.classList.add(constants.SIDEBAR_NOT_SELECTED_BUTTON);
+        sideBarAddButton?.classList.add(constants.SIDEBAR_NOT_SELECTED_BUTTON);
 
-        sideBarSliders.classList.remove("sideBarOpen");
-        sideBarSliders.classList.add("sideBarClosed");
+        sideBarSliders.classList.remove(constants.SIDEBAR_OPEN);
+        sideBarSliders.classList.add(constants.SIDEBAR_CLOSED);
 
-        sideBarSettings.classList.remove("sideBarOpen");
-        sideBarSettings.classList.add("sideBarClosed");
+        sideBarSettings.classList.remove(constants.SIDEBAR_OPEN);
+        sideBarSettings.classList.add(constants.SIDEBAR_CLOSED);
 
-        sideBarLogger.classList.remove("sideBarOpen");
-        sideBarLogger.classList.add("sideBarClosed");
+        sideBarLogger.classList.remove(constants.SIDEBAR_OPEN);
+        sideBarLogger.classList.add(constants.SIDEBAR_CLOSED);
 
-        sideBarManager.classList.remove("sideBarOpen");
-        sideBarManager.classList.add("sideBarClosed");
+        sideBarManager.classList.remove(constants.SIDEBAR_OPEN);
+        sideBarManager.classList.add(constants.SIDEBAR_CLOSED);
 
-        sideBarAdd.classList.remove("sideBarOpen");
-        sideBarAdd.classList.add("sideBarClosed");
+        sideBarAdd.classList.remove(constants.SIDEBAR_OPEN);
+        sideBarAdd.classList.add(constants.SIDEBAR_CLOSED);
         // TODO Should use zIndex if the sliding menus are already open
         // Should use zIndex?  It is more clear that a menu switch has occured if one goes
         // In and another comes out, will need more thought on this.

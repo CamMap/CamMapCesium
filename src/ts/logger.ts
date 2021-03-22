@@ -5,6 +5,7 @@
  * @packageDocumentation
  */
 
+import * as constants from "./consts";
 /**
  * The log level to log messages, debug is the highest, error is the lowest
  */
@@ -40,14 +41,14 @@ class HTMLPrinter implements Printer{
      */
     private print(message: string){
         const para = document.createElement("p");
-        const loggerDiv = document.getElementById("loggercontainer");
-        para.className = "log";
+        const loggerDiv = document.getElementById(constants.LOG_CONTAINER);
+        para.className = constants.LOG_MESSAGE_PREFIX;
         messageCount = (messageCount + 1) % LOG_WRAP;
-        if(document.getElementById("log" + messageCount) != null){
-            const toRemove = document.getElementById("log" + messageCount);
+        if(document.getElementById(constants.LOG_MESSAGE_PREFIX + messageCount) != null){
+            const toRemove = document.getElementById(constants.LOG_MESSAGE_PREFIX + messageCount);
             toRemove?.remove();
         }
-        para.id = "log" + messageCount;
+        para.id = constants.LOG_MESSAGE_PREFIX + messageCount;
         para.innerHTML = message;
         if(loggerDiv != null){
             loggerDiv.appendChild(para);

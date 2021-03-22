@@ -1,3 +1,5 @@
+import * as constants from "./consts";
+
 /**
  * Handles the clicks on a tab button
  *
@@ -5,17 +7,17 @@
  * @param tab - The canvas HTML
  */
 export function onClickTabButton(buttonElement: HTMLElement, tab: HTMLElement): void{
-    if(tab.classList.contains("tabClosed")){
-        tab.classList.remove("tabClosed");
-        tab.classList.add("tabOpen");
-        buttonElement.classList.remove("notSelectedTabButton");
-        buttonElement.classList.add("selectedTabButton");
+    if(tab.classList.contains(constants.TAB_CLOSED)){
+        tab.classList.remove(constants.TAB_CLOSED);
+        tab.classList.add(constants.TAB_OPEN);
+        buttonElement.classList.remove(constants.TAB_NOT_SELECTED);
+        buttonElement.classList.add(constants.TAB_SELECTED);
         console.log("Tab opened");
     } else {
-        tab.classList.remove("tabOpen");
-        tab.classList.add("tabClosed");
-        buttonElement.classList.remove("selectedTabButton");
-        buttonElement.classList.add("notSelectedTabButton");
+        tab.classList.remove(constants.TAB_OPEN);
+        tab.classList.add(constants.TAB_CLOSED);
+        buttonElement.classList.remove(constants.TAB_SELECTED);
+        buttonElement.classList.add(constants.TAB_NOT_SELECTED);
         console.log("Tab closed");
     }
 }

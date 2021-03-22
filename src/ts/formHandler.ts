@@ -1,3 +1,4 @@
+import * as constants from "./consts";
 import { FOVLogger, GeneralLogger } from "./logger";
 import { TLMFovElement, TLMPointElement } from "./targetManager";
 import { FOV } from "./fov";
@@ -18,7 +19,7 @@ interface Form{
  * Handles the FOV form
  */
 class fovForm implements Form{
-    submitElement = document.getElementById("submitFov") as HTMLFormElement;
+    submitElement = document.getElementById(constants.INPUT_FOV_SUBMIT) as HTMLFormElement;
 
     /**
      * Handles a form submition for a new FOV object - TODO: needs to be reworked to correctly error handle input
@@ -26,18 +27,18 @@ class fovForm implements Form{
      * @param scene - the scene used to display the FOV object
      */
     public onSubmit(scene : Cesium.Scene){
-        const name = handleNameInput("fov_name");
-        const lat = handleNumberInput("fov_lat");
-        const long = handleNumberInput("fov_long");
-        const elev = handleNumberInput("fov_elev");
-        const fovDeg = handleNumberInput("fov_fovDeg");
-        const aspectRatio = handleNumberInput("fov_ratio");
-        const heading = handleNumberInput("fov_head");
-        const tilt = handleNumberInput("fov_tilt");
-        const roll = handleNumberInput("fov_roll");
-        const near = handleNumberInput("fov_near");
-        const far = handleNumberInput("fov_far");
-        const geoServer = (document.getElementById("geoData") as HTMLInputElement).value;
+        const name = handleNameInput(constants.INPUT_FOV_NAME);
+        const lat = handleNumberInput(constants.INPUT_FOV_LAT);
+        const long = handleNumberInput(constants.INPUT_FOV_LONG);
+        const elev = handleNumberInput(constants.INPUT_FOV_ELEV);
+        const fovDeg = handleNumberInput(constants.INPUT_FOV_DEGREES);
+        const aspectRatio = handleNumberInput(constants.INPUT_FOV_RATIO);
+        const heading = handleNumberInput(constants.INPUT_FOV_HEADING);
+        const tilt = handleNumberInput(constants.INPUT_FOV_TILT);
+        const roll = handleNumberInput(constants.INPUT_FOV_ROLL);
+        const near = handleNumberInput(constants.INPUT_FOV_NEAR);
+        const far = handleNumberInput(constants.INPUT_FOV_FAR);
+        const geoServer = (document.getElementById(constants.INPUT_GEODATA) as HTMLInputElement).value;
 
         const fov = new FOV(
             scene, [long, lat, elev], fovDeg, aspectRatio, heading, tilt, roll, near, far, name
@@ -51,14 +52,14 @@ class fovForm implements Form{
  * Handles the point form
  */
 class pointForm implements Form{
-    submitElement = document.getElementById("submitPoint") as HTMLFormElement;
+    submitElement = document.getElementById(constants.INPUT_POINT_SUBMIT) as HTMLFormElement;
 
     /**
      * Handles a form submition for a new point object - TODO: needs to be reworked to correctly error handle input
      */
     public onSubmit(){
-        const lat = handleNumberInput("point_lat");
-        const long = handleNumberInput("point_long");
+        const lat = handleNumberInput(constants.INPUT_POINT_LAT);
+        const long = handleNumberInput(constants.INPUT_POINT_LONG);
         const point = addPoint(lat, long);
         new TLMPointElement(point);
         GeneralLogger.debug("Generated Point at" + lat.toString() + " " + long.toString());

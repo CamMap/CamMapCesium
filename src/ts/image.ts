@@ -1,3 +1,4 @@
+import * as constants from "./consts";
 import { FOV } from "./fov";
 import {ImageLogger} from "./logger";
 import exifr from "exifr";
@@ -29,7 +30,7 @@ export class Image {
         this.canvasContext = null;
         this.imgWidth = 0;
         this.imgHeight = 0;
-        const uploadFile = document.getElementById(fov.identifier + "_uploadFile");
+        const uploadFile = document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_UPLOAD_FILE_SUFFIX);
         if(uploadFile != null) {
             uploadFile.onchange = (e) => this.onUploadImage(e);
         } else {
@@ -70,7 +71,7 @@ export class Image {
      * @param imageFile - The image file to read/upload
      */
     showUploadedImage(imageFile: File): void {
-        const imageElement = document.getElementById(this.fovObject.identifier + "target");
+        const imageElement = document.getElementById(this.fovObject.identifier + constants.FOV_IDENTIFIER_TARGET);
         if(imageElement != null) {
             const fileReader = new FileReader();
 
@@ -155,12 +156,12 @@ export class Image {
  * @returns The html image which was flashed to the canvas
  */
 function createImageOnCanvas(fov : FOV): [HTMLImageElement | null, CanvasRenderingContext2D | null, number, number]{
-    const canvas = document.getElementById(fov.identifier + "canvas");
+    const canvas = document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CANVAS);
 
     if(canvas != null){
         const context = (canvas as HTMLCanvasElement).getContext("2d");
         if(context != null){
-            const target = document.getElementById(fov.identifier + "target") as HTMLImageElement;
+            const target = document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_TARGET) as HTMLImageElement;
             if(target != null){
                 let imageWidth = target.naturalWidth;
                 let imageHeight = target.naturalHeight;

@@ -1,6 +1,7 @@
 /* eslint-disable sort-imports */
 //I cant figure out how this is not in aphabetical order...
 import * as Cesium from "cesium_source/Cesium";
+import * as constants from "./consts";
 import { CanvasHandler } from "./canvasHandler";
 import { Cartesian2 } from "cesium_source/Cesium";
 import { Config } from "./configHandler";
@@ -81,10 +82,10 @@ export function videoSetup(fov : FOV) : void{
  */
 export function canvasSetUp(fov: FOV) : void{
     // Get the canvas and listen for clicks
-    const canvas = document.getElementById(fov.identifier + "canvas");
+    const canvas = document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CANVAS);
     if(canvas != null && canvas instanceof HTMLCanvasElement){
         const ch = new CanvasHandler(canvas);
-        const span = document.getElementById(fov.identifier + "image-cord");
+        const span = document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CANVAS_COORD);
         ch.onClick(([x, y]) => {
             if(span != null){
                 span.innerText = `X: ${x}, Y: ${y}`;
@@ -110,34 +111,29 @@ export function canvasSetUp(fov: FOV) : void{
  * @param fov - The FOV on which to set up the event triggers
  */
 export function FOVEventTriggerSetup(fov: FOV) : void{
-    fov.setUpDistanceListener(document.getElementById(fov.identifier + "cam_dist") as HTMLInputElement);
+    fov.setUpDistanceListener(document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CAM_DISTANCE) as HTMLInputElement);
     fov.onDistanceChanged((val) => {
-        (document.getElementById(fov.identifier + "cam_dist_result") as HTMLOutputElement).value = String(val);
+        (document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CAM_DISTANCE + constants.FOV_IDENTIFIER_CAM_RESULT_SUFFIX) as HTMLOutputElement).value = String(val);
     });
 
-    fov.setUpPosListener(document.getElementById(fov.identifier + "cam_height") as HTMLInputElement);
+    fov.setUpPosListener(document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CAM_HEIGHT) as HTMLInputElement);
     fov.onPosChanged((val) => {
-        (document.getElementById(fov.identifier + "cam_height_result") as HTMLOutputElement).value = String(val); console.log("Called");
+        (document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CAM_HEIGHT + constants.FOV_IDENTIFIER_CAM_RESULT_SUFFIX) as HTMLOutputElement).value = String(val); console.log("Called");
     });
 
-    fov.setUpHeadingListener(document.getElementById(fov.identifier + "cam_heading") as HTMLInputElement);
+    fov.setUpHeadingListener(document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_HEADING) as HTMLInputElement);
     fov.onHeadingChanged((val) => {
-        (document.getElementById(fov.identifier + "cam_heading_result") as HTMLOutputElement).value = String(val);
+        (document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CAM_HEADING + constants.FOV_IDENTIFIER_CAM_RESULT_SUFFIX) as HTMLOutputElement).value = String(val);
     });
 
-    fov.setUpTiltListener(document.getElementById(fov.identifier + "cam_tilt") as HTMLInputElement);
+    fov.setUpTiltListener(document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CAM_TILT) as HTMLInputElement);
     fov.onTiltChanged((val) => {
-        (document.getElementById(fov.identifier + "cam_tilt_result") as HTMLOutputElement).value = String(val);
+        (document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CAM_TILT + constants.FOV_IDENTIFIER_CAM_RESULT_SUFFIX) as HTMLOutputElement).value = String(val);
     });
 
-    fov.setUpFOVListener(document.getElementById(fov.identifier + "fov_hor") as HTMLInputElement);
+    fov.setUpFOVListener(document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CAM_HOR) as HTMLInputElement);
     fov.onFOVChanged((val) => {
-        (document.getElementById(fov.identifier + "fov_hor_result") as HTMLOutputElement).value = String(val);
-    });
-
-    fov.setUpFOVListener(document.getElementById(fov.identifier + "fov_hor") as HTMLInputElement);
-    fov.onFOVChanged((val) => {
-        (document.getElementById(fov.identifier + "fov_hor_result") as HTMLOutputElement).value = String(val);
+        (document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CAM_HOR + constants.FOV_IDENTIFIER_CAM_RESULT_SUFFIX) as HTMLOutputElement).value = String(val);
     });
 }
 
@@ -167,10 +163,10 @@ function setCameraView(
  * @param scene - The cesium scene onto which to add the terrain layer
  */
 export function setupTerrainServerConnectButton(scene: Cesium.Scene): void{
-    const terSerButton = document.getElementById("terSerButton");
+    const terSerButton = document.getElementById(constants.TERRAIN_SERVER_BUTTON);
     if(terSerButton != null){
         terSerButton.onclick = () => {
-            const terSerText = document.getElementById("terSer");
+            const terSerText = document.getElementById(constants.TERRAIN_SERVER);
             if(terSerText != null){
                 const serverToConnectTo = (terSerText as HTMLInputElement).value;
                 if(serverToConnectTo != null){
@@ -186,7 +182,7 @@ export function setupTerrainServerConnectButton(scene: Cesium.Scene): void{
     }
 
     // Just set the terrain provider to the default flat EllipsoidTerrainProvider on disconnect
-    const terSerButtonDisconnect = document.getElementById("terSerButtonDisconnect");
+    const terSerButtonDisconnect = document.getElementById(constants.TERRAIN_SERVER_DISCONNECT);
     if(terSerButtonDisconnect != null){
         terSerButtonDisconnect.onclick = () => {
             scene.terrainProvider = new Cesium.EllipsoidTerrainProvider();
