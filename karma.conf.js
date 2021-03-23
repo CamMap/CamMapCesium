@@ -24,7 +24,8 @@ module.exports = function(config) {
       'test-dist/src.js',
       'test-dist/runtime.js',
       'test-dist/vendors.js',
-      {pattern: 'test-dist/**', included: false, watched: false, served: true},
+      {pattern: 'test-dist/**', included: false, watched: true, served: true},
+      {pattern: 'test-dist/examples/*', included: false, watched: true, served: true},
     ],
 
     // preprocess matching files before serving them to the browser
@@ -35,6 +36,10 @@ module.exports = function(config) {
 
    proxies:{
     '/context.html/' : '/base/test-dist/',
+    "/Assets/": "/base/test-dist/Assets/", 
+    "/Widgets/": "/base/test-dist/Widgets/",
+    "/Workers/": "/base/test-dist/Workers/", 
+    "/Images/": "/base/test-dist/Images/",
    },
 
     // test results reporter to use
@@ -81,5 +86,6 @@ module.exports = function(config) {
     // Concurrency level
     // how many browser should be started simultaneous
     concurrency: Infinity,
+    failOnEmptyTestSuite: false
   })
 }

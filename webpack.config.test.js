@@ -31,8 +31,12 @@ module.exports = {
             test: /\.css$/,
             use: ['style-loader', 'css-loader']
         }, {
-            test: /\.(png|gif|jpg|jpeg|svg|xml|json)$/,
-            use: ['url-loader']
+            test: /\.(png|gif|jpg|jpeg|svg|xml|json|mp4)$/,
+            use: ['url-loader'],
+        }, {
+            test: /\.json$/,
+            include: [path.resolve(__dirname, 'example')],
+            use: ['json-loader'],
         }]
     },
     resolve: {
@@ -45,7 +49,7 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
-            template: 'src/html/index.html'
+            template: 'src/html/index.html',
         }),
         // Copy Cesium Assets, Widgets, and Workers to a static directory
         new CopywebpackPlugin({
@@ -53,7 +57,9 @@ module.exports = {
                 { from: path.join(cesiumSource, cesiumWorkers), to: 'Workers' },
                 { from: path.join(cesiumSource, 'Assets'), to: 'Assets' },
                 { from: path.join(cesiumSource, 'Widgets'), to: 'Widgets' },
-                { from: "src/images", to: 'Images' }
+                { from: "src/images", to: 'Images' },
+                { from: "src/css", to: 'css' }, 
+                { from: "example", to: 'examples' }
             ],
             options: { concurrency: 50 },
         }),
@@ -89,23 +95,18 @@ module.exports = {
         moduleIds: 'deterministic',
         runtimeChunk: 'single',
         splitChunks: {
-         cacheGroups: {
-        tests:{
-            test: /[\\/]test[\\/]/,
-            name: 'tests',
-            chunks: 'all',
+            cacheGroups: {
+                src:{
+                    test: /[\\/]src[\\/]/,
+                    name: 'src',
+                    chunks: 'all',
+                },
+                vendor: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: 'vendors',
+                    chunks: 'all',
+                },
             },
-        src:{
-            test: /[\\/]src[\\/]/,
-            name: 'src',
-            chunks: 'all',
-            },
-           vendor: {
-             test: /[\\/]node_modules[\\/]/,
-             name: 'vendors',
-             chunks: 'all',
-           },
-         },
-       },
-      },
+        },
+    },
 };

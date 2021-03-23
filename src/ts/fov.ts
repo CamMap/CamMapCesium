@@ -1411,7 +1411,7 @@ export class FOV {
      * @param lineid - the id of the line to get
      * @returns the polyline found or null
      */
-    private getLineById(lineid : string) : Cesium.Polyline | null{
+    public getLineById(lineid : string) : Cesium.Polyline | null{
         const len = this.linesToPoints.length;
         for(let i = 0; i < len; i++){
             if(this.linesToPoints.get(i).id == lineid){

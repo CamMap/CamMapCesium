@@ -2,69 +2,16 @@
 //I cant figure out how this is not in aphabetical order...
 import * as Cesium from "cesium_source/Cesium";
 import * as constants from "./consts";
-import { CanvasHandler } from "./canvasHandler";
-import { Cartesian2 } from "cesium_source/Cesium";
 import { Config } from "./configHandler";
 import { FOV } from "./fov";
 import { GeneralLogger } from "./logger";
 import { globalPoints} from "./globalObjects";
-import { Image } from "./image";
-import { TLMFovElement, TLMPointElement} from "./targetManager";
+import { TLMFovElement} from "./targetManager";
 import { Video } from "./video";
 
 
 /* eslint @typescript-eslint/no-magic-numbers: off */
 
-/**
- * Set up the image in an example
- *
- * @param fov - The FOV object the image should modify, metadata dependent
- */
-export function imageSetup(fov: FOV) : void{
-    //Create a new imageHandler
-    const imageHandler = new Image(fov);
-    imageHandler.onImageMetadataRead((imageGeoMetadata) => {
-        if(imageGeoMetadata.latitude != null){
-            fov.latitude = imageGeoMetadata.latitude;
-        } else {
-            GeneralLogger.warn("No latitude metadata parsed in the image");
-        }
-        if(imageGeoMetadata.longtitude != null){
-            fov.longitude = imageGeoMetadata.longtitude;
-        } else {
-            GeneralLogger.warn("No longtitude metadata parsed in the image");
-        }
-        if(imageGeoMetadata.bearing != null){
-            fov.heading = imageGeoMetadata.bearing;
-        } else {
-            GeneralLogger.warn("No bearing/heading metadata parsed in the image");
-        }
-    });
-
-    fov.onDistanceChanged(() => {
-        imageHandler.redrawImage();
-    });
-
-    fov.onPosChanged(() => {
-        imageHandler.redrawImage();
-    });
-
-    fov.onHeadingChanged(() => {
-        imageHandler.redrawImage();
-    });
-
-    fov.onTiltChanged(() => {
-        imageHandler.redrawImage();
-    });
-
-    fov.onFOVChanged(() => {
-        imageHandler.redrawImage();
-    });
-
-    fov.onFOVChanged(() => {
-        imageHandler.redrawImage();
-    });
-}
 
 /**
  * Setup the video logging
@@ -76,76 +23,14 @@ export function videoSetup(fov : FOV) : void{
 }
 
 /**
- * Set up the canvas
- *
- * @param fov - The FOV object to draw the dots from (to hit the Earth)
- */
-export function canvasSetUp(fov: FOV) : void{
-    // Get the canvas and listen for clicks
-    const canvas = document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CANVAS);
-    if(canvas != null && canvas instanceof HTMLCanvasElement){
-        const ch = new CanvasHandler(canvas);
-        const span = document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CANVAS_COORD);
-        ch.onClick(([x, y]) => {
-            if(span != null){
-                span.innerText = `X: ${x}, Y: ${y}`;
-            }
-            const precentPoints = new Cartesian2(Number(y / canvas.clientHeight), Number(x / canvas.clientWidth));
-            const point = fov.drawLineFromPercentToScreen(fov.scene, precentPoints, fov.scene.globe.ellipsoid);
-            if(point != null){
-                new TLMPointElement(point);
-            }
-
-
-            //Const p = fov.getCamPointPercent(fov.scene, precentPoints, fov.scene.globe.ellipsoid);
-            //If(p != null){
-            //   Fov.getPointFromMapOnScreen(p);
-            //}
-        });
-    }
-}
-
-/**
- * Set up the fov event triggers
- *
- * @param fov - The FOV on which to set up the event triggers
- */
-export function FOVEventTriggerSetup(fov: FOV) : void{
-    fov.setUpDistanceListener(document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CAM_DISTANCE) as HTMLInputElement);
-    fov.onDistanceChanged((val) => {
-        (document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CAM_DISTANCE + constants.FOV_IDENTIFIER_CAM_RESULT_SUFFIX) as HTMLOutputElement).value = String(val);
-    });
-
-    fov.setUpPosListener(document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CAM_HEIGHT) as HTMLInputElement);
-    fov.onPosChanged((val) => {
-        (document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CAM_HEIGHT + constants.FOV_IDENTIFIER_CAM_RESULT_SUFFIX) as HTMLOutputElement).value = String(val); console.log("Called");
-    });
-
-    fov.setUpHeadingListener(document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_HEADING) as HTMLInputElement);
-    fov.onHeadingChanged((val) => {
-        (document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CAM_HEADING + constants.FOV_IDENTIFIER_CAM_RESULT_SUFFIX) as HTMLOutputElement).value = String(val);
-    });
-
-    fov.setUpTiltListener(document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CAM_TILT) as HTMLInputElement);
-    fov.onTiltChanged((val) => {
-        (document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CAM_TILT + constants.FOV_IDENTIFIER_CAM_RESULT_SUFFIX) as HTMLOutputElement).value = String(val);
-    });
-
-    fov.setUpFOVListener(document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CAM_HOR) as HTMLInputElement);
-    fov.onFOVChanged((val) => {
-        (document.getElementById(fov.identifier + constants.FOV_IDENTIFIER_CAM_HOR + constants.FOV_IDENTIFIER_CAM_RESULT_SUFFIX) as HTMLOutputElement).value = String(val);
-    });
-}
-
-/**
  * @param camera - The camera to set the view
  * @param lat - camera latitude
  * @param lng - camera longtitude
  * @param elevation - camera elevation
  */
-function setCameraView(
+export function setCameraView(
     camera: Cesium.Camera, lat: number, lng: number, elevation: number
-){
+): void{
     // Set the camera to look at the view cone
     camera.setView({
         destination: Cesium.Cartesian3.fromDegrees(lng, lat, elevation),

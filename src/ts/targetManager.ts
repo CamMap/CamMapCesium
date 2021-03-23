@@ -12,8 +12,10 @@ import { onClickTabButton } from "./tabHandler";
  */
 export class TLMFovElement{
     private fovObject : FOV;
-    private removeFuns: { (fov : FOV): void; }[];
+    private selectElement : HTMLElement;
+    private container : HTMLElement;
     private containerElements: HTMLElement[];
+
     /**
      * Constructor for the TLM element
      *
@@ -21,9 +23,11 @@ export class TLMFovElement{
      */
     constructor(fovObject : FOV, geoDataServer : string | null){
         this.fovObject = fovObject;
-        this.removeFuns = [];
         this.containerElements = [];
         const [tlmContainer, removeElement, selectElement] = this.setupTLMHTML(this.fovObject.identifier);
+        this.selectElement = selectElement;
+        this.container = tlmContainer;
+
         const sliderContainer = this.setupSliderHTML(this.fovObject.identifier);
         const canvasContainer = this.setupCanvasHTML(this.fovObject.identifier);
         const tabContainer = this.setupTabHTML(this.fovObject.identifier);
@@ -45,44 +49,51 @@ export class TLMFovElement{
             GeneralLogger.info("No GeoData server provided, camera will be static");
         }
         removeElement.onclick = () => {
-            this.destroy(this.containerElements);
+            this.destroy();
             FOVLogger.info("FOV Object Removed");
         };
 
         selectElement.onclick = () => {
-            const len = globalFOV.length;
-            const prevSelectedFOV = document.getElementById("selectedFOV");
-            GeneralLogger.debug("Selected TLM object");
-            //If point already selected remove id and change inner HTML
-            if(prevSelectedFOV){
-                prevSelectedFOV.removeAttribute("id");
-                prevSelectedFOV.parentElement?.classList.remove("selectedDiv");
-                prevSelectedFOV.innerHTML = "Select";
-            }
-            //No way to reference point in primitive collection with the point primitive
-            for(let i = 0; i < len; ++i) {
-                const fov = globalFOV[i];
-                if(fov.identifier == fovObject.identifier){
-                    if(!fov.select){
-                        selectElement.innerHTML = "Selected";
-                        selectElement.id = "selectedFOV";
-                        tlmContainer.classList.add("selectedDiv");
-                        fov.select = true;
-                    } else {
-                        selectElement.innerHTML = "Select";
-                        tlmContainer.classList.remove("selectedDiv");
-                        selectElement.removeAttribute("id");
-                        fov.select = false;
-                    }
-                } else {
-                    fov.select = false;
-                }
-            }
+            this.toggleFOV();
         };
 
         tabContainer.onclick = () => {
             onClickTabButton(tabContainer, canvasContainer);
         };
+    }
+
+    /**
+     * Toggles whether the FOV is selected
+     */
+    public toggleFOV() : void{
+        const len = globalFOV.length;
+        const prevSelectedFOV = document.getElementById("selectedFOV");
+        GeneralLogger.debug("Selected TLM object");
+        //If point already selected remove id and change inner HTML
+        if(prevSelectedFOV){
+            prevSelectedFOV.removeAttribute("id");
+            prevSelectedFOV.parentElement?.classList.remove("selectedDiv");
+            prevSelectedFOV.innerHTML = "Select";
+        }
+        //No way to reference point in primitive collection with the point primitive
+        for(let i = 0; i < len; ++i) {
+            const fov = globalFOV[i];
+            if(fov.identifier == this.fovObject.identifier){
+                if(!fov.select){
+                    this.selectElement.innerHTML = "Selected";
+                    this.selectElement.id = "selectedFOV";
+                    this.container.classList.add("selectedDiv");
+                    fov.select = true;
+                } else {
+                    this.selectElement.innerHTML = "Select";
+                    this.container.classList.remove("selectedDiv");
+                    this.selectElement.removeAttribute("id");
+                    fov.select = false;
+                }
+            } else {
+                fov.select = false;
+            }
+        }
     }
 
     /**
@@ -215,10 +226,9 @@ export class TLMFovElement{
     /**
      * Removes all the HTML for this FOV object
      *
-     * @param containers - Div elements containing the HTML for the HTML object
      */
-    private destroy(containers : HTMLElement[]) : void{
-        for(const container of containers){
+    public destroy() : void{
+        for(const container of this.containerElements){
             container.remove();
         }
         this.fovObject.destroy();
@@ -235,50 +245,58 @@ export class TLMFovElement{
 export class TLMPointElement{
     private point: Cesium.PointPrimitive;
     private pointContainer: HTMLElement;
+    private selectElement: HTMLElement;
     private removeFuns: { (point : Cesium.PointPrimitive): void; }[];
     constructor(point : Cesium.PointPrimitive){
         this.point = point;
         this.removeFuns = [];
         const [container, removeElement, selectElement] = this.setupPointHTML(point.id as string);
         this.pointContainer = container;
+        this.selectElement = selectElement;
         removeElement.onclick = () => {
-            this.destroy(this.pointContainer);
+            this.destroy();
             FOVLogger.info("FOV Point Removed");
         };
         selectElement.onclick = () => {
-            const len = globalPoints.length;
-            const prevSelectedPoint = document.getElementById("selectedPoint");
+            this.togglePoint();
+        };
+    }
 
-            //If point already selected remove id and change inner HTML
-            if(prevSelectedPoint){
-                prevSelectedPoint.removeAttribute("id");
-                prevSelectedPoint.parentElement?.classList.remove("selectedDiv");
-                prevSelectedPoint.innerHTML = "Select";
-            }
+    /**
+     */
+    public togglePoint() : void {
+        const len = globalPoints.length;
+        const prevSelectedPoint = document.getElementById("selectedPoint");
 
-            //No way to reference point in primitive collection with the point primitive
-            for(let i = 0; i < len; ++i) {
-                const p = globalPoints.get(i);
-                if(p.id == point.id){
-                    if(p.color.equals(Cesium.Color.GREEN)){
-                        p.color = Cesium.Color.ORANGE;
-                        p.pixelSize = 20;
-                        selectElement.innerHTML = "Selected";
-                        container.classList.add("selectedDiv");
-                        selectElement.id = "selectedPoint";
-                    } else {
-                        p.color = Cesium.Color.GREEN;
-                        p.pixelSize = 10;
-                        selectElement.innerHTML = "Select";
-                        container.classList.remove("selectedDiv");
-                        selectElement.removeAttribute("id");
-                    }
+        //If point already selected remove id and change inner HTML
+        if(prevSelectedPoint){
+            prevSelectedPoint.removeAttribute("id");
+            prevSelectedPoint.parentElement?.classList.remove("selectedDiv");
+            prevSelectedPoint.innerHTML = "Select";
+        }
+
+        //No way to reference point in primitive collection with the point primitive
+        for(let i = 0; i < len; ++i) {
+            const p = globalPoints.get(i);
+            if(p.id == this.point.id){
+                if(p.color.equals(Cesium.Color.GREEN)){
+                    p.color = Cesium.Color.ORANGE;
+                    p.pixelSize = 20;
+                    this.selectElement.innerHTML = "Selected";
+                    this.pointContainer.classList.add("selectedDiv");
+                    this.selectElement.id = "selectedPoint";
                 } else {
                     p.color = Cesium.Color.GREEN;
                     p.pixelSize = 10;
+                    this.selectElement.innerHTML = "Select";
+                    this.pointContainer.classList.remove("selectedDiv");
+                    this.selectElement.removeAttribute("id");
                 }
+            } else {
+                p.color = Cesium.Color.GREEN;
+                p.pixelSize = 10;
             }
-        };
+        }
     }
 
     /**
@@ -305,10 +323,9 @@ export class TLMPointElement{
     /**
      * Removes all the HTML for this FOV object
      *
-     * @param pointContainer - element containing the point HTML
      */
-    public destroy(pointContainer : HTMLElement) : void{
-        pointContainer.remove();
+    public destroy() : void{
+        this.pointContainer.remove();
         globalPoints.remove(this.point);
         for(const fov of globalFOV){
             fov.removeLineById(this.point.id);

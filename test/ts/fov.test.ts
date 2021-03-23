@@ -1,43 +1,17 @@
-import { Cartesian2, Cartesian3, Viewer } from "cesium_source/Cesium";
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+import { Cartesian2, Cartesian3, Polyline, Viewer} from "cesium_source/Cesium";
 import { FOV } from "../../src/ts/fov";
 
-/* eslint @typescript-eslint/no-magic-numbers: off */
-
-/**
- * Sets up a viewer attached to a canvas
- *
- * @returns the viewer in the canvas
- */
-function setUpEnviroment(): Viewer{
-    const c = document.createElement("canvas");
-    c.width = 10;
-    c.height = 10;
-    c.id = "ID";
-    document.body.appendChild(c);
-
-
-    return new Viewer("ID", {
-        animation: false,
-        timeline: false,
-        geocoder: false,
-        selectionIndicator: false,
-        infoBox: false,
-        vrButton: false,
-        fullscreenButton: false,
-    });
-}
-
-describe("Sample test", function() {
-    it("Condition is true", function() {
-        expect("AngularJS").toBe("AngularJS");
-    });
-});
-
 describe("FOV tests", function() {
-    const viewer = setUpEnviroment();
+    let viewer : Viewer;
+    beforeAll(() => {
+        const container = document.createElement("div");
+        document.body.appendChild(container);
+        container.id = "Test";
+        viewer = new Viewer("Test");
+    });
 
     it("Sets up an FOV", function() {
-        const viewer = setUpEnviroment();
         new FOV(
             viewer.scene, [ -107.0, 40.0, 100000.0], 60, 1, 90, -45, 0, 10000, 300000
         );
@@ -154,14 +128,30 @@ describe("FOV tests", function() {
         const fov = new FOV(
             viewer.scene, [ -4.946793, 56.615756, 900.0], 60, 1, 90, -90, 0, 100, 3000
         );
-        fov.getCamPointPercent(viewer.scene, new Cartesian2(0.0, 0.0), fov.scene.globe.ellipsoid);
+        const point = fov.getCamPointPercent(viewer.scene, new Cartesian2(0.0, 0.0), fov.scene.globe.ellipsoid);
+        expect(point).toBeInstanceOf(Cartesian3);
     });
 
-    it("Sets up an FOV and gets a point on the ellipsoid", function() {
+    it("Sets up an FOV and gets a point on the ellipsoid using ray casting", function() {
         const fov = new FOV(
             viewer.scene, [ -4.946793, 56.615756, 900.0], 60, 1, 90, -90, 0, 100, 3000
         );
-        fov.getCamPointPercent(viewer.scene, new Cartesian2(0.0, 0.0), fov.scene.globe.ellipsoid);
+        const point = fov.drawLineFromPercentToScreen(viewer.scene, new Cartesian2(0.5, 0.5), fov.scene.globe.ellipsoid);
+        expect(point).toBeNull();
+    });
+
+    it("should check if the point is visible to the camera", function() {
+        const fov = new FOV(
+            viewer.scene, [ -4.946793, 56.615756, 900.0], 60, 1, 90, -90, 0, 100, 3000
+        );
+        const point = fov.drawLineFromPercentToScreen(viewer.scene, new Cartesian2(0.5, 0.5), fov.scene.globe.ellipsoid);
+        fov.elevation = 900;
+        expect(point).toBeNull();
+        if(point){
+            expect(fov.getLineById(point.id)).toBeInstanceOf(Polyline);
+            fov.tilt = 0;
+            expect(fov.getLineById(point.id)).toBeNull();
+        }
     });
 });
 
