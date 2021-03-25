@@ -1,0 +1,80 @@
+{
+    "defaultTerrainServer": "http://localhost:8082/tilesets/test_full_OS",
+    "cameras": [
+        {
+            "name": "Front-Right",
+            "lng": -4.946793,
+            "lat": 56.615756,
+            "elevation": 112.0,
+            "fov": 40,
+            "aspectRatio": 1,
+            "theta": 25,
+            "phi": 0,
+            "roll": 0,
+            "near": 50,
+            "far": 3000,
+            "vgip": "ws://localhost:8081"
+        },
+        {
+            "name": "Front-left",
+            "lng": -4.946793,
+            "lat": 56.615786,
+            "elevation": 112.0,
+            "fov": 40,
+            "aspectRatio": 1,
+            "theta": 335,
+            "phi": 0,
+            "roll": 0,
+            "near": 50,
+            "far": 3000,
+            "vgip": "ws://localhost:8081"
+        },
+        {
+            "name": "middle-right",
+            "lng": -4.946853,
+            "lat": 56.615786,
+            "elevation": 112.0,
+            "fov": 40,
+            "aspectRatio": 1,
+            "theta": 270,
+            "phi": 0,
+            "roll": 0,
+            "near": 50,
+            "far": 3000,
+            "vgip": "ws://localhost:8081"
+        },
+        {
+            "name": "middle-left",
+            "lng": -4.946853,
+            "lat": 56.615756,
+            "elevation": 112.0,
+            "fov": 40,
+            "aspectRatio": 1,
+            "theta": 90,
+            "phi": 0,
+            "roll": 0,
+            "near": 50,
+            "far": 3000,
+            "vgip": "ws://localhost:8081"
+        },
+        {
+            "name": "back-middle",
+            "lng": -4.946893,
+            "lat": 56.615771,
+            "elevation": 112.0,
+            "fov": 40,
+            "aspectRatio": 1,
+            "theta": 180,
+            "phi": 0,
+            "roll": 0,
+            "near": 50,
+            "far": 3000,
+            "vgip": "ws://localhost:8081"
+        }
+    ],
+    "position": {
+        "lng": -4.946793,
+        "lat": 56.615756,
+        "elevation": 10000.0
+    }
+}

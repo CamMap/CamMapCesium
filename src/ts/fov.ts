@@ -72,6 +72,8 @@ export class FOV {
     private shouldUseEarthBoundry: boolean;
 
     private selected: boolean;
+
+    private _isDestroyed: boolean;
     /* Getters & Setters */
 
     /**
@@ -393,6 +395,16 @@ export class FOV {
     }
 
     /**
+     * Get the name of the FOV, it may not have been assigned one,
+     * if you want the ID instead, use `identifier`
+     *
+     * @returns The name, may be undefined if the FOV was never given a name
+     */
+    public get isDestroyed(): boolean{
+        return this._isDestroyed;
+    }
+
+    /**
      * Constructs an FOV object, call draw() to draw it in a scene
      *
      * @param scene - The cesium scene to be used (should this be scene)
@@ -427,6 +439,8 @@ export class FOV {
         this.terrainScanningGeometryPrimitive = this.scene.primitives.add(new Cesium.PrimitiveCollection());
         this._distance = far;
         this._name = name;
+
+        this._isDestroyed = false;
 
         this.numOfPoints = 0;
         this.camLabel = this.scene.primitives.add(new Cesium.LabelCollection());
@@ -636,6 +650,7 @@ export class FOV {
         if(this.curDrawn !== null) this.scene.primitives.remove(this.curDrawn);
         if(this.pointsToEdges !== null) this.scene.primitives.remove(this.pointsToEdges);
         if(this.linesToPoints !== null) this.scene.primitives.remove(this.linesToPoints);
+        this._isDestroyed = true;
     }
 
     /**

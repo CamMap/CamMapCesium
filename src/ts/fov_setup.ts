@@ -170,25 +170,28 @@ export function FOVVGIPWebSocketSetUp(fov: FOV, websocketAddress: string): void{
     vgipReciever.addWebSocketWithAddress(websocketAddress);
     vgipReciever.onRecieveData((geoData: VideoGeoData) => {
         // Modify the lat, long, heading ... depending on what was recieved
+        if(!fov.isDestroyed){
+            if(geoData.latitude != null && geoData.latitude != undefined){
+                //This is += for testing and should be changed to = if used in production
+                fov.latitude += geoData.latitude;
+            }
 
-        if(geoData.latitude != null && geoData.latitude != undefined){
-            fov.latitude = geoData.latitude;
-        }
+            if(geoData.longitude != null && geoData.longitude != undefined){
+                //This is += for testing and should be changed to = if used in production
+                fov.longitude += geoData.longitude;
+            }
 
-        if(geoData.longitude != null && geoData.longitude != undefined){
-            fov.longitude = geoData.longitude;
-        }
+            if(geoData.bearing != null && geoData.bearing != undefined){
+                fov.heading = geoData.bearing;
+            }
 
-        if(geoData.bearing != null && geoData.bearing != undefined){
-            fov.heading = geoData.bearing;
-        }
+            if(geoData.tilt != null && geoData.tilt != undefined){
+                fov.tilt = geoData.tilt;
+            }
 
-        if(geoData.tilt != null && geoData.tilt != undefined){
-            fov.tilt = geoData.tilt;
-        }
-
-        if(geoData.heading != null && geoData.heading != undefined){
-            fov.roll = geoData.heading;
+            if(geoData.heading != null && geoData.heading != undefined){
+                fov.roll = geoData.heading;
+            }
         }
     });
 }
