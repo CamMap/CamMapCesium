@@ -28,7 +28,7 @@ export class TLMFovElement{
         this.selectElement = selectElement;
         this.container = tlmContainer;
 
-        const sliderContainer = this.setupSliderHTML(this.fovObject.identifier);
+        const sliderContainer = this.setupSliderHTML();
         const canvasContainer = this.setupCanvasHTML(this.fovObject.identifier);
         const tabContainer = this.setupTabHTML(this.fovObject.identifier);
         this.containerElements.push(tlmContainer);
@@ -108,7 +108,7 @@ export class TLMFovElement{
             GeneralLogger.error("Could not get the div to hold the TLM FOV objects");
         }
         const fovElement = generateHTMLElement("div", {id: "", class: "targetElement"}, fovId);
-        fovElement.appendChild(generateHTMLElement("h3", {id: "label", innerHTML: "FOV object: " + fovId}, fovId));
+        fovElement.appendChild(generateHTMLElement("h3", {id: "label", innerHTML: "FOV object: " + this.fovObject.name}, fovId));
         const selectElement = fovElement.appendChild(generateHTMLElement("h3", {innerHTML: "Select", class: "selectElement"}));
         fovElement.appendChild(generateHTMLElement("p", {id: "Height", innerHTML: "Height: " + this.fovObject.elevation.toString()}, fovId));
         fovElement.appendChild(generateHTMLElement("p", {id: "Tilt", innerHTML: "Tilt: " + this.fovObject.tilt.toString()}, fovId));
@@ -123,17 +123,16 @@ export class TLMFovElement{
     /**
      * Generates all the slider section HTML for this FOV object
      *
-     * @param fovId - id of the fov object
      *
      * @returns Container element
      */
-    private setupSliderHTML(fovId : string): HTMLElement{
+    private setupSliderHTML(): HTMLElement{
         const parentElement = document.getElementById("sliderbox") as HTMLDivElement;
         if(parentElement == null){
             GeneralLogger.error("Could not get the div to hold the FOV sliders");
         }
         const sliderContainer = generateHTMLElement("div", {class: "slidecontainer"});
-        sliderContainer.appendChild(generateHTMLElement("h3", {innerHTML: fovId}));
+        sliderContainer.appendChild(generateHTMLElement("h3", {innerHTML: this.fovObject.name}));
         sliderContainer.appendChild(this.generateSliderHTML(
             constants.FOV_IDENTIFIER_CAM_DISTANCE, "0", "10000", "1000", "Camera Distance:"
         ));
