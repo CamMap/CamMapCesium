@@ -26,7 +26,23 @@
 </div>
 
 ## About
-CamMap (Name to be decided, this is just what the application is temporarily known as) is an application which allows for the viewing of the view frustum of a video or image with geolocation on a 3D map.  It also maps clicks on the video or image to a real place on the Earth.
+CamMap is an an application that links real life cameras and locators with a 3D map representation. The software can be used for locating targets, tracking points of interest and any other activity related to utilising real life cameras and a software calculation.
+
+## Features
+
+- Positioning real life cameras on a 3D map viewport
+- Updating location and camera parameters in real-time
+- Tracking objects and calculating their exact placement
+- Locating targets positioned in software
+- Quick deployment with flexible configuration features
+- Direct Sophie lite camera integration (when built with additions) [WIP]
+
+## Usage
+
+- Import real life cameras through the add section of the sidepanel, either with cutom parameters or a config object
+- Forward custom video feed, or use a placeholder image, to select the desired targets for calculating and displying their position on map. Simply click on the image canvas, to draw a line of sight
+- Use settings to connect to a terrain server for a 3D terrain data
+- Add a custom tracking point with latitude and longtitude via a sidepanel, to be shown and positioned on canvas, whenever cameras will have it in sight
 
 ## Screenshot
 <!--<img src= "Screenshot.png">-->
