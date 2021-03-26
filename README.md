@@ -16,7 +16,7 @@
 <a ref="https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/cs22-main-cesium/-/commits/master"><img alt="pipeline status" src="https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/cs22-main-cesium/badges/master/pipeline.svg" /></a> &nbsp; 
 <a href="https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/cs22-main-cesium/-/commits/master"><img alt="coverage report" src="https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/cs22-main-cesium/badges/master/coverage.svg" /></a>
 &nbsp; 
-<a href="https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/cs22-main-cesium/-/commits/master"><img alt="coverage report" src="./images/version.svg" /></a>
+<a href="https://stgit.dcs.gla.ac.uk/tp3-2020-CS22/cs22-main-cesium/-/commits/master"><img alt="coverage report" src="./images/version-badge.svg" /></a>
 </div>
 <br/>
 <div align="center">
