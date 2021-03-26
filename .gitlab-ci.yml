@@ -12,6 +12,7 @@ before_script:
 
 stages:
   - lint
+  - doc
   - test
   - build
   - publish
@@ -22,6 +23,18 @@ lint:
   stage: lint
   script: "npm run lint"
 
+doc:
+  tags: 
+    - docker
+  stage: doc
+  script: "npm run docs"
+  artifacts:
+    when: always
+    paths:
+      - docs
+    expire_in: 30 days
+  only:
+    - master
 
 test:
   tags:
